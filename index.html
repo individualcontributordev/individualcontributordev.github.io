@@ -1,27 +1,142 @@
-<html>
-
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>
-        Individual Contributor
-    </title>
-    <link href="https://unpkg.com/daisyui@4.10.1/dist/full.css" rel="stylesheet" type="text/css" />
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" media="screen" href="https://fontlibrary.org/face/dogica" type="text/css"/>
+    <title>IndividualContributor</title>
     <style>
-        * {
-            font-family: Atkinson Hyperlegible;
-            font-size: 24px;
+        @charset "UTF-8";
+        html { 
+            line-height: 1.15; 
+            -webkit-text-size-adjust: 100%; 
+            font-family: Dogica Pixel, Arial, sans-serif; /* Apply Dogica Pixel to all text */
+        }
+        body { 
+            margin: 0; 
+            background-color: #111; 
+            color: #e6e6e6; 
+        }
+        main { 
+            display: block; 
+            padding: 60px 20px; 
+        }
+        h1, h2 { 
+            font-weight: bold; /* Make the headings bold */
+            color: #e6e6e6; 
+        }
+        a, abbr[title] { 
+            color: #00e6e6; 
+            text-decoration: none; 
+        }
+        a:hover { 
+            color: #e6e6e6; 
+        }
+        p { 
+            margin: 20px 0; 
+        }
+        ul { 
+            list-style-type: none; 
+            padding: 0; 
+        }
+        ul li { 
+            margin: 10px 0; 
+        }
+        .container { 
+            max-width: 1600px; 
+            margin: 0 auto; 
+            padding: 0 20px; 
+        }
+        .nav-links { 
+            padding: 20px 0; 
+        }
+        .nav-links a { 
+            margin-right: 15px; 
+            font-size: 1.1rem; 
+        }
+        .nav-links a:hover { 
+            text-decoration: underline; 
+        }
+        footer { 
+            padding: 20px; 
+            text-align: center; 
+            font-size: 0.8rem; 
+            color: #aaa; 
+        }
+
+        /* Card Styling */
+        .details-content {
+            font-size: .875rem;
+            font-weight: 400;
+            color: #e6e6e6;
+            line-height: 2;
+            letter-spacing: 1.5px;
+            box-sizing: border-box;
+            background-color: #003a90;
+            background-image: linear-gradient(160deg, #003a90 35%, #000051);
+            border: 3px solid #e6e6e6;
+            padding: 20px;
+            border-radius: 10px;
+            height: 100%;
+            margin-bottom: 20px;
+        }
+        .mission-statement {
+            font-style: italic;
+            margin-top: 20px;
         }
     </style>
 </head>
-
 <body>
-    <div class="mockup-window bg-base-300 m-2">
-        <div class="flex flex-col items-center px-4 py-16 bg-base-200">Hello world!
-            <a class="link link-primary" href="https://www.youtube.com/@individualcontributor"
-                target="_blank">YouTube</a>
-            <a class="link link-primary" href="https://github.com/individualcontributordev" target="_blank">GitHub</a>
-        </div>
-    </div>
-</body>
 
+    <div class="container">
+        <!-- Navigation Bar -->
+        <div class="nav-links">
+            <a href="#youtube">YouTube</a>
+            <a href="#twitch">Twitch</a>
+            <a href="#github">GitHub</a>
+        </div>
+
+        <main>
+            <h1>Welcome to the IndividualContributor Page</h1>
+            <p>This page provides information about the contributions on YouTube, Twitch, and GitHub by IndividualContributor.</p>
+
+            <!-- YouTube Section -->
+            <h2 id="youtube">YouTube</h2>
+            <div class="details-content">
+                <p>Welcome to the <strong>YouTube channel</strong> of IndividualContributor. On this channel, you will find videos related to various gaming speedruns, tutorials, and live streams supporting different charitable causes. It's an exciting place to explore content related to gaming and more!</p>
+                <p>Check out the YouTube channel for more: <a href="https://www.youtube.com/@individualcontributor" target="_blank" rel="noreferrer">YouTube Channel</a></p>
+            </div>
+
+            <!-- Twitch Section -->
+            <h2 id="twitch">Twitch</h2>
+            <div class="details-content">
+                <p>The <strong>Twitch stream</strong> of IndividualContributor focuses on live gaming events, speedruns, and charity streams. With a fun community, it's a place where you can join in real-time and interact with the streamer during live events.</p>
+                <p>Watch the streams on Twitch: <a href="https://www.twitch.tv/individualcontributor" target="_blank" rel="noreferrer">Twitch Channel</a></p>
+            </div>
+
+            <!-- GitHub Section -->
+            <h2 id="github">GitHub</h2>
+            <div class="details-content">
+                <p>Visit the <strong>GitHub repository</strong> of IndividualContributor to explore various open-source projects, including game mods, tools for streamers, and scripts for speedrunning events. It’s a great resource for developers interested in contributing or just learning more about game-related projects.</p>
+                <p>Explore the repositories on GitHub: <a href="https://github.com/individualcontributordev" target="_blank" rel="noreferrer">GitHub Profile</a></p>
+            </div>
+
+<h2 id="mod">Cutscenes Removed Mod</h2>
+            <div class="details-content">
+                <p>Check out the <strong>CutScenes Removed (CSR) Mod</strong> for the PS1 version of <strong>Final Fantasy VII</strong>. This mod is designed to remove cutscenes from the game, providing a streamlined experience for players who prefer gameplay over cinematic sequences. It’s hosted on GitHub for easy access and contribution.</p>
+                <p>Explore the project on GitHub: <a href="https://github.com/individualcontributordev/Final-Fantasy-7-CSR" target="_blank" rel="noreferrer">Final Fantasy 7 CSR GitHub</a></p>
+            </div>
+
+        </main>
+
+        <!-- Footer -->
+        <footer>
+            <p>Page created by IndividualContributor. &copy; 2025</p>
+        </footer>
+    </div>
+    <audio autoplay loop>
+        <source src="C:/Users/IC/Downloads/intro.mp3" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
+</body>
 </html>
