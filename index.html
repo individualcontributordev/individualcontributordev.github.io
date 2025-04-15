@@ -1,155 +1,212 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IndividualContributor</title>
-    <style>
-@font-face {
-    font-family: 'DogicaPixelBold';
-    src: url('DogicaPixelBold.ttf') format('truetype');
-    font-weight: bold;
-    font-style: normal;
-}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>IndividualContributor</title>
 
-@font-face {
-    font-family: 'DogicaPixelRegular';
-    src: url('DogicaPixelRegular.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-}
-        html { 
-            line-height: 1.15; 
-            -webkit-text-size-adjust: 100%; 
-        }
-        body {
-            font-family: 'DogicaPixelRegular', Arial, sans-serif;
- 
-            margin: 0; 
-            background-color: #111; 
-            color: #e6e6e6; 
-        }
-        main { 
-            display: block; 
-            padding: 60px 20px; 
-        }
-        h1, h2 { 
-            font-family: 'DogicaPixelBold', Arial, sans-serif;
-            color: #e6e6e6; 
-        }
-        a, abbr[title] { 
-            color: #00e6e6; 
-            text-decoration: none; 
-        }
-        a:hover { 
-            color: #e6e6e6; 
-        }
-        p { 
-            font-family: 'DogicaPixelRegular', Arial, sans-serif;
-            margin: 20px 0; 
-        }
-        ul { 
-            list-style-type: none; 
-            padding: 0; 
-        }
-        ul li { 
-            margin: 10px 0; 
-        }
-        .container { 
-            max-width: 1600px; 
-            margin: 0 auto; 
-            padding: 0 20px; 
-        }
-        .nav-links { 
-            padding: 20px 0; 
-        }
-        .nav-links a { 
-            margin-right: 15px; 
-            font-size: 1.1rem; 
-        }
-        .nav-links a:hover { 
-            text-decoration: underline; 
-        }
-        footer { 
-            padding: 20px; 
-            text-align: center; 
-            font-size: 0.8rem; 
-            color: #aaa; 
-        }
+  <!-- Orbitron font for starfield background -->
+  <link href="https://fonts.googleapis.com/css?family=Orbitron:700" rel="stylesheet" />
 
-        /* Card Styling */
-        .details-content {
-            font-size: .875rem;
-            font-weight: 400;
-            color: #e6e6e6;
-            line-height: 2;
-            letter-spacing: 1.5px;
-            box-sizing: border-box;
-            background-color: #003a90;
-            background-image: linear-gradient(160deg, #003a90 35%, #000051);
-            border: 3px solid #e6e6e6;
-            padding: 20px;
-            border-radius: 10px;
-            height: 100%;
-            margin-bottom: 20px;
-        }
-        .mission-statement {
-            font-style: italic;
-            margin-top: 20px;
-        }
-    </style>
+  <style>
+    /* Starfield Background */
+    #space, .stars {
+      overflow: hidden;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: -1;
+    }
+
+    .stars {
+      background-image: 
+        radial-gradient(1px 1px at 20px 30px, #eee, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 40px 70px, #fff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 50px 160px, #ddd, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 90px 40px, #fff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 130px 80px, #fff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 160px 120px, #ddd, rgba(0,0,0,0));
+      background-repeat: repeat;
+      background-size: 200px 200px;
+      animation: zoom 10s infinite;
+      opacity: 0;
+    }
+
+    .stars:nth-child(1) { background-position: 50% 50%; animation-delay: 0s; }
+    .stars:nth-child(2) { background-position: 20% 60%; animation-delay: 2s; }
+    .stars:nth-child(3) { background-position: -20% -30%; animation-delay: 4s; }
+    .stars:nth-child(4) { background-position: 40% -80%; animation-delay: 6s; }
+    .stars:nth-child(5) { background-position: -20% 30%; animation-delay: 8s; }
+
+    @keyframes zoom {
+      0% { opacity: 0; transform: scale(0.5); animation-timing-function: ease-in; }
+      85% { opacity: 1; transform: scale(2.8); animation-timing-function: linear; }
+      100% { opacity: 0; transform: scale(3.5); }
+    }
+
+    /* Existing Page Styling */
+    @font-face {
+      font-family: 'DogicaPixelBold';
+      src: url('DogicaPixelBold.ttf') format('truetype');
+      font-weight: bold;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'DogicaPixelRegular';
+      src: url('DogicaPixelRegular.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    html {
+      line-height: 1.15;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      font-family: 'DogicaPixelRegular', Arial, sans-serif;
+      margin: 0;
+      background-color: #000; /* Reaffirm background color under stars */
+      color: #e6e6e6;
+    }
+
+    main {
+      display: block;
+      padding: 60px 20px;
+    }
+
+    h1, h2 {
+      font-family: 'DogicaPixelBold', Arial, sans-serif;
+      color: #e6e6e6;
+    }
+
+    a, abbr[title] {
+      color: #00e6e6;
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: #e6e6e6;
+    }
+
+    p {
+      margin: 20px 0;
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    ul li {
+      margin: 10px 0;
+    }
+
+    .container {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .nav-links {
+      padding: 20px 0;
+    }
+
+    .nav-links a {
+      margin-right: 15px;
+      font-size: 1.1rem;
+    }
+
+    .nav-links a:hover {
+      text-decoration: underline;
+    }
+
+    footer {
+      padding: 20px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: #aaa;
+    }
+
+    .details-content {
+      font-size: .875rem;
+      font-weight: 400;
+      color: #e6e6e6;
+      line-height: 2;
+      letter-spacing: 1.5px;
+      box-sizing: border-box;
+      background-color: #003a90;
+      background-image: linear-gradient(160deg, #003a90 35%, #000051);
+      border: 3px solid #e6e6e6;
+      padding: 20px;
+      border-radius: 10px;
+      height: 100%;
+      margin-bottom: 20px;
+    }
+
+    .mission-statement {
+      font-style: italic;
+      margin-top: 20px;
+    }
+  </style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- Navigation Bar -->
-        <div class="nav-links">
-            <a href="#youtube">YouTube</a>
-            <a href="#twitch">Twitch</a>
-            <a href="#github">GitHub</a>
-        </div>
+  <!-- Starfield Layers -->
+  <div id="space">
+    <div class="stars"></div>
+    <div class="stars"></div>
+    <div class="stars"></div>
+    <div class="stars"></div>
+    <div class="stars"></div>
+  </div>
 
-        <main>
-            <h1>Welcome to the IndividualContributor Page</h1>
-            <p>This page provides information about the contributions on YouTube, Twitch, and GitHub by IndividualContributor.</p>
-
-            <!-- YouTube Section -->
-            <h2 id="youtube">YouTube</h2>
-            <div class="details-content">
-                <p>Welcome to the <strong>YouTube channel</strong> of IndividualContributor. On this channel, you will find videos related to various gaming speedruns, tutorials, and live streams supporting different charitable causes. It's an exciting place to explore content related to gaming and more!</p>
-                <p>Check out the YouTube channel for more: <a href="https://www.youtube.com/@individualcontributor" target="_blank" rel="noreferrer">YouTube Channel</a></p>
-            </div>
-
-            <!-- Twitch Section -->
-            <h2 id="twitch">Twitch</h2>
-            <div class="details-content">
-                <p>The <strong>Twitch stream</strong> of IndividualContributor focuses on live gaming events, speedruns, and charity streams. With a fun community, it's a place where you can join in real-time and interact with the streamer during live events.</p>
-                <p>Watch the streams on Twitch: <a href="https://www.twitch.tv/individualcontributor" target="_blank" rel="noreferrer">Twitch Channel</a></p>
-            </div>
-
-            <!-- GitHub Section -->
-            <h2 id="github">GitHub</h2>
-            <div class="details-content">
-                <p>Visit the <strong>GitHub repository</strong> of IndividualContributor to explore various open-source projects, including game mods, tools for streamers, and scripts for speedrunning events. It’s a great resource for developers interested in contributing or just learning more about game-related projects.</p>
-                <p>Explore the repositories on GitHub: <a href="https://github.com/individualcontributordev" target="_blank" rel="noreferrer">GitHub Profile</a></p>
-            </div>
-
-<h2 id="mod">CutScenes Removed Mod</h2>
-            <div class="details-content">
-                <p>Check out the <strong>CutScenes Removed (CSR) Mod</strong> for the PS1 version of <strong>Final Fantasy VII</strong>. This mod is designed to remove cutscenes from the game, providing a streamlined experience for players who prefer gameplay over cinematic sequences. It’s hosted on GitHub for easy access and contribution.</p>
-                <p>Explore the project on GitHub: <a href="https://github.com/individualcontributordev/Final-Fantasy-7-CSR" target="_blank" rel="noreferrer">Final Fantasy 7 CSR GitHub</a></p>
-            </div>
-
-        </main>
-
-        <!-- Footer -->
-        <footer>
-            <p>Page created by IndividualContributor. &copy; 2025</p>
-        </footer>
+  <div class="container">
+    <div class="nav-links">
+      <a href="#youtube">YouTube</a>
+      <a href="#twitch">Twitch</a>
+      <a href="#github">GitHub</a>
     </div>
 
-<audio autoplay loop>
-    <source src="intro.mp3" type="audio/mp3">
+    <main>
+      <h1>Welcome to the IndividualContributor Page</h1>
+      <p>This page provides information about the contributions on YouTube, Twitch, and GitHub by IndividualContributor.</p>
+
+      <h2 id="youtube">YouTube</h2>
+      <div class="details-content">
+        <p>Welcome to the <strong>YouTube channel</strong> of IndividualContributor. On this channel, you will find videos related to various gaming speedruns, tutorials, and live streams supporting different charitable causes. It's an exciting place to explore content related to gaming and more!</p>
+        <p>Check out the YouTube channel for more: <a href="https://www.youtube.com/@individualcontributor" target="_blank" rel="noreferrer">YouTube Channel</a></p>
+      </div>
+
+      <h2 id="twitch">Twitch</h2>
+      <div class="details-content">
+        <p>The <strong>Twitch stream</strong> of IndividualContributor focuses on live gaming events, speedruns, and charity streams. With a fun community, it's a place where you can join in real-time and interact with the streamer during live events.</p>
+        <p>Watch the streams on Twitch: <a href="https://www.twitch.tv/individualcontributor" target="_blank" rel="noreferrer">Twitch Channel</a></p>
+      </div>
+
+      <h2 id="github">GitHub</h2>
+      <div class="details-content">
+        <p>Visit the <strong>GitHub repository</strong> of IndividualContributor to explore various open-source projects, including game mods, tools for streamers, and scripts for speedrunning events. It’s a great resource for developers interested in contributing or just learning more about game-related projects.</p>
+        <p>Explore the repositories on GitHub: <a href="https://github.com/individualcontributordev" target="_blank" rel="noreferrer">GitHub Profile</a></p>
+      </div>
+
+      <h2 id="mod">CutScenes Removed Mod</h2>
+      <div class="details-content">
+        <p>Check out the <strong>CutScenes Removed (CSR) Mod</strong> for the PS1 version of <strong>Final Fantasy VII</strong>. This mod is designed to remove cutscenes from the game, providing a streamlined experience for players who prefer gameplay over cinematic sequences. It’s hosted on GitHub for easy access and contribution.</p>
+        <p>Explore the project on GitHub: <a href="https://github.com/individualcontributordev/Final-Fantasy-7-CSR" target="_blank" rel="noreferrer">Final Fantasy 7 CSR GitHub</a></p>
+      </div>
+    </main>
+
+    <footer>
+      <p>Page created by IndividualContributor. &copy; 2025</p>
+    </footer>
+  </div>
+
+  <audio autoplay loop>
+    <source src="intro.mp3" type="audio/mp3" />
     Your browser does not support the audio element.
   </audio>
 
