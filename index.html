@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>IndividualContributor</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
 
   <style>
     /* Starfield Background */
@@ -155,6 +156,18 @@
       font-style: italic;
       margin-top: 20px;
     }
+
+.header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+}
+
+.site-logo {
+  height: 40px;
+  width: auto;
+}
   </style>
 </head>
 <body>
@@ -169,11 +182,15 @@
   </div>
 
   <div class="container">
-    <div class="nav-links">
-      <a href="#youtube">YouTube</a>
-      <a href="#twitch">Twitch</a>
-      <a href="#github">GitHub</a>
-    </div>
+  <div class="header-bar">
+  <div class="nav-links">
+    <a href="#youtube">YouTube</a>
+    <a href="#twitch">Twitch</a>
+    <a href="#github">GitHub</a>
+  </div>
+  <img src="meteor.png" alt="Logo" class="site-logo" />
+
+</div>
 
     <main>
       <p>This page provides information about the contributions on YouTube, Twitch, and GitHub by IndividualContributor.</p>
