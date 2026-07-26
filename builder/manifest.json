@@ -53,5 +53,8 @@
       "url": "./demo/addons/color.layer.json"
     }
   ],
-  "remoteSources": []
+  "remoteSources": [
+    "https://individualcontributor.dev/Final-Fantasy-7-Modding/builder/manifest.json",
+    "https://individualcontributor.dev/Final-Fantasy-7-CSR/builder/manifest.json"
+  ]
 }

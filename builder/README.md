@@ -36,7 +36,9 @@ Verify stacking: Alpha + Speed + Color should contain ASCII `BASEA` @ 16, `SPEED
 
 `manifest.json` lists bases (radio / exclusive) and add-ons (checkboxes). Each entry points at a layer URL.
 
-Later: set `remoteSources` to CSR / Modding manifest URLs; the UI can merge them without cloning those repos into this one.
+Later: set `remoteSources` to CSR / Modding manifest URLs (already wired). Packs with
+`"enabled": false` are ignored until you generate layers on Windows and flip the flag.
+
 
 ## What you prebuild (real mods)
 
