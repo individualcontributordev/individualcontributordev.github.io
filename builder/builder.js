@@ -29,10 +29,68 @@ function downloadBlob(blob, filename) {
 	setTimeout(() => URL.revokeObjectURL(url), 2000);
 }
 
+function resolveUrl(baseUrl, maybeRelative) {
+	if (!maybeRelative) return null;
+	return new URL(maybeRelative, baseUrl).href;
+}
+
 async function fetchJson(url) {
 	const res = await fetch(url);
 	if (!res.ok) throw new Error(`Failed to load ${url} (${res.status})`);
 	return res.json();
+}
+
+function normalizeEntry(entry, manifestUrl) {
+	if (!entry || entry.enabled === false) return null;
+	const url = resolveUrl(manifestUrl, entry.url);
+	if (entry.layer === null) {
+		return { ...entry, url: null };
+	}
+	if (!url && entry.id !== 'clean') return null;
+	return { ...entry, url };
+}
+
+async function loadMergedManifest(localPath) {
+	const localUrl = new URL(localPath, window.location.href).href;
+	const local = await fetchJson(localUrl);
+	const bases = [];
+	const addons = [];
+
+	for (const b of local.bases || []) {
+		const n = normalizeEntry(b, localUrl);
+		if (n) bases.push(n);
+	}
+	for (const a of local.addons || []) {
+		const n = normalizeEntry(a, localUrl);
+		if (n) addons.push(n);
+	}
+
+	const remoteNotes = [];
+	for (const src of local.remoteSources || []) {
+		try {
+			const remote = await fetchJson(src);
+			const remoteUrl = new URL(src, window.location.href).href;
+			for (const b of remote.bases || []) {
+				const n = normalizeEntry(b, remoteUrl);
+				if (n) bases.push(n);
+			}
+			for (const a of remote.addons || []) {
+				const n = normalizeEntry(a, remoteUrl);
+				if (n) addons.push(n);
+			}
+			remoteNotes.push(`Loaded ${src}`);
+		} catch (err) {
+			remoteNotes.push(`Skip ${src}: ${err.message}`);
+			console.warn(err);
+		}
+	}
+
+	return {
+		...local,
+		bases,
+		addons,
+		_remoteNotes: remoteNotes,
+	};
 }
 
 async function loadLayer(entry) {
@@ -78,7 +136,6 @@ function renderManifest() {
 	addonListEl.innerHTML = '';
 
 	manifest.bases.forEach((base, index) => {
-		const id = `base-${base.id}`;
 		const label = document.createElement('label');
 		label.className = 'choice';
 		label.innerHTML = `
@@ -114,7 +171,8 @@ function renderManifest() {
 
 async function loadSample() {
 	setStatus('Loading sample.bin…');
-	const res = await fetch(manifest.sampleBin);
+	const sampleUrl = new URL(manifest.sampleBin, window.location.href).href;
+	const res = await fetch(sampleUrl);
 	if (!res.ok) throw new Error('Could not load sample.bin');
 	sourceBytes = new Uint8Array(await res.arrayBuffer());
 	fileLabel.textContent = `sample.bin (${sourceBytes.length} bytes)`;
@@ -175,7 +233,7 @@ async function applySelection() {
 
 async function init() {
 	try {
-		manifest = await fetchJson('./manifest.json');
+		manifest = await loadMergedManifest('./manifest.json');
 		document.getElementById('page-title').textContent = manifest.title || 'Disc builder';
 		renderManifest();
 
@@ -193,7 +251,12 @@ async function init() {
 			applySelection();
 		});
 
-		setStatus('Pick a sample or your own .bin, choose base + add-ons, then Build.');
+		const remoteMsg = (manifest._remoteNotes || []).join(' · ');
+		setStatus(
+			remoteMsg
+				? `Ready. ${remoteMsg}`
+				: 'Pick a sample or your own .bin, choose base + add-ons, then Build.'
+		);
 	} catch (err) {
 		setStatus(err.message || String(err), true);
 	}
