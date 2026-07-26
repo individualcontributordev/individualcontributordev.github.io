@@ -129,6 +129,10 @@ h1 {
 	font-size: 0.85rem;
 	margin-top: 2px;
 }
+.choice.is-disabled {
+	opacity: 0.45;
+	cursor: not-allowed;
+}
 
 .row {
 	display: flex;
