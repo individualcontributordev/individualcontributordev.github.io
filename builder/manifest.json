@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "title": "Disc builder prototype",
+  "demo": true,
+  "sampleBin": "./demo/sample.bin",
+  "explainer": {
+    "base": "Pick one base (or unmodified). Bases replace the same region and cannot be combined.",
+    "addon": "Add-ons stack on top of your base. Order is fixed by the manifest."
+  },
+  "bases": [
+    {
+      "id": "clean",
+      "name": "Unmodified",
+      "kind": "base",
+      "exclusiveGroup": "cutscenes",
+      "blurb": "No base pack — add-ons only.",
+      "layer": null
+    },
+    {
+      "id": "demo-base-alpha",
+      "name": "Demo base Alpha",
+      "kind": "base",
+      "exclusiveGroup": "cutscenes",
+      "blurb": "Stand-in for a cutscene pack (e.g. CSR).",
+      "format": "ic-layer-v1",
+      "url": "./demo/bases/alpha.layer.json"
+    },
+    {
+      "id": "demo-base-beta",
+      "name": "Demo base Beta",
+      "kind": "base",
+      "exclusiveGroup": "cutscenes",
+      "blurb": "Stand-in for another exclusive pack (e.g. CSR++).",
+      "format": "ic-layer-v1",
+      "url": "./demo/bases/beta.layer.json"
+    }
+  ],
+  "addons": [
+    {
+      "id": "demo-addon-speed",
+      "name": "Demo add-on Speed",
+      "kind": "addon",
+      "blurb": "Stand-in for an engine add-on (e.g. Encounter).",
+      "format": "ic-layer-v1",
+      "url": "./demo/addons/speed.layer.json"
+    },
+    {
+      "id": "demo-addon-color",
+      "name": "Demo add-on Color",
+      "kind": "addon",
+      "blurb": "Second stackable add-on.",
+      "format": "ic-layer-v1",
+      "url": "./demo/addons/color.layer.json"
+    }
+  ],
+  "remoteSources": []
+}
