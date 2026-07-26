@@ -3,6 +3,7 @@ import { applyLayers, buildCue } from './layer.js';
 const statusEl = document.getElementById('status');
 const baseListEl = document.getElementById('base-list');
 const addonListEl = document.getElementById('addon-list');
+const discListEl = document.getElementById('disc-list');
 const fileInput = document.getElementById('bin-file');
 const useSampleBtn = document.getElementById('use-sample');
 const applyBtn = document.getElementById('apply');
@@ -42,12 +43,29 @@ async function fetchJson(url) {
 
 function normalizeEntry(entry, manifestUrl) {
 	if (!entry || entry.enabled === false) return null;
-	const url = resolveUrl(manifestUrl, entry.url);
-	if (entry.layer === null) {
-		return { ...entry, url: null };
+
+	const discs = {};
+	if (entry.discs && typeof entry.discs === 'object') {
+		for (const [disc, rel] of Object.entries(entry.discs)) {
+			const absolute = resolveUrl(manifestUrl, rel);
+			if (absolute) discs[String(disc)] = absolute;
+		}
 	}
-	if (!url && entry.id !== 'clean') return null;
-	return { ...entry, url };
+
+	let url = entry.url ? resolveUrl(manifestUrl, entry.url) : null;
+	if (!url && discs['1']) url = discs['1'];
+	if (entry.layer === null) {
+		return { ...entry, url: null, discs };
+	}
+	if (!url && Object.keys(discs).length === 0 && entry.id !== 'clean') return null;
+	return { ...entry, url, discs };
+}
+
+function layerUrlFor(entry, disc) {
+	if (!entry) return null;
+	const key = String(disc);
+	if (entry.discs && entry.discs[key]) return entry.discs[key];
+	return entry.url || null;
 }
 
 async function loadMergedManifest(localPath) {
@@ -93,11 +111,11 @@ async function loadMergedManifest(localPath) {
 	};
 }
 
-async function loadLayer(entry) {
-	if (!entry || !entry.url) return null;
-	if (layerCache.has(entry.url)) return layerCache.get(entry.url);
-	const layer = await fetchJson(entry.url);
-	layerCache.set(entry.url, layer);
+async function loadLayerByUrl(url) {
+	if (!url) return null;
+	if (layerCache.has(url)) return layerCache.get(url);
+	const layer = await fetchJson(url);
+	layerCache.set(url, layer);
 	return layer;
 }
 
@@ -110,8 +128,14 @@ function selectedAddonIds() {
 	return [...document.querySelectorAll('input[name="addon"]:checked')].map((el) => el.value);
 }
 
+function selectedDisc() {
+	const el = document.querySelector('input[name="disc"]:checked');
+	return el ? parseInt(el.value, 10) : 1;
+}
+
 function updatePlan() {
 	if (!manifest) return;
+	const disc = selectedDisc();
 	const baseId = selectedBaseId();
 	const base = manifest.bases.find((b) => b.id === baseId);
 	const addons = selectedAddonIds()
@@ -120,6 +144,7 @@ function updatePlan() {
 
 	const steps = [];
 	steps.push(sourceBytes ? `Input: ${sourceBytes.length} bytes` : 'Input: (none yet)');
+	steps.push(`Disc: ${disc}`);
 	steps.push(`Base: ${base ? base.name : baseId}`);
 	if (addons.length) {
 		addons.forEach((a, i) => steps.push(`Add-on ${i + 1}: ${a.name}`));
@@ -134,6 +159,17 @@ function updatePlan() {
 function renderManifest() {
 	baseListEl.innerHTML = '';
 	addonListEl.innerHTML = '';
+	discListEl.innerHTML = '';
+
+	[1, 2, 3].forEach((disc, index) => {
+		const label = document.createElement('label');
+		label.className = 'choice';
+		label.innerHTML = `
+			<input type="radio" name="disc" value="${disc}" ${index === 0 ? 'checked' : ''} />
+			<span><strong>Disc ${disc}</strong></span>
+		`;
+		discListEl.appendChild(label);
+	});
 
 	manifest.bases.forEach((base, index) => {
 		const label = document.createElement('label');
@@ -164,6 +200,7 @@ function renderManifest() {
 	document.getElementById('explainer-base').textContent = manifest.explainer?.base || '';
 	document.getElementById('explainer-addon').textContent = manifest.explainer?.addon || '';
 
+	discListEl.addEventListener('change', updatePlan);
 	baseListEl.addEventListener('change', updatePlan);
 	addonListEl.addEventListener('change', updatePlan);
 	updatePlan();
@@ -197,6 +234,7 @@ async function applySelection() {
 	setStatus('Building…');
 
 	try {
+		const disc = selectedDisc();
 		const baseId = selectedBaseId();
 		const base = manifest.bases.find((b) => b.id === baseId);
 		const addonEntries = selectedAddonIds()
@@ -204,15 +242,21 @@ async function applySelection() {
 			.filter(Boolean);
 
 		const layers = [];
-		if (base?.url) {
-			layers.push(await loadLayer(base));
+		const baseUrl = layerUrlFor(base, disc);
+		if (baseUrl) {
+			layers.push(await loadLayerByUrl(baseUrl));
 		}
 		for (const entry of addonEntries) {
-			layers.push(await loadLayer(entry));
+			const url = layerUrlFor(entry, disc);
+			if (!url) {
+				throw new Error(`${entry.name} has no layer for Disc ${disc}`);
+			}
+			layers.push(await loadLayerByUrl(url));
 		}
 
 		const out = applyLayers(sourceBytes, layers);
 		const stamp = [
+			`d${disc}`,
 			baseId === 'clean' ? 'clean' : baseId.replace(/^demo-base-/, ''),
 			...addonEntries.map((a) => a.id.replace(/^demo-addon-/, '')),
 		].join('+');
@@ -255,7 +299,7 @@ async function init() {
 		setStatus(
 			remoteMsg
 				? `Ready. ${remoteMsg}`
-				: 'Pick a sample or your own .bin, choose base + add-ons, then Build.'
+				: 'Pick disc, base, add-ons, then Build.'
 		);
 	} catch (err) {
 		setStatus(err.message || String(err), true);
