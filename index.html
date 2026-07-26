@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>IndividualContributor</title>
+  <meta name="description" content="IndividualContributor — FF7 CSR mods, browser patcher, speedruns, and charity streams." />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <link rel="icon" href="favicon.ico" type="image/x-icon" />
 
   <style>
-    /* Starfield Background */
     #space, .stars {
       overflow: hidden;
       position: fixed;
@@ -20,13 +20,13 @@
     }
 
     .stars {
-      background-image: 
-        radial-gradient(1px 1px at 20px 30px, #eee, rgba(0,0,0,0)),
-        radial-gradient(1px 1px at 40px 70px, #fff, rgba(0,0,0,0)),
-        radial-gradient(1px 1px at 50px 160px, #ddd, rgba(0,0,0,0)),
-        radial-gradient(1px 1px at 90px 40px, #fff, rgba(0,0,0,0)),
-        radial-gradient(1px 1px at 130px 80px, #fff, rgba(0,0,0,0)),
-        radial-gradient(1px 1px at 160px 120px, #ddd, rgba(0,0,0,0));
+      background-image:
+        radial-gradient(1px 1px at 20px 30px, #eee, rgba(0, 0, 0, 0)),
+        radial-gradient(1px 1px at 40px 70px, #fff, rgba(0, 0, 0, 0)),
+        radial-gradient(1px 1px at 50px 160px, #ddd, rgba(0, 0, 0, 0)),
+        radial-gradient(1px 1px at 90px 40px, #fff, rgba(0, 0, 0, 0)),
+        radial-gradient(1px 1px at 130px 80px, #fff, rgba(0, 0, 0, 0)),
+        radial-gradient(1px 1px at 160px 120px, #ddd, rgba(0, 0, 0, 0));
       background-repeat: repeat;
       background-size: 200px 200px;
       animation: zoom 10s infinite;
@@ -45,17 +45,16 @@
       100% { opacity: 0; transform: scale(3.5); }
     }
 
-    /* Existing Page Styling */
     @font-face {
-      font-family: 'DogicaPixelBold';
-      src: url('DogicaPixelBold.ttf') format('truetype');
+      font-family: "DogicaPixelBold";
+      src: url("DogicaPixelBold.ttf") format("truetype");
       font-weight: bold;
       font-style: normal;
     }
 
     @font-face {
-      font-family: 'DogicaPixelRegular';
-      src: url('DogicaPixelRegular.ttf') format('truetype');
+      font-family: "DogicaPixelRegular";
+      src: url("DogicaPixelRegular.ttf") format("truetype");
       font-weight: normal;
       font-style: normal;
     }
@@ -65,114 +64,217 @@
       -webkit-text-size-adjust: 100%;
     }
 
+    * { box-sizing: border-box; }
+
     body {
-      font-family: 'DogicaPixelRegular', Arial, sans-serif;
+      font-family: "DogicaPixelRegular", Arial, sans-serif;
       margin: 0;
-      background-color: #000; /* Reaffirm background color under stars */
+      background-color: #000;
       color: #e6e6e6;
-    }
-
-    main {
-      display: block;
-      padding: 60px 20px;
-    }
-
-    h1, h2 {
-      font-family: 'DogicaPixelBold', Arial, sans-serif;
-      color: #e6e6e6;
-      display: inline-flex;
-      align-items: center;
-    }
-
-    h2 i {
-      margin-right: 10px;
-    }
-
-    a, abbr[title] {
-      color: #00e6e6;
-      text-decoration: none;
-    }
-
-    a:hover {
-      color: #e6e6e6;
-    }
-
-    p {
-      margin: 20px 0;
-    }
-
-    ul {
-      list-style-type: none;
-      padding: 0;
-    }
-
-    ul li {
-      margin: 10px 0;
     }
 
     .container {
-      max-width: 1600px;
+      max-width: 920px;
       margin: 0 auto;
       padding: 0 20px;
     }
 
-    .nav-links {
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       padding: 20px 0;
+      gap: 16px;
+      flex-wrap: wrap;
     }
 
     .nav-links a {
       margin-right: 15px;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
+      color: #00e6e6;
+      text-decoration: none;
     }
 
     .nav-links a:hover {
+      color: #e6e6e6;
       text-decoration: underline;
     }
 
-    footer {
+    .site-logo {
+      height: 40px;
+      width: auto;
+    }
+
+    .music-btn {
+      font-family: "DogicaPixelRegular", Arial, sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 1px;
+      color: #e6e6e6;
+      background: transparent;
+      border: 2px solid #e6e6e6;
+      border-radius: 8px;
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+
+    .music-btn:hover,
+    .music-btn[aria-pressed="true"] {
+      color: #000;
+      background: #00e6e6;
+      border-color: #00e6e6;
+    }
+
+    main {
+      display: block;
+      padding: 24px 0 40px;
+    }
+
+    .hero {
+      margin-bottom: 36px;
+    }
+
+    .brand {
+      font-family: "DogicaPixelBold", Arial, sans-serif;
+      font-size: clamp(1.4rem, 5vw, 2.2rem);
+      letter-spacing: 2px;
+      color: #e6e6e6;
+      margin: 0 0 16px;
+    }
+
+    .tagline {
+      margin: 0 0 24px;
+      max-width: 40rem;
+      font-size: 0.95rem;
+      line-height: 2;
+      letter-spacing: 1.5px;
+      color: #e6e6e6;
+    }
+
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .cta {
+      display: inline-block;
+      font-family: "DogicaPixelBold", Arial, sans-serif;
+      font-size: 0.85rem;
+      letter-spacing: 1.5px;
+      color: #e6e6e6;
+      background-color: #003a90;
+      background-image: linear-gradient(160deg, #003a90 35%, #000051);
+      border: 3px solid #e6e6e6;
+      border-radius: 10px;
+      padding: 12px 18px;
+      text-decoration: none;
+    }
+
+    .cta:hover {
+      color: #000;
+      background: #00e6e6;
+      border-color: #00e6e6;
+    }
+
+    .cta-secondary {
+      background: rgba(0, 0, 40, 0.55);
+      background-image: none;
+    }
+
+    h2 {
+      font-family: "DogicaPixelBold", Arial, sans-serif;
+      color: #e6e6e6;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.15rem;
+      letter-spacing: 1.5px;
+      margin: 28px 0 12px;
+    }
+
+    a {
+      color: #00e6e6;
+      text-decoration: none;
+    }
+
+    a:hover { color: #e6e6e6; }
+
+    code {
+      font-family: "DogicaPixelRegular", monospace;
+      color: #00e6e6;
+    }
+
+    p {
+      margin: 0 0 14px;
+      font-size: 0.875rem;
+      line-height: 2;
+      letter-spacing: 1.5px;
+    }
+
+    .panel {
+      background-color: #003a90;
+      background-image: linear-gradient(160deg, #003a90 35%, #000051);
+      border: 3px solid #e6e6e6;
+      border-radius: 10px;
       padding: 20px;
+      margin-bottom: 8px;
+    }
+
+    .panel p:last-child { margin-bottom: 0; }
+
+    .variants {
+      list-style: none;
+      padding: 0;
+      margin: 14px 0 18px;
+    }
+
+    .variants li {
+      margin: 10px 0;
+      font-size: 0.875rem;
+      line-height: 1.8;
+      letter-spacing: 1.2px;
+    }
+
+    .variants strong {
+      color: #00e6e6;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .actions a {
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+      border-bottom: 1px solid #00e6e6;
+    }
+
+    .actions a:hover {
+      border-bottom-color: #e6e6e6;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 700px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    footer {
+      padding: 24px 0 40px;
       text-align: center;
       font-size: 0.8rem;
       color: #aaa;
     }
-
-    .details-content {
-      font-size: .875rem;
-      font-weight: 400;
-      color: #e6e6e6;
-      line-height: 2;
-      letter-spacing: 1.5px;
-      box-sizing: border-box;
-      background-color: #003a90;
-      background-image: linear-gradient(160deg, #003a90 35%, #000051);
-      border: 3px solid #e6e6e6;
-      padding: 20px;
-      border-radius: 10px;
-      height: 100%;
-      margin-bottom: 20px;
-    }
-
-    .mission-statement {
-      font-style: italic;
-      margin-top: 20px;
-    }
-
-.header-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 0;
-}
-
-.site-logo {
-  height: 40px;
-  width: auto;
-}
   </style>
 </head>
 <body>
-
-  <!-- Starfield Layers -->
   <div id="space">
     <div class="stars"></div>
     <div class="stars"></div>
@@ -182,35 +284,69 @@
   </div>
 
   <div class="container">
-  <div class="header-bar">
-  <div class="nav-links">
-    <a href="#youtube">YouTube</a>
-    <a href="#twitch">Twitch</a>
-    <a href="#github">GitHub</a>
-  </div>
-  <img src="meteor.png" alt="Logo" class="site-logo" />
-
-</div>
+    <div class="header-bar">
+      <div class="nav-links">
+        <a href="#csr">CSR</a>
+        <a href="#streams">Streams</a>
+        <a href="https://github.com/individualcontributordev" target="_blank" rel="noreferrer">GitHub</a>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button type="button" class="music-btn" id="music-btn" aria-pressed="false">♪ Music</button>
+        <img src="meteor.png" alt="" class="site-logo" />
+      </div>
+    </div>
 
     <main>
-      <p>This page provides information about the contributions on YouTube, Twitch, and GitHub by IndividualContributor.</p>
+      <section class="hero">
+        <h1 class="brand">IndividualContributor</h1>
+        <p class="tagline">
+          FF7 speedrun tools, cutscene-removed patches, and charity streams —
+          built for runners who want less waiting and more playing.
+        </p>
+        <div class="cta-row">
+          <a class="cta" href="https://individualcontributor.dev/Final-Fantasy-7-CSR/">Open CSR Patcher</a>
+          <a class="cta cta-secondary" href="#csr">About the mods</a>
+        </div>
+      </section>
 
-      <h2 id="youtube"><i class="fab fa-youtube"></i>YouTube</h2>
-      <div class="details-content">
-        <p>Welcome to the <strong>YouTube channel</strong> of IndividualContributor. On this channel, you will find videos related to various gaming speedruns, tutorials, and live streams supporting different charitable causes. It's an exciting place to explore content related to gaming and more!</p>
-        <p>Check out the YouTube channel for more: <a href="https://www.youtube.com/@individualcontributor" target="_blank" rel="noreferrer">YouTube Channel</a></p>
+      <h2 id="csr"><i class="fas fa-compact-disc"></i> Final Fantasy VII — CSR</h2>
+      <div class="panel">
+        <p>
+          <strong>CutScenes Removed</strong> patches for the PS1 (and PC) versions of Final Fantasy VII.
+          Same game, far less downtime — ideal for racing and casual replays alike.
+        </p>
+        <ul class="variants">
+          <li><strong>CSR</strong> — skill checks stay; FMVs and long sequences are cut or shortened. Plays like a normal run, just faster.</li>
+          <li><strong>CSR+</strong> — removes cutscenes more aggressively, even when that changes familiar strats.</li>
+          <li><strong>CSR++</strong> — CSR+ plus filler dialogue and padding trimmed out.</li>
+        </ul>
+        <p>
+          Patch your own NTSC-U <code>.bin</code> in the browser — nothing is uploaded.
+        </p>
+        <div class="actions">
+          <a href="https://individualcontributor.dev/Final-Fantasy-7-CSR/">Browser patcher</a>
+          <a href="https://github.com/individualcontributordev/Final-Fantasy-7-CSR" target="_blank" rel="noreferrer">GitHub repo &amp; PPF files</a>
+        </div>
       </div>
 
-      <h2 id="twitch"><i class="fab fa-twitch"></i>Twitch</h2>
-      <div class="details-content">
-        <p>The <strong>Twitch stream</strong> of IndividualContributor focuses on live gaming events, speedruns, and charity streams. With a fun community, it's a place where you can join in real-time and interact with the streamer during live events.</p>
-        <p>Watch the streams on Twitch: <a href="https://www.twitch.tv/individualcontributor" target="_blank" rel="noreferrer">Twitch Channel</a></p>
-      </div>
-
-      <h2 id="github"><i class="fab fa-github"></i>FF7 CutScenes Removed</h2>
-      <div class="details-content">
-        <p>Check out the <strong>CutScenes Removed (CSR) Mod</strong> for the PS1 version of <strong>Final Fantasy VII</strong>. This mod is designed to remove cutscenes from the game, providing a streamlined experience for players who prefer gameplay over cinematic sequences. It’s hosted on GitHub for easy access and contribution.</p>
-        <p>Explore the project on GitHub: <a href="https://github.com/individualcontributordev/Final-Fantasy-7-CSR" target="_blank" rel="noreferrer">Final Fantasy 7 CSR GitHub</a></p>
+      <h2 id="streams"><i class="fas fa-broadcast-tower"></i> Streams &amp; video</h2>
+      <div class="grid">
+        <div class="panel">
+          <p>
+            <strong>YouTube</strong> — speedruns, tutorials, and VODs from charity events.
+          </p>
+          <div class="actions">
+            <a href="https://www.youtube.com/@individualcontributor" target="_blank" rel="noreferrer">youtube.com/@individualcontributor</a>
+          </div>
+        </div>
+        <div class="panel">
+          <p>
+            <strong>Twitch</strong> — live races, practice, and community charity streams.
+          </p>
+          <div class="actions">
+            <a href="https://www.twitch.tv/individualcontributor" target="_blank" rel="noreferrer">twitch.tv/individualcontributor</a>
+          </div>
+        </div>
       </div>
     </main>
 
@@ -219,10 +355,29 @@
     </footer>
   </div>
 
-  <audio autoplay loop>
+  <audio id="bgm" loop preload="none">
     <source src="intro.mp3" type="audio/mp3" />
-    Your browser does not support the audio element.
   </audio>
-
+  <script>
+    (function () {
+      var audio = document.getElementById("bgm");
+      var btn = document.getElementById("music-btn");
+      if (!audio || !btn) return;
+      btn.addEventListener("click", function () {
+        if (audio.paused) {
+          audio.play().then(function () {
+            btn.setAttribute("aria-pressed", "true");
+            btn.textContent = "♪ Playing";
+          }).catch(function () {
+            btn.textContent = "♪ Unavailable";
+          });
+        } else {
+          audio.pause();
+          btn.setAttribute("aria-pressed", "false");
+          btn.textContent = "♪ Music";
+        }
+      });
+    })();
+  </script>
 </body>
 </html>
