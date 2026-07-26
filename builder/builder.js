@@ -74,16 +74,8 @@ async function loadMergedManifest(localPath) {
 	const bases = [];
 	const addons = [];
 
-	for (const b of local.bases || []) {
-		const n = normalizeEntry(b, localUrl);
-		if (n) bases.push(n);
-	}
-	for (const a of local.addons || []) {
-		const n = normalizeEntry(a, localUrl);
-		if (n) addons.push(n);
-	}
-
 	const remoteNotes = [];
+	let remotesOk = 0;
 	for (const src of local.remoteSources || []) {
 		try {
 			const remote = await fetchJson(src);
@@ -96,6 +88,7 @@ async function loadMergedManifest(localPath) {
 				const n = normalizeEntry(a, remoteUrl);
 				if (n) addons.push(n);
 			}
+			remotesOk += 1;
 			remoteNotes.push(`Loaded ${src}`);
 		} catch (err) {
 			remoteNotes.push(`Skip ${src}: ${err.message}`);
@@ -103,8 +96,28 @@ async function loadMergedManifest(localPath) {
 		}
 	}
 
+	// Keep Unmodified; drop local demo packs once remotes are available.
+	const useDemo = !!local.demo && remotesOk === 0;
+	if (useDemo) {
+		for (const b of local.bases || []) {
+			const n = normalizeEntry(b, localUrl);
+			if (n) bases.push(n);
+		}
+		for (const a of local.addons || []) {
+			const n = normalizeEntry(a, localUrl);
+			if (n) addons.push(n);
+		}
+	} else {
+		const clean = (local.bases || []).find((b) => b.id === 'clean');
+		if (clean) {
+			const n = normalizeEntry({ ...clean, enabled: true }, localUrl);
+			if (n) bases.unshift(n);
+		}
+	}
+
 	return {
 		...local,
+		demo: useDemo,
 		bases,
 		addons,
 		_remoteNotes: remoteNotes,
@@ -115,6 +128,16 @@ async function loadLayerByUrl(url) {
 	if (!url) return null;
 	if (layerCache.has(url)) return layerCache.get(url);
 	const layer = await fetchJson(url);
+	if (!layer || layer.format !== 'ic-layer-v1') {
+		throw new Error(`Invalid layer at ${url}`);
+	}
+	const records = Array.isArray(layer.records) ? layer.records : [];
+	const changed = layer.stats?.changedBytes ?? records.length;
+	if (records.length === 0 || changed === 0) {
+		throw new Error(
+			`Layer has no changes (${url}). Re-diff after the stub is actually in the .bin.`
+		);
+	}
 	layerCache.set(url, layer);
 	return layer;
 }
@@ -283,6 +306,10 @@ async function init() {
 
 		if (manifest.demo) {
 			document.getElementById('demo-banner').hidden = false;
+			useSampleBtn.hidden = false;
+		} else {
+			document.getElementById('demo-banner').hidden = true;
+			useSampleBtn.hidden = true;
 		}
 
 		useSampleBtn.addEventListener('click', () => {
