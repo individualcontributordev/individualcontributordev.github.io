@@ -156,8 +156,33 @@ function selectedDisc() {
 	return el ? parseInt(el.value, 10) : 1;
 }
 
+function addonCompatibleWithBase(addon, baseId) {
+	const allowed = addon?.compatibleBases;
+	if (!allowed || !allowed.length) return true;
+	return allowed.includes(baseId);
+}
+
+function syncAddonAvailability() {
+	if (!manifest) return;
+	const baseId = selectedBaseId();
+	for (const input of document.querySelectorAll('input[name="addon"]')) {
+		const addon = manifest.addons.find((a) => a.id === input.value);
+		const ok = addonCompatibleWithBase(addon, baseId);
+		input.disabled = !ok;
+		if (!ok) input.checked = false;
+		const label = input.closest('label');
+		if (label) {
+			label.classList.toggle('is-disabled', !ok);
+			label.title = ok
+				? ''
+				: 'Only works with Unmodified until a CSR-based Encounter layer exists.';
+		}
+	}
+}
+
 function updatePlan() {
 	if (!manifest) return;
+	syncAddonAvailability();
 	const disc = selectedDisc();
 	const baseId = selectedBaseId();
 	const base = manifest.bases.find((b) => b.id === baseId);
@@ -263,6 +288,16 @@ async function applySelection() {
 		const addonEntries = selectedAddonIds()
 			.map((id) => manifest.addons.find((a) => a.id === id))
 			.filter(Boolean);
+
+		for (const entry of addonEntries) {
+			if (!addonCompatibleWithBase(entry, baseId)) {
+				throw new Error(
+					`${entry.name} cannot stack on ${base?.name || baseId}. ` +
+						`Use Unmodified + Encounter, or a CSR base alone. ` +
+						`(Pristine Encounter layers overwrite CSR FIELD.BIN.)`
+				);
+			}
+		}
 
 		const layers = [];
 		const baseUrl = layerUrlFor(base, disc);

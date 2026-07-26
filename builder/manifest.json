@@ -5,7 +5,7 @@
   "sampleBin": "./demo/sample.bin",
   "explainer": {
     "base": "Pick one base (or unmodified). Cutscene packs cannot be combined with each other.",
-    "addon": "Add-ons stack on top of your base for the selected disc. Order is fixed by the manifest."
+    "addon": "Add-ons stack on top of your base for the selected disc. Some add-ons only work with Unmodified until a CSR-based layer exists."
   },
   "bases": [
     {
