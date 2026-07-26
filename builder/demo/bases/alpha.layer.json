@@ -1,0 +1,9 @@
+{
+  "format": "ic-layer-v1",
+  "id": "demo-base-alpha",
+  "description": "Demo base Alpha — writes BASEA at offset 16",
+  "target": "disc-image",
+  "records": [
+    { "offset": 16, "hex": "4241534541" }
+  ]
+}

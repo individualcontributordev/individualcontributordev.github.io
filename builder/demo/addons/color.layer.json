@@ -1,0 +1,9 @@
+{
+  "format": "ic-layer-v1",
+  "id": "demo-addon-color",
+  "description": "Demo add-on Color — writes COLOR at offset 48",
+  "target": "disc-image",
+  "records": [
+    { "offset": 48, "hex": "434F4C4F52" }
+  ]
+}

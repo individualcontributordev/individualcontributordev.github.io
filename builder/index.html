@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Disc builder prototype — IndividualContributor</title>
+	<meta name="description" content="Prototype: pick a base and stackable add-ons, build a .bin + .cue in the browser." />
+	<link rel="icon" href="/favicon.ico" type="image/x-icon" />
+	<link rel="stylesheet" href="./builder.css" />
+</head>
+<body>
+	<div id="space">
+		<div class="stars"></div>
+		<div class="stars"></div>
+		<div class="stars"></div>
+	</div>
+
+	<div class="page">
+		<div class="header-bar">
+			<nav class="nav-links">
+				<a href="/">Home</a>
+				<a href="https://individualcontributor.dev/Final-Fantasy-7-CSR/">CSR</a>
+				<a href="https://individualcontributor.dev/Final-Fantasy-7-Modding/">Modding</a>
+			</nav>
+		</div>
+
+		<h1 id="page-title">Disc builder prototype</h1>
+		<p class="lede">
+			Choose one base and any add-ons. Layers apply in order in your browser — no combo PPFs.
+		</p>
+
+		<div id="demo-banner" class="banner" hidden>
+			Demo mode: uses a tiny <code>sample.bin</code> and local <code>ic-layer-v1</code> packs.
+			Real CSR / Encounter layers can plug into the same manifest later.
+		</div>
+
+		<section class="panel">
+			<h2>1. Disc image</h2>
+			<div class="row">
+				<button type="button" id="use-sample">Use demo sample.bin</button>
+				<label class="file-btn">
+					Choose .bin
+					<input type="file" id="bin-file" accept=".bin,.img,.iso" />
+				</label>
+				<span class="file-label" id="file-label">No file loaded</span>
+			</div>
+		</section>
+
+		<section class="panel">
+			<h2>2. Base</h2>
+			<p class="explainer" id="explainer-base"></p>
+			<div id="base-list"></div>
+		</section>
+
+		<section class="panel">
+			<h2>3. Add-ons</h2>
+			<p class="explainer" id="explainer-addon"></p>
+			<div id="addon-list"></div>
+		</section>
+
+		<section class="panel">
+			<h2>4. Build</h2>
+			<pre class="plan" id="plan"></pre>
+			<div class="row" style="margin-top:12px;margin-bottom:0;">
+				<button type="button" id="apply" disabled>Build .bin + .cue</button>
+			</div>
+			<p id="status" aria-live="polite"></p>
+		</section>
+
+		<footer class="footer">
+			<p><a href="./README.md">Format notes</a> · Prototype only</p>
+		</footer>
+	</div>
+
+	<script type="module" src="./builder.js"></script>
+</body>
+</html>
