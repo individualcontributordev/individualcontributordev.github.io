@@ -356,66 +356,35 @@ async function applySelection() {
 	}
 }
 
-function buildAppliedReport({
-	disc,
-	base,
-	baseId,
-	addons,
-	layers,
-	binName,
-	cueName,
-	inputBytes,
-	outputBytes,
-}) {
-	const when = new Date().toISOString();
+function buildAppliedReport({ disc, base, baseId, addons }) {
+	const baseName =
+		!base || baseId === 'clean' || !layerUrlFor(base, disc)
+			? 'Unmodified (retail)'
+			: base.name;
+
 	const lines = [
-		'Final Fantasy VII disc builder — applied mods',
-		'https://individualcontributor.dev/builder/',
+		'Final Fantasy VII — IndividualContributor',
 		'',
-		`Built: ${when}`,
 		`Disc: ${disc}`,
-		`Input size: ${inputBytes} bytes`,
-		`Output size: ${outputBytes} bytes`,
-		`Output files: ${binName}, ${cueName}`,
-		'',
-		'Stack (apply order):',
+		`Base: ${baseName}`,
 	];
 
-	if (!base || baseId === 'clean' || !layerUrlFor(base, disc)) {
-		lines.push('  1. Unmodified (no base layer)');
+	if (addons.length) {
+		lines.push('Add-ons:');
+		for (const addon of addons) {
+			lines.push(`  - ${addon.name}`);
+		}
 	} else {
-		const layer = layers[0];
-		lines.push(`  1. Base: ${base.name} (${base.id})`);
-		if (base.blurb) lines.push(`     ${base.blurb}`);
-		if (layer?.id) lines.push(`     layer id: ${layer.id}`);
-		if (layer?.stats?.changedBytes != null) {
-			lines.push(`     changed bytes: ${layer.stats.changedBytes}`);
-		}
-	}
-
-	let step = 2;
-	const layerOffset = base && baseId !== 'clean' && layerUrlFor(base, disc) ? 1 : 0;
-	addons.forEach((addon, i) => {
-		const layer = layers[layerOffset + i];
-		lines.push(`  ${step}. Add-on: ${addon.name} (${addon.id})`);
-		if (addon.blurb) lines.push(`     ${addon.blurb}`);
-		if (layer?.id) lines.push(`     layer id: ${layer.id}`);
-		if (layer?.stats?.changedBytes != null) {
-			lines.push(`     changed bytes: ${layer.stats.changedBytes}`);
-		}
-		step += 1;
-	});
-
-	if (!addons.length) {
-		lines.push('  (no add-ons)');
+		lines.push('Add-ons: none');
 	}
 
 	lines.push(
 		'',
-		'Notes:',
-		'- Start from a clean NTSC-U retail .bin matching the disc number.',
-		'- Put the .bin and .cue in the same folder for DuckStation.',
-		'- Do not stack this zip on an already-patched image.',
+		'Play:',
+		'- Keep the .bin and .cue in the same folder.',
+		'- Open the .cue in DuckStation (or your emulator).',
+		'',
+		'https://individualcontributor.dev/builder/',
 		''
 	);
 	return lines.join('\n');
