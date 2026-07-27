@@ -478,6 +478,7 @@ function buildAppliedReport({ disc, base, baseId, addons }) {
 		'Play:',
 		'- Keep the .bin and .cue in the same folder.',
 		'- Open the .cue in DuckStation (or your emulator).',
+		'- Real PS2 (MechaPwn): burn from the .cue as MODE2/2352 DAO (see Modding docs/07-hardware-burn.md).',
 		'',
 		'https://individualcontributor.dev/builder/',
 		''
