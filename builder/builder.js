@@ -399,14 +399,17 @@ async function onFileChosen(file) {
 }
 
 async function applySelection() {
-	if (!sourceBytes || !manifest) return;
+	if (building || !sourceBytes || !manifest) return;
 	const disc = selectedDisc();
 	if (!disc) {
 		setStatus('Load an NTSC-U FF7 .bin so the disc can be detected.', true);
 		return;
 	}
-	applyBtn.disabled = true;
+
+	building = true;
+	updatePlan();
 	setStatus('Building…');
+	await yieldToUi();
 
 	try {
 		const baseId = selectedBaseId();
@@ -426,6 +429,8 @@ async function applySelection() {
 		const layers = [];
 		const baseUrl = layerUrlFor(base, disc);
 		if (baseUrl) {
+			setStatus('Loading base layer…');
+			await yieldToUi();
 			layers.push(await loadLayerByUrl(baseUrl));
 		}
 		for (const entry of addonEntries) {
@@ -433,9 +438,13 @@ async function applySelection() {
 			if (!url) {
 				throw new Error(`${entry.name} has no layer for Disc ${disc}`);
 			}
+			setStatus(`Loading ${entry.name}…`);
+			await yieldToUi();
 			layers.push(await loadLayerByUrl(url));
 		}
 
+		setStatus('Applying layers…');
+		await yieldToUi();
 		const out = applyLayers(sourceBytes, layers);
 		const stamp = [
 			`d${disc}`,
@@ -454,23 +463,22 @@ async function applySelection() {
 			addons: addonEntries,
 		});
 
-		setStatus('Zipping…');
+		setStatus('Zipping (large file — may take a minute)…');
+		await yieldToUi();
 		const zipBytes = zipStore([
 			{ name: binName, data: out },
 			{ name: cueName, data: new TextEncoder().encode(buildCue(binName)) },
 			{ name: appliedName, data: new TextEncoder().encode(appliedText) },
 		]);
 
-		downloadBlob(new Blob([zipBytes], { type: 'application/zip' }), zipName);
-
-		setStatus(
-			`Done — downloaded ${zipName} (${out.length} byte image, ${layers.length} layer(s)).`
-		);
+		const url = downloadBlob(new Blob([zipBytes], { type: 'application/zip' }), zipName);
+		showDownloadFallback(url, zipName);
 	} catch (err) {
 		console.error(err);
 		setStatus(err.message || String(err), true);
 	} finally {
-		applyBtn.disabled = !sourceBytes;
+		building = false;
+		updatePlan();
 	}
 }
 
