@@ -5,7 +5,7 @@
   "sampleBin": "./demo/sample.bin",
   "explainer": {
     "base": "Pick one cutscene base (and version) from the list. Only one base applies.",
-    "addon": "Pick one encounter density for this base: Light, Standard, or Dense."
+    "addon": "Optional add-ons (e.g. Field encounter density). Exclusive options within a group cannot stack; different mods can."
   },
   "bases": [
     {

@@ -2,7 +2,9 @@
 
 Local URL (after deploy): https://individualcontributor.dev/builder/
 
-Existing CSR / Modding patcher pages are untouched. This page proves **on-the-fly stacking** with `ic-layer-v1`.
+This page applies **on-the-fly stacking** with `ic-layer-v1` from CSR and Modding manifests
+(hosted under each repo’s Pages `/builder/` path). Player UI lives only here; CSR/Modding GitHub
+repos hold source and research.
 
 ## Try it
 
@@ -44,9 +46,8 @@ Later: set `remoteSources` to CSR / Modding manifest URLs (already wired). Packs
 
 | Kind | Ship as | Tooling |
 |------|---------|---------|
-| CSR-style base | file-pack or byte records vs pristine | Makou + CDmage diff |
-| Encounter addon | byte records or `FIELD.BIN` replace | Ghidra + scripts |
-| Full-disc PPF | optional single-flavor download only | `make_ppf.py` — not for stacking |
+| CSR-style base | byte records vs pristine | Makou + layer diff |
+| Encounter addon | byte records vs base | Ghidra + `build_encounter_on_base.py` |
 
 ## Files
 
