@@ -3,13 +3,15 @@
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<title>Disc builder prototype — IndividualContributor</title>
+	<title>Disc builder — IndividualContributor</title>
 	<meta name="description" content="Pick a Final Fantasy VII disc base and add-ons; download a zip with .bin, .cue, and an APPLIED.txt summary." />
 	<link rel="icon" href="/favicon.ico" type="image/x-icon" />
 	<link rel="stylesheet" href="./builder.css" />
 </head>
 <body>
 	<div id="space">
+		<div class="stars"></div>
+		<div class="stars"></div>
 		<div class="stars"></div>
 		<div class="stars"></div>
 		<div class="stars"></div>
@@ -21,16 +23,20 @@
 				<a href="/">Home</a>
 				<a href="https://individualcontributor.dev/Final-Fantasy-7-CSR/">CSR</a>
 				<a href="https://individualcontributor.dev/Final-Fantasy-7-Modding/">Modding</a>
+				<a href="https://github.com/individualcontributordev">GitHub</a>
 			</nav>
+			<img src="/meteor.png" alt="" class="site-logo" />
 		</div>
 
-		<h1 id="page-title">Disc builder prototype</h1>
-		<p class="lede">
-			Pick disc, one cutscene base, and any add-ons. Layers apply in your browser.
-			Build downloads one zip: patched .bin, .cue, and APPLIED.txt.
-		</p>
+		<header class="hero">
+			<h1 id="page-title">Disc builder</h1>
+			<p class="lede">
+				Pick disc, one cutscene base, and any add-ons. Layers apply in your browser.
+				Build downloads one zip: patched <strong>.bin</strong>, <strong>.cue</strong>, and <strong>APPLIED.txt</strong>.
+			</p>
+		</header>
 
-		<div id="demo-banner" class="banner" hidden>
+		<div id="demo-banner" class="note" hidden>
 			Demo packs only — remote CSR / Modding manifests did not load.
 		</div>
 
@@ -67,14 +73,14 @@
 		<section class="panel">
 			<h2>5. Build</h2>
 			<pre class="plan" id="plan"></pre>
-			<div class="row" style="margin-top:12px;margin-bottom:0;">
+			<div class="row" style="margin-top:16px;margin-bottom:0;">
 				<button type="button" id="apply" disabled>Build zip</button>
 			</div>
 			<p id="status" aria-live="polite"></p>
 		</section>
 
 		<footer class="footer">
-			<p><a href="./README.md">Format notes</a> · Prototype only</p>
+			<p><a href="./README.md">Format notes</a> · Layers stay in your browser</p>
 		</footer>
 	</div>
 
