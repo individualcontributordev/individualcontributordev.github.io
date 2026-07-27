@@ -1,6 +1,7 @@
 import { applyLayers, buildCue } from './layer.js';
 import { zipStore } from './zip-store.js';
 import { detectFf7Disc } from './disc-id.js';
+import { repairMode2EdcInImage } from './edc.js';
 
 const statusEl = document.getElementById('status');
 const baseListEl = document.getElementById('base-list');
@@ -415,6 +416,12 @@ async function applySelection() {
 		setStatus('Applying layers…');
 		await yieldToUi();
 		const out = applyLayers(sourceBytes, layers);
+
+		setStatus('Repairing sector EDC/ECC…');
+		await yieldToUi();
+		const edcStats = repairMode2EdcInImage(sourceBytes, out);
+		console.info('EDC repair', edcStats);
+
 		const stamp = [
 			`d${disc}`,
 			baseId === 'clean' ? 'clean' : baseId,
@@ -430,6 +437,7 @@ async function applySelection() {
 			base,
 			baseId,
 			addons: addonEntries,
+			edcFixed: edcStats.fixed,
 		});
 
 		setStatus('Zipping (large file — may take a minute)…');
@@ -451,7 +459,7 @@ async function applySelection() {
 	}
 }
 
-function buildAppliedReport({ disc, base, baseId, addons }) {
+function buildAppliedReport({ disc, base, baseId, addons, edcFixed }) {
 	const baseName =
 		!base || baseId === 'clean' || !layerUrlFor(base, disc)
 			? 'Unmodified (retail)'
@@ -473,12 +481,17 @@ function buildAppliedReport({ disc, base, baseId, addons }) {
 		lines.push('Add-ons: none');
 	}
 
+	if (edcFixed != null) {
+		lines.push(`EDC/ECC sectors repaired: ${edcFixed}`);
+	}
+
 	lines.push(
 		'',
 		'Play:',
 		'- Keep the .bin and .cue in the same folder.',
 		'- Open the .cue in DuckStation (or your emulator).',
 		'- Real PS2 (MechaPwn): burn from the .cue as MODE2/2352 DAO (see Modding docs/07-hardware-burn.md).',
+		'- Builder regenerates Mode2 Form1 EDC/ECC on patched sectors after applying layers.',
 		'',
 		'https://individualcontributor.dev/builder/',
 		''
