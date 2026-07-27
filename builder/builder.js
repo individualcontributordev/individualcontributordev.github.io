@@ -144,8 +144,8 @@ async function loadLayerByUrl(url) {
 }
 
 function selectedBaseId() {
-	const el = document.querySelector('input[name="base"]:checked');
-	return el ? el.value : 'clean';
+	const el = document.getElementById('base-select');
+	return el && el.value ? el.value : 'clean';
 }
 
 function selectedAddonIds() {
@@ -155,6 +155,70 @@ function selectedAddonIds() {
 function selectedDisc() {
 	const el = document.querySelector('input[name="disc"]:checked');
 	return el ? parseInt(el.value, 10) : 1;
+}
+
+function baseFamily(base) {
+	const id = String(base?.id || '');
+	if (id === 'clean' || /unmodified/i.test(base?.name || '')) return 'Unmodified';
+	if (id.startsWith('csr-plusplus') || /^csrplusplus/i.test(id)) return 'CSR++';
+	if (id.startsWith('csr-plus') || /^csrplus/i.test(id)) return 'CSR+';
+	if (id.startsWith('csr-') || id === 'csr' || /^csr-v/i.test(id)) return 'CSR';
+	if (id.startsWith('demo-base-')) return 'Demo';
+	return 'Other';
+}
+
+const BASE_FAMILY_ORDER = ['Unmodified', 'CSR', 'CSR+', 'CSR++', 'Demo', 'Other'];
+
+function updateBaseBlurb() {
+	const blurbEl = document.getElementById('base-blurb');
+	if (!blurbEl || !manifest) return;
+	const base = manifest.bases.find((b) => b.id === selectedBaseId());
+	blurbEl.textContent = base?.blurb || '';
+}
+
+function renderBases() {
+	if (!manifest || !baseListEl) return;
+	const prev = selectedBaseId();
+	baseListEl.innerHTML = '';
+
+	const byFamily = new Map();
+	for (const base of manifest.bases) {
+		const family = baseFamily(base);
+		if (!byFamily.has(family)) byFamily.set(family, []);
+		byFamily.get(family).push(base);
+	}
+
+	const select = document.createElement('select');
+	select.id = 'base-select';
+	select.name = 'base';
+	select.setAttribute('aria-label', 'Base');
+
+	for (const family of BASE_FAMILY_ORDER) {
+		const bases = byFamily.get(family);
+		if (!bases?.length) continue;
+		const group = document.createElement('optgroup');
+		group.label = family;
+		for (const base of bases) {
+			const opt = document.createElement('option');
+			opt.value = base.id;
+			opt.textContent = base.name;
+			group.appendChild(opt);
+		}
+		select.appendChild(group);
+	}
+
+	const ids = manifest.bases.map((b) => b.id);
+	select.value = ids.includes(prev) ? prev : ids[0] || 'clean';
+
+	const blurb = document.createElement('p');
+	blurb.id = 'base-blurb';
+	blurb.className = 'explainer';
+	blurb.style.marginTop = '10px';
+	blurb.style.marginBottom = '0';
+
+	baseListEl.appendChild(select);
+	baseListEl.appendChild(blurb);
+	updateBaseBlurb();
 }
 
 function addonCompatibleWithBase(addon, baseId) {
@@ -248,26 +312,16 @@ function renderManifest() {
 		discListEl.appendChild(label);
 	});
 
-	manifest.bases.forEach((base, index) => {
-		const label = document.createElement('label');
-		label.className = 'choice';
-		label.innerHTML = `
-			<input type="radio" name="base" value="${base.id}" ${index === 0 ? 'checked' : ''} />
-			<span>
-				<strong>${base.name}</strong>
-				<small>${base.blurb || ''}</small>
-			</span>
-		`;
-		baseListEl.appendChild(label);
-	});
-
 	document.getElementById('explainer-base').textContent = manifest.explainer?.base || '';
 	document.getElementById('explainer-addon').textContent = manifest.explainer?.addon || '';
 
 	discListEl.addEventListener('change', updatePlan);
-	baseListEl.addEventListener('change', () => {
-		renderAddons();
-		updatePlan();
+	baseListEl.addEventListener('change', (ev) => {
+		if (ev.target && ev.target.id === 'base-select') {
+			updateBaseBlurb();
+			renderAddons();
+			updatePlan();
+		}
 	});
 	addonListEl.addEventListener('change', (ev) => {
 		const t = ev.target;
@@ -275,6 +329,7 @@ function renderManifest() {
 		updatePlan();
 	});
 
+	renderBases();
 	renderAddons();
 	updatePlan();
 }

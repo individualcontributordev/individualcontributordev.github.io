@@ -4,7 +4,7 @@
   "demo": true,
   "sampleBin": "./demo/sample.bin",
   "explainer": {
-    "base": "Pick one base (or unmodified). Cutscene packs cannot be combined with each other.",
+    "base": "Pick one cutscene base (and version) from the list. Only one base applies.",
     "addon": "Add-ons for the selected base only. Encounter rates (25/50/75%) are mutually exclusive."
   },
   "bases": [
