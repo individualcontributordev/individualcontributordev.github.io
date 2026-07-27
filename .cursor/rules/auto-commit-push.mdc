@@ -1,0 +1,28 @@
+---
+description: Commit and push completed site work without waiting to be asked
+alwaysApply: true
+---
+
+# Auto commit and push
+
+After finishing a task that changes tracked files, **commit and push automatically**.
+
+## When
+
+- HTML/CSS/JS, AGENTS, rules, or skills changed and the work is complete
+
+## When not
+
+- User said not to commit this turn
+- Hook failure — fix and make a **new** commit
+- Secrets present — warn instead
+
+## How
+
+1. `git status` / `git diff`
+2. Stage relevant files
+3. Concise why-focused message
+4. No Cursor trailers
+5. `git push` (no force; no skip-hooks; do not update git config)
+
+Author: `individualcontributordev <contributorindividual@gmail.com>`.
