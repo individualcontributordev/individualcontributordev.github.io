@@ -1,10 +1,11 @@
 import { applyLayers, buildCue } from './layer.js';
 import { zipStore } from './zip-store.js';
+import { detectFf7Disc } from './disc-id.js';
 
 const statusEl = document.getElementById('status');
 const baseListEl = document.getElementById('base-list');
 const addonListEl = document.getElementById('addon-list');
-const discListEl = document.getElementById('disc-list');
+const discInfoEl = document.getElementById('disc-info');
 const fileInput = document.getElementById('bin-file');
 const useSampleBtn = document.getElementById('use-sample');
 const applyBtn = document.getElementById('apply');
@@ -13,6 +14,8 @@ const fileLabel = document.getElementById('file-label');
 
 let manifest = null;
 let sourceBytes = null;
+/** @type {number | null} */
+let detectedDisc = null;
 const layerCache = new Map();
 
 function setStatus(msg, isError) {
@@ -153,8 +156,36 @@ function selectedAddonIds() {
 }
 
 function selectedDisc() {
-	const el = document.querySelector('input[name="disc"]:checked');
-	return el ? parseInt(el.value, 10) : 1;
+	return detectedDisc;
+}
+
+function setDiscInfo(text, isError) {
+	if (!discInfoEl) return;
+	discInfoEl.textContent = text || '';
+	discInfoEl.classList.toggle('is-error', !!isError);
+}
+
+function rememberImage(bytes, label, { demo = false } = {}) {
+	sourceBytes = bytes;
+	fileLabel.textContent = label;
+
+	if (demo) {
+		detectedDisc = 1;
+		setDiscInfo('Disc 1 (demo sample)');
+		return;
+	}
+
+	const hit = detectFf7Disc(bytes);
+	if (!hit) {
+		detectedDisc = null;
+		setDiscInfo(
+			'Could not detect disc — need an NTSC-U FF7 .bin (SCUS_941.63 / .64 / .65).',
+			true
+		);
+		return;
+	}
+	detectedDisc = hit.disc;
+	setDiscInfo(`Detected NTSC-U Disc ${hit.disc} (${hit.marker})`);
 }
 
 function baseFamily(base) {
@@ -179,14 +210,14 @@ function updateBaseBlurb() {
 function renderBases() {
 	if (!manifest || !baseListEl) return;
 	const prev = selectedBaseId();
-	baseListEl.innerHTML = '';
-
 	const byFamily = new Map();
 	for (const base of manifest.bases) {
 		const family = baseFamily(base);
 		if (!byFamily.has(family)) byFamily.set(family, []);
 		byFamily.get(family).push(base);
 	}
+
+	baseListEl.innerHTML = '';
 
 	const select = document.createElement('select');
 	select.id = 'base-select';
@@ -285,7 +316,7 @@ function updatePlan() {
 
 	const steps = [];
 	steps.push(sourceBytes ? `Input: ${sourceBytes.length} bytes` : 'Input: (none yet)');
-	steps.push(`Disc: ${disc}`);
+	steps.push(disc ? `Disc: ${disc} (auto)` : 'Disc: (not detected)');
 	steps.push(`Base: ${base ? base.name : baseId}`);
 	if (addons.length) {
 		addons.forEach((a, i) => steps.push(`Add-on ${i + 1}: ${a.name}`));
@@ -294,28 +325,16 @@ function updatePlan() {
 	}
 	steps.push('Output: .zip (.bin + .cue + APPLIED.txt)');
 	planEl.textContent = steps.join('\n');
-	applyBtn.disabled = !sourceBytes;
+	applyBtn.disabled = !(sourceBytes && disc);
 }
 
 function renderManifest() {
 	baseListEl.innerHTML = '';
 	addonListEl.innerHTML = '';
-	discListEl.innerHTML = '';
-
-	[1, 2, 3].forEach((disc, index) => {
-		const label = document.createElement('label');
-		label.className = 'choice';
-		label.innerHTML = `
-			<input type="radio" name="disc" value="${disc}" ${index === 0 ? 'checked' : ''} />
-			<span><strong>Disc ${disc}</strong></span>
-		`;
-		discListEl.appendChild(label);
-	});
 
 	document.getElementById('explainer-base').textContent = manifest.explainer?.base || '';
 	document.getElementById('explainer-addon').textContent = manifest.explainer?.addon || '';
 
-	discListEl.addEventListener('change', updatePlan);
 	baseListEl.addEventListener('change', (ev) => {
 		if (ev.target && ev.target.id === 'base-select') {
 			updateBaseBlurb();
@@ -339,9 +358,9 @@ async function loadSample() {
 	const sampleUrl = new URL(manifest.sampleBin, window.location.href).href;
 	const res = await fetch(sampleUrl);
 	if (!res.ok) throw new Error('Could not load sample.bin');
-	sourceBytes = new Uint8Array(await res.arrayBuffer());
-	fileLabel.textContent = `sample.bin (${sourceBytes.length} bytes)`;
+	const bytes = new Uint8Array(await res.arrayBuffer());
 	fileInput.value = '';
+	rememberImage(bytes, `sample.bin (${bytes.length} bytes)`, { demo: true });
 	setStatus('Sample image loaded.');
 	updatePlan();
 }
@@ -350,19 +369,27 @@ async function onFileChosen(file) {
 	if (!file) return;
 	setStatus(`Reading ${file.name}…`);
 	const buf = await file.arrayBuffer();
-	sourceBytes = new Uint8Array(buf);
-	fileLabel.textContent = `${file.name} (${sourceBytes.length} bytes)`;
-	setStatus('Image ready.');
+	const bytes = new Uint8Array(buf);
+	rememberImage(bytes, `${file.name} (${bytes.length} bytes)`);
+	if (!detectedDisc) {
+		setStatus('Image loaded, but disc could not be detected.', true);
+	} else {
+		setStatus(`Image ready — NTSC-U Disc ${detectedDisc}.`);
+	}
 	updatePlan();
 }
 
 async function applySelection() {
 	if (!sourceBytes || !manifest) return;
+	const disc = selectedDisc();
+	if (!disc) {
+		setStatus('Load an NTSC-U FF7 .bin so the disc can be detected.', true);
+		return;
+	}
 	applyBtn.disabled = true;
 	setStatus('Building…');
 
 	try {
-		const disc = selectedDisc();
 		const baseId = selectedBaseId();
 		const base = manifest.bases.find((b) => b.id === baseId);
 		const addonEntries = selectedAddonIds()
@@ -490,7 +517,7 @@ async function init() {
 		setStatus(
 			remoteMsg
 				? `Ready. ${remoteMsg}`
-				: 'Pick disc, base, add-ons, then Build.'
+				: 'Choose an NTSC-U .bin, then pick base and add-ons.'
 		);
 	} catch (err) {
 		setStatus(err.message || String(err), true);
