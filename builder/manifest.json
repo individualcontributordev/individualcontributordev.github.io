@@ -5,7 +5,7 @@
   "sampleBin": "./demo/sample.bin",
   "explainer": {
     "base": "Pick one base (or unmodified). Cutscene packs cannot be combined with each other.",
-    "addon": "Add-ons for the selected base only. Multiple rate variants for the same base can all appear here."
+    "addon": "Add-ons for the selected base only. Encounter rates (25/50/75%) are mutually exclusive."
   },
   "bases": [
     {

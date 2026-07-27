@@ -199,6 +199,17 @@ function renderAddons() {
 	}
 }
 
+function enforceExclusiveAddons(changedInput) {
+	const addon = manifest.addons.find((a) => a.id === changedInput.value);
+	const group = addon?.exclusiveGroup;
+	if (!group || !changedInput.checked) return;
+	for (const input of document.querySelectorAll('input[name="addon"]')) {
+		if (input === changedInput || !input.checked) continue;
+		const other = manifest.addons.find((a) => a.id === input.value);
+		if (other?.exclusiveGroup === group) input.checked = false;
+	}
+}
+
 function updatePlan() {
 	if (!manifest) return;
 	const disc = selectedDisc();
@@ -258,7 +269,11 @@ function renderManifest() {
 		renderAddons();
 		updatePlan();
 	});
-	addonListEl.addEventListener('change', updatePlan);
+	addonListEl.addEventListener('change', (ev) => {
+		const t = ev.target;
+		if (t && t.name === 'addon') enforceExclusiveAddons(t);
+		updatePlan();
+	});
 
 	renderAddons();
 	updatePlan();
