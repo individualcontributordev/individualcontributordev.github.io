@@ -17,7 +17,7 @@
 		<div class="stars"></div>
 	</div>
 
-	<div class="page">
+	<div class="container">
 		<div class="header-bar">
 			<nav class="nav-links">
 				<a href="/">Home</a>
@@ -29,52 +29,54 @@
 			<img src="/meteor.png" alt="" class="site-logo" />
 		</div>
 
-		<header class="hero">
-			<h1 id="page-title">Disc builder</h1>
-			<p class="lede">
-				Choose a clean NTSC-U <strong>.bin</strong> (disc is detected automatically).
-				Pick a cutscene base and optional add-ons. Downloads one zip with
-				<strong>.bin</strong>, <strong>.cue</strong>, and <strong>APPLIED.txt</strong>.
-				Nothing is uploaded.
-			</p>
-		</header>
+		<main>
+			<header class="hero">
+				<h1 id="page-title">Disc builder</h1>
+				<p class="lede">
+					Choose a clean NTSC-U <strong>.bin</strong> (disc is detected automatically).
+					Pick a cutscene base and optional add-ons. Downloads one zip with
+					<strong>.bin</strong>, <strong>.cue</strong>, and <strong>APPLIED.txt</strong>.
+					Nothing is uploaded.
+				</p>
+			</header>
 
-		<div id="load-banner" class="note" hidden></div>
+			<div id="load-banner" class="note" hidden></div>
 
-		<section class="panel">
-			<h2>1. Disc image</h2>
-			<div class="row">
-				<label class="file-btn">
-					Choose .bin
-					<input type="file" id="bin-file" accept=".bin,.img,.iso" />
-				</label>
-				<span class="file-label" id="file-label">No file loaded</span>
-			</div>
-			<p id="disc-info" class="explainer" style="margin-bottom:0;">Disc: (load a .bin)</p>
-		</section>
+			<section class="panel">
+				<h2>1. Disc image</h2>
+				<div class="row">
+					<label class="file-btn">
+						Choose .bin
+						<input type="file" id="bin-file" accept=".bin,.img,.iso" />
+					</label>
+					<span class="file-label" id="file-label">No file loaded</span>
+				</div>
+				<p id="disc-info" class="explainer" style="margin-bottom:0;">Disc: (load a .bin)</p>
+			</section>
 
-		<section class="panel">
-			<h2>2. Base</h2>
-			<p class="explainer" id="explainer-base"></p>
-			<div id="base-list"></div>
-		</section>
+			<section class="panel">
+				<h2>2. Base</h2>
+				<p class="explainer" id="explainer-base"></p>
+				<div id="base-list"></div>
+			</section>
 
-		<section class="panel">
-			<h2>3. Add-ons</h2>
-			<p class="explainer" id="explainer-addon"></p>
-			<div id="addon-list"></div>
-		</section>
+			<section class="panel">
+				<h2>3. Add-ons</h2>
+				<p class="explainer" id="explainer-addon"></p>
+				<div id="addon-list"></div>
+			</section>
 
-		<section class="panel">
-			<h2>4. Build</h2>
-			<pre class="plan" id="plan"></pre>
-			<div class="row" style="margin-top:16px;margin-bottom:0;">
-				<button type="button" id="apply" disabled>Build zip</button>
-			</div>
-			<p id="status" aria-live="polite"></p>
-		</section>
+			<section class="panel">
+				<h2>4. Build</h2>
+				<pre class="plan" id="plan"></pre>
+				<div class="row" style="margin-top:16px;margin-bottom:0;">
+					<button type="button" id="apply" disabled>Build zip</button>
+				</div>
+				<p id="status" aria-live="polite"></p>
+			</section>
+		</main>
 
-		<footer class="footer">
+		<footer>
 			<p>Layers stay in your browser · <a href="https://github.com/individualcontributordev">GitHub</a></p>
 		</footer>
 	</div>
