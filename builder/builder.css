@@ -254,6 +254,13 @@ button#apply {
 	padding: 10px 28px;
 }
 
+button#apply.is-busy,
+button#apply.is-busy:disabled {
+	opacity: 1;
+	cursor: wait;
+	color: var(--ff7-link);
+}
+
 select#base-select {
 	display: block;
 	width: 100%;
