@@ -7,10 +7,10 @@ const baseListEl = document.getElementById('base-list');
 const addonListEl = document.getElementById('addon-list');
 const discInfoEl = document.getElementById('disc-info');
 const fileInput = document.getElementById('bin-file');
-const useSampleBtn = document.getElementById('use-sample');
 const applyBtn = document.getElementById('apply');
 const planEl = document.getElementById('plan');
 const fileLabel = document.getElementById('file-label');
+const loadBannerEl = document.getElementById('load-banner');
 
 let manifest = null;
 let sourceBytes = null;
@@ -118,30 +118,18 @@ async function loadMergedManifest(localPath) {
 		}
 	}
 
-	// Keep Unmodified; drop local demo packs once remotes are available.
-	const useDemo = !!local.demo && remotesOk === 0;
-	if (useDemo) {
-		for (const b of local.bases || []) {
-			const n = normalizeEntry(b, localUrl);
-			if (n) bases.push(n);
-		}
-		for (const a of local.addons || []) {
-			const n = normalizeEntry(a, localUrl);
-			if (n) addons.push(n);
-		}
-	} else {
-		const clean = (local.bases || []).find((b) => b.id === 'clean');
-		if (clean) {
-			const n = normalizeEntry({ ...clean, enabled: true }, localUrl);
-			if (n) bases.unshift(n);
-		}
+	// Always include Unmodified from the local manifest; packs come from remotes.
+	const clean = (local.bases || []).find((b) => b.id === 'clean');
+	if (clean) {
+		const n = normalizeEntry({ ...clean, enabled: true }, localUrl);
+		if (n) bases.unshift(n);
 	}
 
 	return {
 		...local,
-		demo: useDemo,
 		bases,
 		addons,
+		_remotesOk: remotesOk,
 		_remoteNotes: remoteNotes,
 	};
 }
@@ -183,15 +171,9 @@ function setDiscInfo(text, isError) {
 	discInfoEl.classList.toggle('is-error', !!isError);
 }
 
-function rememberImage(bytes, label, { demo = false } = {}) {
+function rememberImage(bytes, label) {
 	sourceBytes = bytes;
 	fileLabel.textContent = label;
-
-	if (demo) {
-		detectedDisc = 1;
-		setDiscInfo('Disc 1 (demo sample)');
-		return;
-	}
 
 	const hit = detectFf7Disc(bytes);
 	if (!hit) {
@@ -212,11 +194,10 @@ function baseFamily(base) {
 	if (id.startsWith('csr-plusplus') || /^csrplusplus/i.test(id)) return 'CSR++';
 	if (id.startsWith('csr-plus') || /^csrplus/i.test(id)) return 'CSR+';
 	if (id.startsWith('csr-') || id === 'csr' || /^csr-v/i.test(id)) return 'CSR';
-	if (id.startsWith('demo-base-')) return 'Demo';
 	return 'Other';
 }
 
-const BASE_FAMILY_ORDER = ['Unmodified', 'CSR', 'CSR+', 'CSR++', 'Demo', 'Other'];
+const BASE_FAMILY_ORDER = ['Unmodified', 'CSR', 'CSR+', 'CSR++', 'Other'];
 
 function updateBaseBlurb() {
 	const blurbEl = document.getElementById('base-blurb');
@@ -372,18 +353,6 @@ function renderManifest() {
 	updatePlan();
 }
 
-async function loadSample() {
-	setStatus('Loading sample.bin…');
-	const sampleUrl = new URL(manifest.sampleBin, window.location.href).href;
-	const res = await fetch(sampleUrl);
-	if (!res.ok) throw new Error('Could not load sample.bin');
-	const bytes = new Uint8Array(await res.arrayBuffer());
-	fileInput.value = '';
-	rememberImage(bytes, `sample.bin (${bytes.length} bytes)`, { demo: true });
-	setStatus('Sample image loaded.');
-	updatePlan();
-}
-
 async function onFileChosen(file) {
 	if (!file) return;
 	setStatus(`Reading ${file.name}…`);
@@ -448,8 +417,8 @@ async function applySelection() {
 		const out = applyLayers(sourceBytes, layers);
 		const stamp = [
 			`d${disc}`,
-			baseId === 'clean' ? 'clean' : baseId.replace(/^demo-base-/, ''),
-			...addonEntries.map((a) => a.id.replace(/^demo-addon-/, '')),
+			baseId === 'clean' ? 'clean' : baseId,
+			...addonEntries.map((a) => a.id),
 		].join('+');
 		const binName = `ff7-builder-${stamp || 'clean'}.bin`;
 		const cueName = binName.replace(/\.bin$/i, '.cue');
@@ -522,17 +491,23 @@ async function init() {
 		document.getElementById('page-title').textContent = manifest.title || 'Disc builder';
 		renderManifest();
 
-		if (manifest.demo) {
-			document.getElementById('demo-banner').hidden = false;
-			useSampleBtn.hidden = false;
-		} else {
-			document.getElementById('demo-banner').hidden = true;
-			useSampleBtn.hidden = true;
+		const expectedRemotes = (manifest.remoteSources || []).length;
+		const remotesOk = manifest._remotesOk || 0;
+		if (loadBannerEl) {
+			if (remotesOk === 0 && expectedRemotes > 0) {
+				loadBannerEl.hidden = false;
+				loadBannerEl.textContent =
+					'Could not load CSR / Modding packs. Check your connection and try again.';
+			} else if (remotesOk < expectedRemotes) {
+				loadBannerEl.hidden = false;
+				loadBannerEl.textContent =
+					'Some pack sources failed to load — the list may be incomplete.';
+			} else {
+				loadBannerEl.hidden = true;
+				loadBannerEl.textContent = '';
+			}
 		}
 
-		useSampleBtn.addEventListener('click', () => {
-			loadSample().catch((err) => setStatus(err.message, true));
-		});
 		fileInput.addEventListener('change', () => {
 			onFileChosen(fileInput.files?.[0]).catch((err) => setStatus(err.message, true));
 		});
@@ -540,12 +515,7 @@ async function init() {
 			applySelection();
 		});
 
-		const remoteMsg = (manifest._remoteNotes || []).join(' · ');
-		setStatus(
-			remoteMsg
-				? `Ready. ${remoteMsg}`
-				: 'Choose an NTSC-U .bin, then pick base and add-ons.'
-		);
+		setStatus('Choose an NTSC-U .bin, then pick base and add-ons.');
 	} catch (err) {
 		setStatus(err.message || String(err), true);
 	}

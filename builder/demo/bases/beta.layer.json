@@ -1,9 +1,0 @@
-{
-  "format": "ic-layer-v1",
-  "id": "demo-base-beta",
-  "description": "Demo base Beta — writes BASEB at offset 16 (mutually exclusive with Alpha)",
-  "target": "disc-image",
-  "records": [
-    { "offset": 16, "hex": "4241534542" }
-  ]
-}
