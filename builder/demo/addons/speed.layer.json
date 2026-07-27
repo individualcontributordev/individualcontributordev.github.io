@@ -1,9 +1,0 @@
-{
-  "format": "ic-layer-v1",
-  "id": "demo-addon-speed",
-  "description": "Demo add-on Speed — writes SPEED at offset 32",
-  "target": "disc-image",
-  "records": [
-    { "offset": 32, "hex": "5350454544" }
-  ]
-}

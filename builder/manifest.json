@@ -1,11 +1,9 @@
 {
   "version": 1,
-  "title": "Disc builder prototype",
-  "demo": true,
-  "sampleBin": "./demo/sample.bin",
+  "title": "Disc builder",
   "explainer": {
-    "base": "Pick one cutscene base (and version) from the list. Only one base applies.",
-    "addon": "Optional add-ons (e.g. Field encounter density). Exclusive options within a group cannot stack; different mods can."
+    "base": "Cutscene base — only one applies.",
+    "addon": "Optional add-ons (e.g. Field encounter density). Options in the same group cannot stack."
   },
   "bases": [
     {
@@ -13,46 +11,11 @@
       "name": "Unmodified",
       "kind": "base",
       "exclusiveGroup": "cutscenes",
-      "blurb": "No base pack \u2014 add-ons only.",
+      "blurb": "No cutscene pack — add-ons only.",
       "layer": null
-    },
-    {
-      "id": "demo-base-alpha",
-      "name": "Demo base Alpha",
-      "kind": "base",
-      "exclusiveGroup": "cutscenes",
-      "blurb": "Stand-in for a cutscene pack (e.g. CSR).",
-      "format": "ic-layer-v1",
-      "url": "./demo/bases/alpha.layer.json"
-    },
-    {
-      "id": "demo-base-beta",
-      "name": "Demo base Beta",
-      "kind": "base",
-      "exclusiveGroup": "cutscenes",
-      "blurb": "Stand-in for another exclusive pack (e.g. CSR++).",
-      "format": "ic-layer-v1",
-      "url": "./demo/bases/beta.layer.json"
     }
   ],
-  "addons": [
-    {
-      "id": "demo-addon-speed",
-      "name": "Demo add-on Speed",
-      "kind": "addon",
-      "blurb": "Stand-in for an engine add-on (e.g. Encounter).",
-      "format": "ic-layer-v1",
-      "url": "./demo/addons/speed.layer.json"
-    },
-    {
-      "id": "demo-addon-color",
-      "name": "Demo add-on Color",
-      "kind": "addon",
-      "blurb": "Second stackable add-on.",
-      "format": "ic-layer-v1",
-      "url": "./demo/addons/color.layer.json"
-    }
-  ],
+  "addons": [],
   "remoteSources": [
     "https://individualcontributor.dev/Final-Fantasy-7-Modding/builder/manifest.json",
     "https://individualcontributor.dev/Final-Fantasy-7-CSR/builder/manifest.json"

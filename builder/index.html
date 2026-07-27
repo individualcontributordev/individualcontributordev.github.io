@@ -4,7 +4,7 @@
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>Disc builder — IndividualContributor</title>
-	<meta name="description" content="Pick a Final Fantasy VII disc base and add-ons; download a zip with .bin, .cue, and an APPLIED.txt summary." />
+	<meta name="description" content="Apply CSR and Field encounter packs to your Final Fantasy VII NTSC-U .bin in the browser." />
 	<link rel="icon" href="/favicon.ico" type="image/x-icon" />
 	<link rel="stylesheet" href="./builder.css" />
 </head>
@@ -32,19 +32,18 @@
 		<header class="hero">
 			<h1 id="page-title">Disc builder</h1>
 			<p class="lede">
-				Choose your NTSC-U <strong>.bin</strong> — disc number is detected automatically.
-				Pick a cutscene base and add-ons; build downloads one zip with patched <strong>.bin</strong>, <strong>.cue</strong>, and <strong>APPLIED.txt</strong>.
+				Choose a clean NTSC-U <strong>.bin</strong> (disc is detected automatically).
+				Pick a cutscene base and optional add-ons. Downloads one zip with
+				<strong>.bin</strong>, <strong>.cue</strong>, and <strong>APPLIED.txt</strong>.
+				Nothing is uploaded.
 			</p>
 		</header>
 
-		<div id="demo-banner" class="note" hidden>
-			Demo packs only — remote CSR / Modding manifests did not load.
-		</div>
+		<div id="load-banner" class="note" hidden></div>
 
 		<section class="panel">
 			<h2>1. Disc image</h2>
 			<div class="row">
-				<button type="button" id="use-sample">Use demo sample.bin</button>
 				<label class="file-btn">
 					Choose .bin
 					<input type="file" id="bin-file" accept=".bin,.img,.iso" />
@@ -76,7 +75,7 @@
 		</section>
 
 		<footer class="footer">
-			<p><a href="./README.md">Format notes</a> · Layers stay in your browser</p>
+			<p>Layers stay in your browser · <a href="https://github.com/individualcontributordev">GitHub</a></p>
 		</footer>
 	</div>
 
