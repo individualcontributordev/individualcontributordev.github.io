@@ -10,7 +10,7 @@ Existing CSR / Modding patcher pages are untouched. This page proves **on-the-fl
 2. Click **Use demo sample.bin**
 3. Pick base Alpha or Beta (radio)
 4. Tick Speed and/or Color (checkboxes)
-5. **Build .bin + .cue** — both download
+5. **Build zip** — downloads one `.zip` with `.bin`, `.cue`, and `APPLIED.txt`
 
 Verify stacking: Alpha + Speed + Color should contain ASCII `BASEA` @ 16, `SPEED` @ 32, `COLOR` @ 48.
 
