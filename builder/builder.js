@@ -163,27 +163,44 @@ function addonCompatibleWithBase(addon, baseId) {
 	return allowed.includes(baseId);
 }
 
-function syncAddonAvailability() {
-	if (!manifest) return;
+function addonsForBase(baseId) {
+	if (!manifest) return [];
+	return (manifest.addons || []).filter((addon) => addonCompatibleWithBase(addon, baseId));
+}
+
+function renderAddons() {
+	if (!manifest || !addonListEl) return;
 	const baseId = selectedBaseId();
-	for (const input of document.querySelectorAll('input[name="addon"]')) {
-		const addon = manifest.addons.find((a) => a.id === input.value);
-		const ok = addonCompatibleWithBase(addon, baseId);
-		input.disabled = !ok;
-		if (!ok) input.checked = false;
-		const label = input.closest('label');
-		if (label) {
-			label.classList.toggle('is-disabled', !ok);
-			label.title = ok
-				? ''
-				: 'Only works with Unmodified until a CSR-based Encounter layer exists.';
-		}
+	const prevChecked = new Set(selectedAddonIds());
+	const visible = addonsForBase(baseId);
+
+	addonListEl.innerHTML = '';
+	if (!visible.length) {
+		const empty = document.createElement('p');
+		empty.className = 'explainer';
+		empty.style.marginBottom = '0';
+		empty.textContent = 'No add-ons for this base yet.';
+		addonListEl.appendChild(empty);
+		return;
+	}
+
+	for (const addon of visible) {
+		const label = document.createElement('label');
+		label.className = 'choice';
+		const checked = prevChecked.has(addon.id) ? 'checked' : '';
+		label.innerHTML = `
+			<input type="checkbox" name="addon" value="${addon.id}" ${checked} />
+			<span>
+				<strong>${addon.name}</strong>
+				<small>${addon.blurb || ''}</small>
+			</span>
+		`;
+		addonListEl.appendChild(label);
 	}
 }
 
 function updatePlan() {
 	if (!manifest) return;
-	syncAddonAvailability();
 	const disc = selectedDisc();
 	const baseId = selectedBaseId();
 	const base = manifest.bases.find((b) => b.id === baseId);
@@ -233,25 +250,17 @@ function renderManifest() {
 		baseListEl.appendChild(label);
 	});
 
-	manifest.addons.forEach((addon) => {
-		const label = document.createElement('label');
-		label.className = 'choice';
-		label.innerHTML = `
-			<input type="checkbox" name="addon" value="${addon.id}" />
-			<span>
-				<strong>${addon.name}</strong>
-				<small>${addon.blurb || ''}</small>
-			</span>
-		`;
-		addonListEl.appendChild(label);
-	});
-
 	document.getElementById('explainer-base').textContent = manifest.explainer?.base || '';
 	document.getElementById('explainer-addon').textContent = manifest.explainer?.addon || '';
 
 	discListEl.addEventListener('change', updatePlan);
-	baseListEl.addEventListener('change', updatePlan);
+	baseListEl.addEventListener('change', () => {
+		renderAddons();
+		updatePlan();
+	});
 	addonListEl.addEventListener('change', updatePlan);
+
+	renderAddons();
 	updatePlan();
 }
 
@@ -293,9 +302,7 @@ async function applySelection() {
 		for (const entry of addonEntries) {
 			if (!addonCompatibleWithBase(entry, baseId)) {
 				throw new Error(
-					`${entry.name} cannot stack on ${base?.name || baseId}. ` +
-						`Use Unmodified + Encounter, or a CSR base alone. ` +
-						`(Pristine Encounter layers overwrite CSR FIELD.BIN.)`
+					`${entry.name} is not available for ${base?.name || baseId}.`
 				);
 			}
 		}
@@ -329,11 +336,6 @@ async function applySelection() {
 			base,
 			baseId,
 			addons: addonEntries,
-			layers,
-			binName,
-			cueName,
-			inputBytes: sourceBytes.length,
-			outputBytes: out.length,
 		});
 
 		setStatus('Zipping…');
