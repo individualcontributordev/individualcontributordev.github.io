@@ -31,8 +31,8 @@
 		<header class="hero">
 			<h1 id="page-title">Disc builder</h1>
 			<p class="lede">
-				Pick disc, one cutscene base, and any add-ons. Layers apply in your browser.
-				Build downloads one zip: patched <strong>.bin</strong>, <strong>.cue</strong>, and <strong>APPLIED.txt</strong>.
+				Choose your NTSC-U <strong>.bin</strong> — disc number is detected automatically.
+				Pick a cutscene base and add-ons; build downloads one zip with patched <strong>.bin</strong>, <strong>.cue</strong>, and <strong>APPLIED.txt</strong>.
 			</p>
 		</header>
 
@@ -50,28 +50,23 @@
 				</label>
 				<span class="file-label" id="file-label">No file loaded</span>
 			</div>
+			<p id="disc-info" class="explainer" style="margin-bottom:0;">Disc: (load a .bin)</p>
 		</section>
 
 		<section class="panel">
-			<h2>2. Disc number</h2>
-			<p class="explainer">Mods ship a separate layer per disc. Match the disc of your .bin.</p>
-			<div id="disc-list"></div>
-		</section>
-
-		<section class="panel">
-			<h2>3. Base</h2>
+			<h2>2. Base</h2>
 			<p class="explainer" id="explainer-base"></p>
 			<div id="base-list"></div>
 		</section>
 
 		<section class="panel">
-			<h2>4. Add-ons</h2>
+			<h2>3. Add-ons</h2>
 			<p class="explainer" id="explainer-addon"></p>
 			<div id="addon-list"></div>
 		</section>
 
 		<section class="panel">
-			<h2>5. Build</h2>
+			<h2>4. Build</h2>
 			<pre class="plan" id="plan"></pre>
 			<div class="row" style="margin-top:16px;margin-bottom:0;">
 				<button type="button" id="apply" disabled>Build zip</button>
