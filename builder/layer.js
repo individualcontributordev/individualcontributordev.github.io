@@ -23,7 +23,7 @@ export function validateLayer(layer) {
 		throw new Error('expected format ic-layer-v1');
 	}
 	if (layer.target && layer.target !== 'disc-image') {
-		throw new Error(`unsupported target: ${layer.target} (prototype supports disc-image only)`);
+		throw new Error(`unsupported target: ${layer.target} (expected disc-image)`);
 	}
 	if (!Array.isArray(layer.records)) {
 		throw new Error('layer.records required');
