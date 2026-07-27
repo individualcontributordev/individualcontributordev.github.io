@@ -16,11 +16,16 @@ let manifest = null;
 let sourceBytes = null;
 /** @type {number | null} */
 let detectedDisc = null;
+let building = false;
 const layerCache = new Map();
 
 function setStatus(msg, isError) {
 	statusEl.textContent = msg || '';
 	statusEl.classList.toggle('is-error', !!isError);
+}
+
+function yieldToUi() {
+	return new Promise((resolve) => setTimeout(resolve, 0));
 }
 
 function downloadBlob(blob, filename) {
@@ -31,7 +36,20 @@ function downloadBlob(blob, filename) {
 	document.body.appendChild(a);
 	a.click();
 	a.remove();
-	setTimeout(() => URL.revokeObjectURL(url), 2000);
+	setTimeout(() => URL.revokeObjectURL(url), 60_000);
+	return url;
+}
+
+function showDownloadFallback(url, filename) {
+	statusEl.replaceChildren();
+	statusEl.classList.remove('is-error');
+	statusEl.append('Done — ');
+	const link = document.createElement('a');
+	link.href = url;
+	link.download = filename;
+	link.textContent = `save ${filename}`;
+	statusEl.append(link);
+	statusEl.append(' if the download did not start.');
 }
 
 function resolveUrl(baseUrl, maybeRelative) {
@@ -325,7 +343,8 @@ function updatePlan() {
 	}
 	steps.push('Output: .zip (.bin + .cue + APPLIED.txt)');
 	planEl.textContent = steps.join('\n');
-	applyBtn.disabled = !(sourceBytes && disc);
+	applyBtn.disabled = building || !(sourceBytes && disc);
+	applyBtn.classList.toggle('is-busy', building);
 }
 
 function renderManifest() {
