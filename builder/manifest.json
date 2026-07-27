@@ -5,7 +5,7 @@
   "sampleBin": "./demo/sample.bin",
   "explainer": {
     "base": "Pick one cutscene base (and version) from the list. Only one base applies.",
-    "addon": "Add-ons for the selected base only. Encounter rates (25/50/75%) are mutually exclusive."
+    "addon": "Pick one encounter density for this base: Light, Standard, or Dense."
   },
   "bases": [
     {
@@ -13,7 +13,7 @@
       "name": "Unmodified",
       "kind": "base",
       "exclusiveGroup": "cutscenes",
-      "blurb": "No base pack — add-ons only.",
+      "blurb": "No base pack \u2014 add-ons only.",
       "layer": null
     },
     {
