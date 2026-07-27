@@ -314,6 +314,8 @@ input[type="file"] {
 
 #status.is-error { color: #ff6b8a; }
 
+#disc-info.is-error { color: #ff6b8a; }
+
 code {
 	font-family: "DogicaPixelRegular", monospace;
 	font-size: 0.95em;
