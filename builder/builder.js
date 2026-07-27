@@ -1,4 +1,5 @@
 import { applyLayers, buildCue } from './layer.js';
+import { zipStore } from './zip-store.js';
 
 const statusEl = document.getElementById('status');
 const baseListEl = document.getElementById('base-list');
@@ -199,7 +200,7 @@ function updatePlan() {
 	} else {
 		steps.push('Add-ons: (none)');
 	}
-	steps.push('Output: .bin + .cue');
+	steps.push('Output: .zip (.bin + .cue + APPLIED.txt)');
 	planEl.textContent = steps.join('\n');
 	applyBtn.disabled = !sourceBytes;
 }
@@ -320,17 +321,104 @@ async function applySelection() {
 		].join('+');
 		const binName = `ff7-builder-${stamp || 'clean'}.bin`;
 		const cueName = binName.replace(/\.bin$/i, '.cue');
+		const zipName = binName.replace(/\.bin$/i, '.zip');
+		const appliedName = 'APPLIED.txt';
 
-		downloadBlob(new Blob([out], { type: 'application/octet-stream' }), binName);
-		downloadBlob(new Blob([buildCue(binName)], { type: 'text/plain' }), cueName);
+		const appliedText = buildAppliedReport({
+			disc,
+			base,
+			baseId,
+			addons: addonEntries,
+			layers,
+			binName,
+			cueName,
+			inputBytes: sourceBytes.length,
+			outputBytes: out.length,
+		});
 
-		setStatus(`Done — downloaded ${binName} and ${cueName} (${out.length} bytes, ${layers.length} layer(s)).`);
+		setStatus('Zipping…');
+		const zipBytes = zipStore([
+			{ name: binName, data: out },
+			{ name: cueName, data: new TextEncoder().encode(buildCue(binName)) },
+			{ name: appliedName, data: new TextEncoder().encode(appliedText) },
+		]);
+
+		downloadBlob(new Blob([zipBytes], { type: 'application/zip' }), zipName);
+
+		setStatus(
+			`Done — downloaded ${zipName} (${out.length} byte image, ${layers.length} layer(s)).`
+		);
 	} catch (err) {
 		console.error(err);
 		setStatus(err.message || String(err), true);
 	} finally {
 		applyBtn.disabled = !sourceBytes;
 	}
+}
+
+function buildAppliedReport({
+	disc,
+	base,
+	baseId,
+	addons,
+	layers,
+	binName,
+	cueName,
+	inputBytes,
+	outputBytes,
+}) {
+	const when = new Date().toISOString();
+	const lines = [
+		'Final Fantasy VII disc builder — applied mods',
+		'https://individualcontributor.dev/builder/',
+		'',
+		`Built: ${when}`,
+		`Disc: ${disc}`,
+		`Input size: ${inputBytes} bytes`,
+		`Output size: ${outputBytes} bytes`,
+		`Output files: ${binName}, ${cueName}`,
+		'',
+		'Stack (apply order):',
+	];
+
+	if (!base || baseId === 'clean' || !layerUrlFor(base, disc)) {
+		lines.push('  1. Unmodified (no base layer)');
+	} else {
+		const layer = layers[0];
+		lines.push(`  1. Base: ${base.name} (${base.id})`);
+		if (base.blurb) lines.push(`     ${base.blurb}`);
+		if (layer?.id) lines.push(`     layer id: ${layer.id}`);
+		if (layer?.stats?.changedBytes != null) {
+			lines.push(`     changed bytes: ${layer.stats.changedBytes}`);
+		}
+	}
+
+	let step = 2;
+	const layerOffset = base && baseId !== 'clean' && layerUrlFor(base, disc) ? 1 : 0;
+	addons.forEach((addon, i) => {
+		const layer = layers[layerOffset + i];
+		lines.push(`  ${step}. Add-on: ${addon.name} (${addon.id})`);
+		if (addon.blurb) lines.push(`     ${addon.blurb}`);
+		if (layer?.id) lines.push(`     layer id: ${layer.id}`);
+		if (layer?.stats?.changedBytes != null) {
+			lines.push(`     changed bytes: ${layer.stats.changedBytes}`);
+		}
+		step += 1;
+	});
+
+	if (!addons.length) {
+		lines.push('  (no add-ons)');
+	}
+
+	lines.push(
+		'',
+		'Notes:',
+		'- Start from a clean NTSC-U retail .bin matching the disc number.',
+		'- Put the .bin and .cue in the same folder for DuckStation.',
+		'- Do not stack this zip on an already-patched image.',
+		''
+	);
+	return lines.join('\n');
 }
 
 async function init() {

@@ -4,7 +4,7 @@
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>Disc builder prototype — IndividualContributor</title>
-	<meta name="description" content="Prototype: pick a base and stackable add-ons, build a .bin + .cue in the browser." />
+	<meta name="description" content="Pick a Final Fantasy VII disc base and add-ons; download a zip with .bin, .cue, and an APPLIED.txt summary." />
 	<link rel="icon" href="/favicon.ico" type="image/x-icon" />
 	<link rel="stylesheet" href="./builder.css" />
 </head>
@@ -27,6 +27,7 @@
 		<h1 id="page-title">Disc builder prototype</h1>
 		<p class="lede">
 			Pick disc, one cutscene base, and any add-ons. Layers apply in your browser.
+			Build downloads one zip: patched .bin, .cue, and APPLIED.txt.
 		</p>
 
 		<div id="demo-banner" class="banner" hidden>
@@ -67,7 +68,7 @@
 			<h2>5. Build</h2>
 			<pre class="plan" id="plan"></pre>
 			<div class="row" style="margin-top:12px;margin-bottom:0;">
-				<button type="button" id="apply" disabled>Build .bin + .cue</button>
+				<button type="button" id="apply" disabled>Build zip</button>
 			</div>
 			<p id="status" aria-live="polite"></p>
 		</section>
