@@ -3,7 +3,7 @@
   "title": "Disc builder",
   "explainer": {
     "base": "Cutscene base — only one applies.",
-    "addon": "Optional add-ons (e.g. Field encounter density). Options in the same group cannot stack."
+    "addon": "Optional densities — one pick per group (Off skips). Field and World can both be on."
   },
   "bases": [
     {

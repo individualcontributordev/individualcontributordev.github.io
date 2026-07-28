@@ -159,7 +159,14 @@ function selectedBaseId() {
 }
 
 function selectedAddonIds() {
-	return [...document.querySelectorAll('input[name="addon"]:checked')].map((el) => el.value);
+	const ids = [];
+	for (const input of document.querySelectorAll('input[name="addon"]:checked')) {
+		ids.push(input.value);
+	}
+	for (const select of document.querySelectorAll('select[name="addon-group"]')) {
+		if (select.value) ids.push(select.value);
+	}
+	return ids;
 }
 
 function selectedDisc() {
@@ -263,11 +270,135 @@ function addonsForBase(baseId) {
 	return (manifest.addons || []).filter((addon) => addonCompatibleWithBase(addon, baseId));
 }
 
+const RATE_OPTION_LABEL = {
+	25: 'Light (25%)',
+	50: 'Standard (50%)',
+	75: 'Dense (75%)',
+};
+
+function partitionAddons(visible) {
+	const groups = new Map();
+	const groupOrder = [];
+	const free = [];
+	for (const addon of visible) {
+		const groupId = addon.exclusiveGroup;
+		if (!groupId) {
+			free.push(addon);
+			continue;
+		}
+		if (!groups.has(groupId)) {
+			groups.set(groupId, []);
+			groupOrder.push(groupId);
+		}
+		groups.get(groupId).push(addon);
+	}
+	for (const groupId of groupOrder) {
+		groups.get(groupId).sort(
+			(a, b) => (a.rate || 0) - (b.rate || 0) || String(a.name).localeCompare(String(b.name))
+		);
+	}
+	return { groups, groupOrder, free };
+}
+
+function exclusiveGroupTitle(addons) {
+	const name = String(addons[0]?.name || '');
+	const before = name.split('—')[0].trim();
+	if (before) return before;
+	return addons[0]?.exclusiveGroup || 'Add-on';
+}
+
+function exclusiveOptionLabel(addon) {
+	if (addon.rate != null && RATE_OPTION_LABEL[addon.rate]) {
+		return RATE_OPTION_LABEL[addon.rate];
+	}
+	const after = String(addon.name || '')
+		.split('—')
+		.slice(1)
+		.join('—')
+		.trim();
+	return (
+		after
+			.replace(/\s*\(on [^)]+\)/gi, '')
+			.replace(/\s+v[\d.]+$/i, '')
+			.trim() || addon.name
+	);
+}
+
+function updateAddonGroupBlurb(select) {
+	const blurbEl = select.parentElement?.querySelector('.addon-group-blurb');
+	if (!blurbEl || !manifest) return;
+	if (!select.value) {
+		blurbEl.textContent = 'Off — leave this group unchanged.';
+		return;
+	}
+	const addon = manifest.addons.find((a) => a.id === select.value);
+	blurbEl.textContent = addon?.blurb || '';
+}
+
+function renderAddonGroup(groupId, addons, prevSelected) {
+	const wrap = document.createElement('div');
+	wrap.className = 'addon-group';
+
+	const title = exclusiveGroupTitle(addons);
+	const selectId = `addon-group-${groupId}`;
+
+	const label = document.createElement('label');
+	label.className = 'addon-group-label';
+	label.htmlFor = selectId;
+	label.textContent = title;
+
+	const select = document.createElement('select');
+	select.id = selectId;
+	select.name = 'addon-group';
+	select.dataset.group = groupId;
+	select.setAttribute('aria-label', title);
+
+	const off = document.createElement('option');
+	off.value = '';
+	off.textContent = 'Off';
+	select.appendChild(off);
+
+	const ids = new Set(addons.map((a) => a.id));
+	for (const addon of addons) {
+		const opt = document.createElement('option');
+		opt.value = addon.id;
+		opt.textContent = exclusiveOptionLabel(addon);
+		select.appendChild(opt);
+	}
+
+	const prevInGroup = [...prevSelected].find((id) => ids.has(id));
+	select.value = prevInGroup || '';
+
+	const blurb = document.createElement('p');
+	blurb.className = 'explainer addon-group-blurb';
+
+	wrap.appendChild(label);
+	wrap.appendChild(select);
+	wrap.appendChild(blurb);
+	updateAddonGroupBlurb(select);
+	return wrap;
+}
+
+function renderFreeAddon(addon, prevSelected) {
+	const label = document.createElement('label');
+	label.className = 'choice';
+	const checked = prevSelected.has(addon.id) ? 'checked' : '';
+	label.innerHTML = `
+		<input type="checkbox" name="addon" value="${addon.id}" ${checked} />
+		<span>
+			<strong>${addon.name}</strong>
+			<small>${addon.blurb || ''}</small>
+		</span>
+	`;
+	return label;
+}
+
 function renderAddons() {
 	if (!manifest || !addonListEl) return;
 	const baseId = selectedBaseId();
-	const prevChecked = new Set(selectedAddonIds());
+	const prevSelected = new Set(selectedAddonIds());
 	const visible = addonsForBase(baseId);
+	const { groups, groupOrder, free } = partitionAddons(visible);
 
 	addonListEl.innerHTML = '';
 	if (!visible.length) {
@@ -279,29 +410,11 @@ function renderAddons() {
 		return;
 	}
 
-	for (const addon of visible) {
-		const label = document.createElement('label');
-		label.className = 'choice';
-		const checked = prevChecked.has(addon.id) ? 'checked' : '';
-		label.innerHTML = `
-			<input type="checkbox" name="addon" value="${addon.id}" ${checked} />
-			<span>
-				<strong>${addon.name}</strong>
-				<small>${addon.blurb || ''}</small>
-			</span>
-		`;
-		addonListEl.appendChild(label);
+	for (const groupId of groupOrder) {
+		addonListEl.appendChild(renderAddonGroup(groupId, groups.get(groupId), prevSelected));
 	}
-}
-
-function enforceExclusiveAddons(changedInput) {
-	const addon = manifest.addons.find((a) => a.id === changedInput.value);
-	const group = addon?.exclusiveGroup;
-	if (!group || !changedInput.checked) return;
-	for (const input of document.querySelectorAll('input[name="addon"]')) {
-		if (input === changedInput || !input.checked) continue;
-		const other = manifest.addons.find((a) => a.id === input.value);
-		if (other?.exclusiveGroup === group) input.checked = false;
+	for (const addon of free) {
+		addonListEl.appendChild(renderFreeAddon(addon, prevSelected));
 	}
 }
 
@@ -345,7 +458,7 @@ function renderManifest() {
 	});
 	addonListEl.addEventListener('change', (ev) => {
 		const t = ev.target;
-		if (t && t.name === 'addon') enforceExclusiveAddons(t);
+		if (t && t.name === 'addon-group') updateAddonGroupBlurb(t);
 		updatePlan();
 	});
 

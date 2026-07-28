@@ -272,7 +272,8 @@ button#apply.is-busy:disabled {
 	color: var(--ff7-link);
 }
 
-select#base-select {
+select#base-select,
+select[name="addon-group"] {
 	display: block;
 	width: 100%;
 	max-width: 28rem;
@@ -289,15 +290,40 @@ select#base-select {
 }
 
 select#base-select:hover,
-select#base-select:focus {
+select#base-select:focus,
+select[name="addon-group"]:hover,
+select[name="addon-group"]:focus {
 	border-color: var(--ff7-link);
 	outline: none;
 }
 
 select#base-select option,
-select#base-select optgroup {
+select#base-select optgroup,
+select[name="addon-group"] option {
 	background: #000051;
 	color: var(--ff7-text);
+}
+
+.addon-group {
+	margin: 0 0 18px;
+}
+
+.addon-group:last-child {
+	margin-bottom: 0;
+}
+
+.addon-group-label {
+	display: block;
+	margin: 0 0 8px;
+	font-family: "DogicaPixelBold", Arial, sans-serif;
+	font-size: 0.875rem;
+	letter-spacing: 1.2px;
+	color: var(--ff7-text);
+}
+
+.addon-group-blurb {
+	margin-top: 10px;
+	margin-bottom: 0;
 }
 
 input[type="file"] {
