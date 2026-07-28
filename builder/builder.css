@@ -90,8 +90,8 @@ body {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	padding: 20px 0;
-	gap: 16px;
+	padding: 14px 0;
+	gap: 12px;
 	flex-wrap: wrap;
 }
 
@@ -114,11 +114,11 @@ body {
 
 main {
 	display: block;
-	padding: 24px 0 40px;
+	padding: 16px 0 28px;
 }
 
 .hero {
-	margin-bottom: 28px;
+	margin-bottom: 16px;
 }
 
 .hero h1 {
@@ -126,30 +126,30 @@ main {
 	font-size: clamp(1.4rem, 5vw, 2.2rem);
 	letter-spacing: 2px;
 	color: var(--ff7-text);
-	margin: 0 0 16px;
+	margin: 0 0 10px;
 }
 
 .lede {
 	margin: 0;
 	max-width: 40rem;
 	font-size: 0.95rem;
-	line-height: 2;
-	letter-spacing: 1.5px;
+	line-height: 1.6;
+	letter-spacing: 1.2px;
 	color: var(--ff7-text);
 }
 
 .lede strong { color: #fff; }
 
 .note {
-	margin: 0 0 20px;
-	padding: 12px 14px;
+	margin: 0 0 14px;
+	padding: 10px 12px;
 	border: 2px solid var(--ff7-link);
 	border-radius: 8px;
 	background: rgba(0, 0, 0, 0.25);
 	color: var(--ff7-text);
 	font-size: 0.875rem;
-	line-height: 2;
-	letter-spacing: 1.5px;
+	line-height: 1.5;
+	letter-spacing: 1.2px;
 }
 
 /* Author display must not override the HTML hidden attribute */
@@ -162,23 +162,28 @@ main {
 	background-image: var(--ff7-panel);
 	border: 3px solid var(--ff7-text);
 	border-radius: 10px;
-	padding: 20px;
-	margin-bottom: 16px;
+	padding: 14px 16px;
+	margin-bottom: 10px;
+}
+
+.panel.is-locked {
+	opacity: 0.45;
+	pointer-events: none;
 }
 
 .panel h2 {
 	font-family: "DogicaPixelBold", Arial, sans-serif;
-	margin: 0 0 12px;
-	font-size: 1.15rem;
-	letter-spacing: 1.5px;
+	margin: 0 0 8px;
+	font-size: 1.05rem;
+	letter-spacing: 1.3px;
 	color: var(--ff7-text);
 }
 
 .explainer {
-	margin: 0 0 14px;
-	font-size: 0.875rem;
-	line-height: 2;
-	letter-spacing: 1.5px;
+	margin: 0 0 8px;
+	font-size: 0.85rem;
+	line-height: 1.5;
+	letter-spacing: 1px;
 	color: #c8d0e0;
 }
 
@@ -188,34 +193,34 @@ main {
 
 .choice {
 	display: flex;
-	gap: 10px;
+	gap: 8px;
 	align-items: flex-start;
-	margin: 0 0 12px;
+	margin: 0 0 6px;
 	cursor: pointer;
-	font-size: 0.875rem;
-	line-height: 1.8;
-	letter-spacing: 1.2px;
+	font-size: 0.85rem;
+	line-height: 1.4;
+	letter-spacing: 1px;
 }
 
 .choice:last-child { margin-bottom: 0; }
 
 .choice input {
-	margin-top: 5px;
+	margin-top: 4px;
 	accent-color: var(--ff7-link);
 }
 
 .choice strong {
 	display: block;
 	font-family: "DogicaPixelBold", Arial, sans-serif;
-	letter-spacing: 1.2px;
+	letter-spacing: 1px;
 }
 
 .choice small {
 	display: block;
 	color: #c8d0e0;
-	font-size: 0.8rem;
-	margin-top: 2px;
-	letter-spacing: 1px;
+	font-size: 0.75rem;
+	margin-top: 1px;
+	letter-spacing: 0.8px;
 }
 
 .choice.is-disabled {
@@ -226,9 +231,9 @@ main {
 .row {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 10px;
+	gap: 8px;
 	align-items: center;
-	margin-bottom: 10px;
+	margin-bottom: 6px;
 }
 
 .file-label {
@@ -241,12 +246,12 @@ button, .file-btn {
 	appearance: none;
 	font-family: "DogicaPixelBold", Arial, sans-serif;
 	font-size: 0.85rem;
-	letter-spacing: 1.5px;
+	letter-spacing: 1.3px;
 	color: var(--ff7-text);
 	background: rgba(0, 0, 40, 0.65);
 	border: 3px solid var(--ff7-text);
 	border-radius: 10px;
-	padding: 12px 18px;
+	padding: 9px 14px;
 	cursor: pointer;
 }
 
@@ -262,7 +267,7 @@ button:disabled {
 }
 
 button#apply {
-	padding: 12px 28px;
+	padding: 10px 22px;
 }
 
 button#apply.is-busy,
@@ -279,13 +284,13 @@ select[name="addon-group"] {
 	max-width: 28rem;
 	appearance: none;
 	font-family: "DogicaPixelRegular", Arial, sans-serif;
-	font-size: 0.875rem;
-	letter-spacing: 1px;
+	font-size: 0.85rem;
+	letter-spacing: 0.8px;
 	color: var(--ff7-text);
 	background: rgba(0, 0, 40, 0.65);
 	border: 3px solid var(--ff7-text);
 	border-radius: 10px;
-	padding: 12px 14px;
+	padding: 8px 12px;
 	cursor: pointer;
 }
 
@@ -305,7 +310,7 @@ select[name="addon-group"] option {
 }
 
 .addon-group {
-	margin: 0 0 18px;
+	margin: 0 0 10px;
 }
 
 .addon-group:last-child {
@@ -314,15 +319,15 @@ select[name="addon-group"] option {
 
 .addon-group-label {
 	display: block;
-	margin: 0 0 8px;
+	margin: 0 0 5px;
 	font-family: "DogicaPixelBold", Arial, sans-serif;
-	font-size: 0.875rem;
-	letter-spacing: 1.2px;
+	font-size: 0.85rem;
+	letter-spacing: 1px;
 	color: var(--ff7-text);
 }
 
 .addon-group-blurb {
-	margin-top: 10px;
+	margin-top: 6px;
 	margin-bottom: 0;
 }
 
@@ -336,14 +341,14 @@ input[type="file"] {
 
 .plan {
 	margin: 0;
-	padding: 12px 14px;
+	padding: 8px 10px;
 	background: rgba(0, 0, 0, 0.35);
 	border: 2px solid #4a5a80;
 	border-radius: 8px;
 	white-space: pre-wrap;
 	font-family: "DogicaPixelRegular", monospace;
 	font-size: 0.8rem;
-	line-height: 1.8;
+	line-height: 1.4;
 	letter-spacing: 1px;
 	color: #c8d0e0;
 }
@@ -354,11 +359,11 @@ input[type="file"] {
 
 #status {
 	min-height: 1.4em;
-	margin: 12px 0 0;
+	margin: 8px 0 0;
 	color: var(--ff7-link);
-	font-size: 0.875rem;
-	letter-spacing: 1.5px;
-	line-height: 2;
+	font-size: 0.85rem;
+	letter-spacing: 1.2px;
+	line-height: 1.5;
 }
 
 #status.is-error { color: #ff6b8a; }
@@ -378,7 +383,7 @@ a {
 a:hover { color: var(--ff7-text); }
 
 footer {
-	padding: 24px 0 40px;
+	padding: 16px 0 28px;
 	text-align: center;
 	font-size: 0.8rem;
 	color: var(--ff7-muted);
