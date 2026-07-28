@@ -7,6 +7,8 @@ const statusEl = document.getElementById('status');
 const baseListEl = document.getElementById('base-list');
 const presetListEl = document.getElementById('preset-list');
 const addonListEl = document.getElementById('addon-list');
+const panelBaseEl = document.getElementById('panel-base');
+const panelAddonsEl = document.getElementById('panel-addons');
 const discInfoEl = document.getElementById('disc-info');
 const fileInput = document.getElementById('bin-file');
 const applyBtn = document.getElementById('apply');
@@ -375,8 +377,29 @@ function renderPresets() {
 	presetListEl.appendChild(wrap);
 }
 
+function presetManagedAddonIds(baseId) {
+	const ids = new Set();
+	for (const preset of presetsForBase(baseId)) {
+		for (const id of preset.addons || []) ids.add(id);
+	}
+	return ids;
+}
+
 function applyActivePresetToAddons() {
 	if (!manifest || !addonListEl) return;
+	const baseId = selectedBaseId();
+	const managed = presetManagedAddonIds(baseId);
+
+	// Clear anything any preset could have set (including the previously active
+	// one) before applying the current choice, so picking "None" — or switching
+	// presets — doesn't leave a stale add-on selected.
+	for (const select of addonListEl.querySelectorAll('select[name="addon-group"]')) {
+		if ([...select.options].some((o) => managed.has(o.value))) select.value = '';
+	}
+	for (const input of addonListEl.querySelectorAll('input[name="addon"]')) {
+		if (managed.has(input.value)) input.checked = false;
+	}
+
 	const preset = (manifest.presets || []).find((p) => p.id === selectedPresetId());
 	if (!preset) return;
 	const memberIds = new Set(preset.addons || []);
@@ -534,9 +557,19 @@ function renderAddons() {
 	}
 }
 
+function setSectionLocked(panel, locked) {
+	if (!panel) return;
+	panel.classList.toggle('is-locked', locked);
+	for (const control of panel.querySelectorAll('select, input, button')) {
+		control.disabled = locked;
+	}
+}
+
 function updatePlan() {
 	if (!manifest) return;
 	const disc = selectedDisc();
+	setSectionLocked(panelBaseEl, !disc);
+	setSectionLocked(panelAddonsEl, !disc);
 	const baseId = selectedBaseId();
 	const base = manifest.bases.find((b) => b.id === baseId);
 	const addons = selectedAddonIds()
