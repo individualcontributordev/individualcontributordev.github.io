@@ -326,17 +326,21 @@ function presetsForBase(baseId) {
 }
 
 function selectedPresetId() {
-	const el = document.getElementById('preset-select');
-	return el ? el.value : '';
+	const checked = document.querySelector('input[name="preset"]:checked');
+	return checked ? checked.value : '';
 }
 
-function updatePresetBlurb() {
-	if (!presetListEl || !manifest) return;
-	const blurbEl = document.getElementById('preset-blurb');
-	if (!blurbEl) return;
-	const preset = (manifest.presets || []).find((p) => p.id === selectedPresetId());
-	blurbEl.textContent =
-		preset?.blurb || 'Optional: pick a preset to auto-select the right add-on per disc.';
+function renderPresetChoice(value, name, blurb, checked) {
+	const label = document.createElement('label');
+	label.className = 'choice';
+	label.innerHTML = `
+		<input type="radio" name="preset" value="${value}" ${checked ? 'checked' : ''} />
+		<span>
+			<strong>${name}</strong>
+			<small>${blurb || ''}</small>
+		</span>
+	`;
+	return label;
 }
 
 function renderPresets() {
@@ -348,44 +352,27 @@ function renderPresets() {
 
 	const prefs = loadPresetPrefs();
 	const prevId = prefs[baseId] || '';
+	const ids = new Set(presets.map((p) => p.id));
+	const activeId = ids.has(prevId) ? prevId : '';
 
 	const wrap = document.createElement('div');
 	wrap.className = 'addon-group';
 
-	const label = document.createElement('label');
+	const label = document.createElement('p');
 	label.className = 'addon-group-label';
-	label.htmlFor = 'preset-select';
 	label.textContent = 'Preset';
+	wrap.appendChild(label);
 
-	const select = document.createElement('select');
-	select.id = 'preset-select';
-	select.name = 'preset';
-	select.setAttribute('aria-label', 'Preset');
-
-	const off = document.createElement('option');
-	off.value = '';
-	off.textContent = 'None — pick add-ons manually';
-	select.appendChild(off);
-
+	wrap.appendChild(
+		renderPresetChoice('', 'None', 'Pick add-ons manually below.', activeId === '')
+	);
 	for (const preset of presets) {
-		const opt = document.createElement('option');
-		opt.value = preset.id;
-		opt.textContent = preset.name;
-		select.appendChild(opt);
+		wrap.appendChild(
+			renderPresetChoice(preset.id, preset.name, preset.blurb, activeId === preset.id)
+		);
 	}
 
-	const ids = new Set(presets.map((p) => p.id));
-	select.value = ids.has(prevId) ? prevId : '';
-
-	const blurb = document.createElement('p');
-	blurb.id = 'preset-blurb';
-	blurb.className = 'explainer addon-group-blurb';
-
-	wrap.appendChild(label);
-	wrap.appendChild(select);
-	wrap.appendChild(blurb);
 	presetListEl.appendChild(wrap);
-	updatePresetBlurb();
 }
 
 function applyActivePresetToAddons() {
@@ -590,9 +577,8 @@ function renderManifest() {
 	});
 	if (presetListEl) {
 		presetListEl.addEventListener('change', (ev) => {
-			if (ev.target && ev.target.id === 'preset-select') {
+			if (ev.target && ev.target.name === 'preset') {
 				savePresetPref(selectedBaseId(), ev.target.value);
-				updatePresetBlurb();
 				applyActivePresetToAddons();
 				updatePlan();
 			}
