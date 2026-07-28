@@ -5,6 +5,7 @@ import { repairMode2EdcInImage } from './edc.js';
 
 const statusEl = document.getElementById('status');
 const baseListEl = document.getElementById('base-list');
+const presetListEl = document.getElementById('preset-list');
 const addonListEl = document.getElementById('addon-list');
 const discInfoEl = document.getElementById('disc-info');
 const fileInput = document.getElementById('bin-file');
@@ -96,6 +97,7 @@ async function loadMergedManifest(localPath) {
 	const local = await fetchJson(localUrl);
 	const bases = [];
 	const addons = [];
+	const presets = [];
 
 	const remoteNotes = [];
 	let remotesOk = 0;
@@ -110,6 +112,9 @@ async function loadMergedManifest(localPath) {
 			for (const a of remote.addons || []) {
 				const n = normalizeEntry(a, remoteUrl);
 				if (n) addons.push(n);
+			}
+			for (const p of remote.presets || []) {
+				if (p && p.id && Array.isArray(p.addons) && p.addons.length) presets.push(p);
 			}
 			remotesOk += 1;
 			remoteNotes.push(`Loaded ${src}`);
@@ -130,6 +135,7 @@ async function loadMergedManifest(localPath) {
 		...local,
 		bases,
 		addons,
+		presets,
 		_remotesOk: remotesOk,
 		_remoteNotes: remoteNotes,
 	};
@@ -265,9 +271,136 @@ function addonCompatibleWithBase(addon, baseId) {
 	return allowed.includes(baseId);
 }
 
+function addonHasLayerForDisc(addon, disc) {
+	// No disc detected yet (no file loaded) — don't filter, show everything base-compatible.
+	if (!disc) return true;
+	if (!addon) return false;
+	// Check the discs map directly rather than via layerUrlFor(): that function
+	// falls back to entry.url for callers building the actual apply plan, and
+	// normalizeEntry sets entry.url = discs['1'] for legacy single-url addons —
+	// which would make a disc-1-only addon look valid for every other disc too.
+	if (addon.discs && Object.keys(addon.discs).length) {
+		return Boolean(addon.discs[String(disc)]);
+	}
+	// No per-disc map at all (legacy flat-url addon) — can't tell which disc it's
+	// scoped to, so don't filter it out.
+	return Boolean(addon.url);
+}
+
 function addonsForBase(baseId) {
 	if (!manifest) return [];
-	return (manifest.addons || []).filter((addon) => addonCompatibleWithBase(addon, baseId));
+	const disc = selectedDisc();
+	return (manifest.addons || []).filter(
+		(addon) => addonCompatibleWithBase(addon, baseId) && addonHasLayerForDisc(addon, disc)
+	);
+}
+
+// Presets bundle several per-disc add-ons (e.g. one scene per disc) under one
+// choice so a player doesn't have to remember/re-pick the right add-on each
+// time they load the next disc of the set. Selection persists per-base in
+// localStorage across file loads and page reloads.
+const PRESET_STORAGE_KEY = 'ff7builder.presetByBase';
+
+function loadPresetPrefs() {
+	try {
+		return JSON.parse(localStorage.getItem(PRESET_STORAGE_KEY) || '{}');
+	} catch {
+		return {};
+	}
+}
+
+function savePresetPref(baseId, presetId) {
+	const prefs = loadPresetPrefs();
+	if (presetId) prefs[baseId] = presetId;
+	else delete prefs[baseId];
+	try {
+		localStorage.setItem(PRESET_STORAGE_KEY, JSON.stringify(prefs));
+	} catch {
+		// Private browsing / storage disabled — preset just won't persist.
+	}
+}
+
+function presetsForBase(baseId) {
+	if (!manifest) return [];
+	return (manifest.presets || []).filter((p) => addonCompatibleWithBase(p, baseId));
+}
+
+function selectedPresetId() {
+	const el = document.getElementById('preset-select');
+	return el ? el.value : '';
+}
+
+function updatePresetBlurb() {
+	if (!presetListEl || !manifest) return;
+	const blurbEl = document.getElementById('preset-blurb');
+	if (!blurbEl) return;
+	const preset = (manifest.presets || []).find((p) => p.id === selectedPresetId());
+	blurbEl.textContent =
+		preset?.blurb || 'Optional: pick a preset to auto-select the right add-on per disc.';
+}
+
+function renderPresets() {
+	if (!manifest || !presetListEl) return;
+	const baseId = selectedBaseId();
+	const presets = presetsForBase(baseId);
+	presetListEl.innerHTML = '';
+	if (!presets.length) return;
+
+	const prefs = loadPresetPrefs();
+	const prevId = prefs[baseId] || '';
+
+	const wrap = document.createElement('div');
+	wrap.className = 'addon-group';
+
+	const label = document.createElement('label');
+	label.className = 'addon-group-label';
+	label.htmlFor = 'preset-select';
+	label.textContent = 'Preset';
+
+	const select = document.createElement('select');
+	select.id = 'preset-select';
+	select.name = 'preset';
+	select.setAttribute('aria-label', 'Preset');
+
+	const off = document.createElement('option');
+	off.value = '';
+	off.textContent = 'None — pick add-ons manually';
+	select.appendChild(off);
+
+	for (const preset of presets) {
+		const opt = document.createElement('option');
+		opt.value = preset.id;
+		opt.textContent = preset.name;
+		select.appendChild(opt);
+	}
+
+	const ids = new Set(presets.map((p) => p.id));
+	select.value = ids.has(prevId) ? prevId : '';
+
+	const blurb = document.createElement('p');
+	blurb.id = 'preset-blurb';
+	blurb.className = 'explainer addon-group-blurb';
+
+	wrap.appendChild(label);
+	wrap.appendChild(select);
+	wrap.appendChild(blurb);
+	presetListEl.appendChild(wrap);
+	updatePresetBlurb();
+}
+
+function applyActivePresetToAddons() {
+	if (!manifest || !addonListEl) return;
+	const preset = (manifest.presets || []).find((p) => p.id === selectedPresetId());
+	if (!preset) return;
+	const memberIds = new Set(preset.addons || []);
+
+	for (const select of addonListEl.querySelectorAll('select[name="addon-group"]')) {
+		const match = [...select.options].find((o) => memberIds.has(o.value));
+		if (match) select.value = match.value;
+	}
+	for (const input of addonListEl.querySelectorAll('input[name="addon"]')) {
+		if (memberIds.has(input.value)) input.checked = true;
+	}
 }
 
 function partitionAddons(visible) {
@@ -440,6 +573,7 @@ function updatePlan() {
 
 function renderManifest() {
 	baseListEl.innerHTML = '';
+	if (presetListEl) presetListEl.innerHTML = '';
 	addonListEl.innerHTML = '';
 
 	document.getElementById('explainer-base').textContent = manifest.explainer?.base || '';
@@ -448,10 +582,22 @@ function renderManifest() {
 	baseListEl.addEventListener('change', (ev) => {
 		if (ev.target && ev.target.id === 'base-select') {
 			updateBaseBlurb();
+			renderPresets();
 			renderAddons();
+			applyActivePresetToAddons();
 			updatePlan();
 		}
 	});
+	if (presetListEl) {
+		presetListEl.addEventListener('change', (ev) => {
+			if (ev.target && ev.target.id === 'preset-select') {
+				savePresetPref(selectedBaseId(), ev.target.value);
+				updatePresetBlurb();
+				applyActivePresetToAddons();
+				updatePlan();
+			}
+		});
+	}
 	addonListEl.addEventListener('change', (ev) => {
 		const t = ev.target;
 		if (t && t.name === 'addon-group') updateAddonGroupBlurb(t);
@@ -459,7 +605,9 @@ function renderManifest() {
 	});
 
 	renderBases();
+	renderPresets();
 	renderAddons();
+	applyActivePresetToAddons();
 	updatePlan();
 }
 
@@ -469,6 +617,8 @@ async function onFileChosen(file) {
 	const buf = await file.arrayBuffer();
 	const bytes = new Uint8Array(buf);
 	rememberImage(bytes, `${file.name} (${bytes.length} bytes)`);
+	renderAddons();
+	applyActivePresetToAddons();
 	if (!detectedDisc) {
 		setStatus('Image loaded, but disc could not be detected.', true);
 	} else {
