@@ -270,12 +270,6 @@ function addonsForBase(baseId) {
 	return (manifest.addons || []).filter((addon) => addonCompatibleWithBase(addon, baseId));
 }
 
-const RATE_OPTION_LABEL = {
-	25: 'Light (25%)',
-	50: 'Standard (50%)',
-	75: 'Dense (75%)',
-};
-
 function partitionAddons(visible) {
 	const groups = new Map();
 	const groupOrder = [];
@@ -293,14 +287,19 @@ function partitionAddons(visible) {
 		groups.get(groupId).push(addon);
 	}
 	for (const groupId of groupOrder) {
+		// Optional numeric `rate` is only a sort key when packs provide it.
 		groups.get(groupId).sort(
-			(a, b) => (a.rate || 0) - (b.rate || 0) || String(a.name).localeCompare(String(b.name))
+			(a, b) =>
+				(Number(a.rate) || 0) - (Number(b.rate) || 0) ||
+				String(a.optionLabel || a.name).localeCompare(String(b.optionLabel || b.name))
 		);
 	}
 	return { groups, groupOrder, free };
 }
 
 function exclusiveGroupTitle(addons) {
+	const fromMeta = addons.find((a) => a.groupLabel)?.groupLabel;
+	if (fromMeta) return String(fromMeta);
 	const name = String(addons[0]?.name || '');
 	const before = name.split('—')[0].trim();
 	if (before) return before;
@@ -308,27 +307,24 @@ function exclusiveGroupTitle(addons) {
 }
 
 function exclusiveOptionLabel(addon) {
-	if (addon.rate != null && RATE_OPTION_LABEL[addon.rate]) {
-		return RATE_OPTION_LABEL[addon.rate];
-	}
+	if (addon.optionLabel) return String(addon.optionLabel);
 	const after = String(addon.name || '')
 		.split('—')
 		.slice(1)
 		.join('—')
 		.trim();
-	return (
-		after
-			.replace(/\s*\(on [^)]+\)/gi, '')
-			.replace(/\s+v[\d.]+$/i, '')
-			.trim() || addon.name
-	);
+	const cleaned = after
+		.replace(/\s*\(on [^)]+\)/gi, '')
+		.replace(/\s+v[\d.]+$/i, '')
+		.trim();
+	return cleaned || addon.name;
 }
 
 function updateAddonGroupBlurb(select) {
 	const blurbEl = select.parentElement?.querySelector('.addon-group-blurb');
 	if (!blurbEl || !manifest) return;
 	if (!select.value) {
-		blurbEl.textContent = 'Off — leave this group unchanged.';
+		blurbEl.textContent = 'None — skip this group.';
 		return;
 	}
 	const addon = manifest.addons.find((a) => a.id === select.value);
@@ -355,7 +351,7 @@ function renderAddonGroup(groupId, addons, prevSelected) {
 
 	const off = document.createElement('option');
 	off.value = '';
-	off.textContent = 'Off';
+	off.textContent = 'None';
 	select.appendChild(off);
 
 	const ids = new Set(addons.map((a) => a.id));

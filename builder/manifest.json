@@ -3,7 +3,7 @@
   "title": "Disc builder",
   "explainer": {
     "base": "Cutscene base — only one applies.",
-    "addon": "Optional densities — one pick per group (Off skips). Field and World can both be on."
+    "addon": "Optional mods. Conflicting choices share a dropdown (None = skip). Other add-ons can stack."
   },
   "bases": [
     {
