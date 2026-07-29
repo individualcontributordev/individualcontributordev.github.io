@@ -489,6 +489,9 @@ function renderAddonGroup(groupId, addons, prevSelected) {
 	const disc = selectedDisc();
 	const baseId = selectedBaseId();
 
+	// Filter to only base-compatible addons for dropdown groups
+	const baseCompatibleAddons = addons.filter(a => addonCompatibleWithBase(a, baseId));
+
 	const title = exclusiveGroupTitle(addons);
 	const selectId = `addon-group-${groupId}`;
 
@@ -509,28 +512,22 @@ function renderAddonGroup(groupId, addons, prevSelected) {
 	off.title = 'Skip this group.';
 	select.appendChild(off);
 
-	const ids = new Set(addons.map((a) => a.id));
-	for (const addon of addons) {
+	const ids = new Set(baseCompatibleAddons.map((a) => a.id));
+	for (const addon of baseCompatibleAddons) {
 		const opt = document.createElement('option');
 		opt.value = addon.id;
 		opt.textContent = exclusiveOptionLabel(addon);
 		opt.title = addon.blurb || '';
-		const baseCompatible = addonCompatibleWithBase(addon, baseId);
 		const discCompatible = addonHasLayerForDisc(addon, disc);
-		const compatible = baseCompatible && discCompatible;
-		opt.disabled = !compatible;
-		if (!compatible) {
-			if (!baseCompatible) {
-				opt.textContent += ' (not compatible with this base)';
-			} else {
-				opt.textContent += ' (not available for this disc)';
-			}
+		opt.disabled = !discCompatible;
+		if (!discCompatible) {
+			opt.textContent += ' (not available for this disc)';
 		}
 		select.appendChild(opt);
 	}
 
 	const prevInGroup = [...prevSelected].find((id) => ids.has(id));
-	const prevAddon = addons.find(a => a.id === prevInGroup);
+	const prevAddon = baseCompatibleAddons.find(a => a.id === prevInGroup);
 	const prevStillValid = prevInGroup &&
 		addonCompatibleWithBase(prevAddon, baseId) &&
 		addonHasLayerForDisc(prevAddon, disc);
