@@ -521,11 +521,7 @@ function renderAddonGroup(groupId, addons, prevSelected) {
 		opt.value = addon.id;
 		opt.textContent = exclusiveOptionLabel(addon);
 		opt.title = addon.blurb || '';
-		const discCompatible = addonHasLayerForDisc(addon, disc);
-		opt.disabled = !discCompatible;
-		if (!discCompatible) {
-			opt.textContent += ' (not available for this disc)';
-		}
+		opt.disabled = !addonHasLayerForDisc(addon, disc);
 		select.appendChild(opt);
 	}
 
@@ -560,18 +556,9 @@ function renderFreeAddon(addon, prevSelected) {
 	}
 	label.title = addon.blurb || '';
 
-	let displayName = addon.name;
-	if (!compatible) {
-		if (!baseCompatible) {
-			displayName += ' (not compatible with this base)';
-		} else {
-			displayName += ' (not available for this disc)';
-		}
-	}
-
 	label.innerHTML = `
 		<input type="checkbox" name="addon" value="${addon.id}" ${checked} ${disabled} />
-		<span><strong>${displayName}</strong></span>
+		<span><strong>${addon.name}</strong></span>
 	`;
 	return label;
 }
