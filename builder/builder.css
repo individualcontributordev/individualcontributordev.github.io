@@ -220,6 +220,10 @@ main {
 	cursor: not-allowed;
 }
 
+.choice input:disabled {
+	cursor: not-allowed;
+}
+
 .row {
 	display: flex;
 	flex-wrap: wrap;
