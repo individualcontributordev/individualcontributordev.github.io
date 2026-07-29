@@ -415,11 +415,14 @@ function applyActivePresetToAddons() {
 	const memberIds = new Set(preset.addons || []);
 
 	for (const select of addonListEl.querySelectorAll('select[name="addon-group"]')) {
-		const match = [...select.options].find((o) => memberIds.has(o.value));
+		const match = [...select.options].find((o) => memberIds.has(o.value) && !o.disabled);
 		if (match) select.value = match.value;
 	}
 	for (const input of addonListEl.querySelectorAll('input[name="addon"]')) {
-		if (memberIds.has(input.value)) input.checked = true;
+		// Only check if it's in the preset AND not disabled
+		if (memberIds.has(input.value) && !input.disabled) {
+			input.checked = true;
+		}
 	}
 }
 
