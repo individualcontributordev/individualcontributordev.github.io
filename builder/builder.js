@@ -338,7 +338,8 @@ function renderPresets() {
 	const baseId = selectedBaseId();
 	const presets = presetsForBase(baseId);
 	presetListEl.innerHTML = '';
-	if (!presets.length) return;
+	// Always show preset dropdown even if no presets for this base
+	// if (!presets.length) return;
 
 	const prefs = loadPresetPrefs();
 	const prevId = prefs[baseId] || '';
