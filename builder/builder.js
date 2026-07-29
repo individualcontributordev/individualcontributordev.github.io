@@ -277,9 +277,9 @@ function addonCompatibleWithBase(addon, baseId) {
 }
 
 function addonHasLayerForDisc(addon, disc) {
-	// No disc detected yet (no file loaded) — don't filter, show everything base-compatible.
-	if (!disc) return true;
 	if (!addon) return false;
+	// No disc detected yet — nothing is compatible until a file is loaded
+	if (!disc) return false;
 	// Check the discs map directly rather than via layerUrlFor(): that function
 	// falls back to entry.url for callers building the actual apply plan, and
 	// normalizeEntry sets entry.url = discs['1'] for legacy single-url addons —
@@ -360,7 +360,7 @@ function renderPresets() {
 
 	const noneOpt = document.createElement('option');
 	noneOpt.value = '';
-	noneOpt.textContent = 'None — Pick add-ons manually';
+	noneOpt.textContent = 'None';
 	noneOpt.title = 'Pick add-ons manually below.';
 	select.appendChild(noneOpt);
 
@@ -373,6 +373,13 @@ function renderPresets() {
 	}
 
 	select.value = activeId;
+
+	// Disable preset dropdown if no disc loaded
+	const disc = selectedDisc();
+	if (!disc) {
+		select.disabled = true;
+		select.title = 'Load a disc image to use presets.';
+	}
 
 	wrap.appendChild(label);
 	wrap.appendChild(select);
