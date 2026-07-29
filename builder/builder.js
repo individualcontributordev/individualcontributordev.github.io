@@ -375,11 +375,16 @@ function renderPresets() {
 
 	select.value = activeId;
 
-	// Disable preset dropdown if no disc loaded
+	// Disable when nothing can be chosen: no disc, or no presets for this base.
 	const disc = selectedDisc();
 	if (!disc) {
 		select.disabled = true;
 		select.title = 'Load a disc image to use presets.';
+		wrap.classList.add('is-disabled');
+	} else if (!presets.length) {
+		select.disabled = true;
+		select.title = 'No presets for this base.';
+		wrap.classList.add('is-disabled');
 	}
 
 	wrap.appendChild(label);
