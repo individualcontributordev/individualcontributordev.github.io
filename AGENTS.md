@@ -36,4 +36,4 @@ meteor.png          logo
 
 ## Skills / rules
 
-See `.cursor/rules/` and `.cursor/skills/polish-site-chrome`.
+See `.agents/rules/` and `.agents/skills/polish-site-chrome`.
