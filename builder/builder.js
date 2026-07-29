@@ -294,8 +294,8 @@ function addonHasLayerForDisc(addon, disc) {
 
 function addonsForBase(baseId) {
 	if (!manifest) return [];
-	// Show all addons that are compatible with this base, regardless of disc
-	return (manifest.addons || []).filter((addon) => addonCompatibleWithBase(addon, baseId));
+	// Show ALL addons regardless of base - we'll disable incompatible ones in the UI
+	return (manifest.addons || []);
 }
 
 // Presets bundle several per-disc add-ons (e.g. one scene per disc) under one
@@ -486,6 +486,7 @@ function renderAddonGroup(groupId, addons, prevSelected) {
 	const wrap = document.createElement('div');
 	wrap.className = 'addon-group';
 	const disc = selectedDisc();
+	const baseId = selectedBaseId();
 
 	const title = exclusiveGroupTitle(addons);
 	const selectId = `addon-group-${groupId}`;
@@ -513,18 +514,25 @@ function renderAddonGroup(groupId, addons, prevSelected) {
 		opt.value = addon.id;
 		opt.textContent = exclusiveOptionLabel(addon);
 		opt.title = addon.blurb || '';
-		const compatible = addonHasLayerForDisc(addon, disc);
+		const baseCompatible = addonCompatibleWithBase(addon, baseId);
+		const discCompatible = addonHasLayerForDisc(addon, disc);
+		const compatible = baseCompatible && discCompatible;
 		opt.disabled = !compatible;
 		if (!compatible) {
-			opt.textContent += ' (not available for this disc)';
+			if (!baseCompatible) {
+				opt.textContent += ' (not compatible with this base)';
+			} else {
+				opt.textContent += ' (not available for this disc)';
+			}
 		}
 		select.appendChild(opt);
 	}
 
 	const prevInGroup = [...prevSelected].find((id) => ids.has(id));
-	const prevStillValid = prevInGroup && addonHasLayerForDisc(
-		addons.find(a => a.id === prevInGroup), disc
-	);
+	const prevAddon = addons.find(a => a.id === prevInGroup);
+	const prevStillValid = prevInGroup &&
+		addonCompatibleWithBase(prevAddon, baseId) &&
+		addonHasLayerForDisc(prevAddon, disc);
 	select.value = prevStillValid ? prevInGroup : '';
 
 	wrap.appendChild(label);
@@ -535,7 +543,11 @@ function renderAddonGroup(groupId, addons, prevSelected) {
 
 function renderFreeAddon(addon, prevSelected) {
 	const disc = selectedDisc();
-	const compatible = addonHasLayerForDisc(addon, disc);
+	const baseId = selectedBaseId();
+	const baseCompatible = addonCompatibleWithBase(addon, baseId);
+	const discCompatible = addonHasLayerForDisc(addon, disc);
+	const compatible = baseCompatible && discCompatible;
+
 	const wasChecked = prevSelected.has(addon.id);
 	const checked = wasChecked && compatible ? 'checked' : '';
 	const disabled = !compatible ? 'disabled' : '';
@@ -547,7 +559,14 @@ function renderFreeAddon(addon, prevSelected) {
 	}
 	label.title = addon.blurb || '';
 
-	const displayName = compatible ? addon.name : `${addon.name} (not available for this disc)`;
+	let displayName = addon.name;
+	if (!compatible) {
+		if (!baseCompatible) {
+			displayName += ' (not compatible with this base)';
+		} else {
+			displayName += ' (not available for this disc)';
+		}
+	}
 
 	label.innerHTML = `
 		<input type="checkbox" name="addon" value="${addon.id}" ${checked} ${disabled} />
