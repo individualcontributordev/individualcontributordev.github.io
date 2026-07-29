@@ -9,6 +9,7 @@ const presetListEl = document.getElementById('preset-list');
 const addonListEl = document.getElementById('addon-list');
 const panelBaseEl = document.getElementById('panel-base');
 const panelAddonsEl = document.getElementById('panel-addons');
+const panelBuildEl = document.getElementById('panel-build');
 const discInfoEl = document.getElementById('disc-info');
 const fileInput = document.getElementById('bin-file');
 const applyBtn = document.getElementById('apply');
@@ -207,8 +208,8 @@ function rememberImage(bytes, label) {
 function baseFamily(base) {
 	const id = String(base?.id || '');
 	if (id === 'clean' || /unmodified/i.test(base?.name || '')) return 'Unmodified';
-	// Highwind (csr-plusplus-*) is its own separate mod, not a bigger CSR+ — don't
-	// group it under a "CSR" family label.
+	// Highwind is its own separate mod, not a bigger CSR+ — don't group it under
+	// a "CSR" family label.
 	if (id.startsWith('csr-plusplus') || /^csrplusplus/i.test(id)) return 'Highwind';
 	if (id.startsWith('csr-plus') || /^csrplus/i.test(id)) return 'CSR+';
 	if (id.startsWith('csr-') || id === 'csr' || /^csr-v/i.test(id)) return 'CSR';
@@ -565,6 +566,7 @@ function updatePlan() {
 	const disc = selectedDisc();
 	setSectionLocked(panelBaseEl, !disc);
 	setSectionLocked(panelAddonsEl, !disc);
+	setSectionLocked(panelBuildEl, !disc);
 	const baseId = selectedBaseId();
 	const base = manifest.bases.find((b) => b.id === baseId);
 	const addons = selectedAddonIds()

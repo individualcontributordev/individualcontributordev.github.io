@@ -14,7 +14,7 @@ description: >-
 - [ ] No empty bordered boxes (`[hidden]` must actually hide; empty `.plan` hidden)
 - [ ] Builder CTAs on homepage: nav + hero only
 - [ ] CSR/Modding sections → GitHub only
-- [ ] CSR++ wording matches CSR README / builder blurbs
+- [ ] Highwind wording matches CSR README / builder blurbs
 - [ ] Remote manifest failure shows the load banner; no demo fallback
 
 ## Files
