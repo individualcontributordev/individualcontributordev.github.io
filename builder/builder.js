@@ -209,8 +209,15 @@ function baseFamily(base) {
 	const id = String(base?.id || '');
 	if (id === 'clean' || /unmodified/i.test(base?.name || '')) return 'Unmodified';
 	// Highwind is its own separate mod, not a bigger CSR+ — don't group it under
-	// a "CSR" family label.
-	if (id.startsWith('csr-plusplus') || /^csrplusplus/i.test(id)) return 'Highwind';
+	// a "CSR" family label. Slug is highwind-v*; accept legacy csr-plusplus if any CDN lag.
+	if (
+		id.startsWith('highwind') ||
+		/^highwind/i.test(id) ||
+		id.startsWith('csr-plusplus') ||
+		/^csrplusplus/i.test(id)
+	) {
+		return 'Highwind';
+	}
 	if (id.startsWith('csr-plus') || /^csrplus/i.test(id)) return 'CSR+';
 	if (id.startsWith('csr-') || id === 'csr' || /^csr-v/i.test(id)) return 'CSR';
 	return 'Other';
