@@ -270,6 +270,7 @@ button#apply.is-busy:disabled {
 }
 
 select#base-select,
+select#preset-select,
 select[name="addon-group"] {
 	display: block;
 	width: 100%;
@@ -288,6 +289,8 @@ select[name="addon-group"] {
 
 select#base-select:hover,
 select#base-select:focus,
+select#preset-select:hover,
+select#preset-select:focus,
 select[name="addon-group"]:hover,
 select[name="addon-group"]:focus {
 	border-color: var(--ff7-link);
@@ -296,9 +299,15 @@ select[name="addon-group"]:focus {
 
 select#base-select option,
 select#base-select optgroup,
+select#preset-select option,
 select[name="addon-group"] option {
 	background: #000051;
 	color: var(--ff7-text);
+}
+
+select[name="addon-group"] option:disabled,
+select#preset-select option:disabled {
+	opacity: 0.5;
 }
 
 .addon-group {
@@ -326,8 +335,7 @@ select[name="addon-group"] option {
 	min-height: calc(1.3em * 2);
 }
 
-#addon-list,
-#preset-list .addon-group {
+#addon-list {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 	gap: 4px 20px;
@@ -335,18 +343,24 @@ select[name="addon-group"] option {
 }
 
 #addon-list .addon-group,
-#addon-list .choice,
-#preset-list .addon-group,
-#preset-list .choice {
+#addon-list .choice {
 	margin: 0;
 }
 
-#preset-list .addon-group-label {
-	grid-column: 1 / -1;
+.preset-dropdown-wrap {
+	margin-bottom: 20px;
+	padding-bottom: 20px;
+	border-bottom: 1px solid var(--ff7-border);
 }
 
-#preset-list {
-	margin-bottom: 14px;
+.preset-label {
+	display: block;
+	margin: 0 0 8px;
+	font-family: "DogicaPixelBold", Arial, sans-serif;
+	font-size: 0.9rem;
+	line-height: 1.3;
+	letter-spacing: 1px;
+	text-transform: uppercase;
 }
 
 input[type="file"] {

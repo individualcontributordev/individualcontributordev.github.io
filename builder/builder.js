@@ -294,10 +294,8 @@ function addonHasLayerForDisc(addon, disc) {
 
 function addonsForBase(baseId) {
 	if (!manifest) return [];
-	const disc = selectedDisc();
-	return (manifest.addons || []).filter(
-		(addon) => addonCompatibleWithBase(addon, baseId) && addonHasLayerForDisc(addon, disc)
-	);
+	// Show all addons that are compatible with this base, regardless of disc
+	return (manifest.addons || []).filter((addon) => addonCompatibleWithBase(addon, baseId));
 }
 
 // Presets bundle several per-disc add-ons (e.g. one scene per disc) under one
@@ -331,19 +329,8 @@ function presetsForBase(baseId) {
 }
 
 function selectedPresetId() {
-	const checked = document.querySelector('input[name="preset"]:checked');
-	return checked ? checked.value : '';
-}
-
-function renderPresetChoice(value, name, blurb, checked) {
-	const label = document.createElement('label');
-	label.className = 'choice';
-	label.title = blurb || '';
-	label.innerHTML = `
-		<input type="radio" name="preset" value="${value}" ${checked ? 'checked' : ''} />
-		<span><strong>${name}</strong></span>
-	`;
-	return label;
+	const select = document.getElementById('preset-select');
+	return select ? select.value : '';
 }
 
 function renderPresets() {
@@ -359,22 +346,36 @@ function renderPresets() {
 	const activeId = ids.has(prevId) ? prevId : '';
 
 	const wrap = document.createElement('div');
-	wrap.className = 'addon-group';
+	wrap.className = 'preset-dropdown-wrap';
 
-	const label = document.createElement('p');
-	label.className = 'addon-group-label';
+	const label = document.createElement('label');
+	label.className = 'preset-label';
+	label.htmlFor = 'preset-select';
 	label.textContent = 'Preset';
-	wrap.appendChild(label);
 
-	wrap.appendChild(
-		renderPresetChoice('', 'None', 'Pick add-ons manually below.', activeId === '')
-	);
+	const select = document.createElement('select');
+	select.id = 'preset-select';
+	select.name = 'preset';
+	select.setAttribute('aria-label', 'Preset');
+
+	const noneOpt = document.createElement('option');
+	noneOpt.value = '';
+	noneOpt.textContent = 'None — Pick add-ons manually';
+	noneOpt.title = 'Pick add-ons manually below.';
+	select.appendChild(noneOpt);
+
 	for (const preset of presets) {
-		wrap.appendChild(
-			renderPresetChoice(preset.id, preset.name, preset.blurb, activeId === preset.id)
-		);
+		const opt = document.createElement('option');
+		opt.value = preset.id;
+		opt.textContent = preset.name;
+		opt.title = preset.blurb || '';
+		select.appendChild(opt);
 	}
 
+	select.value = activeId;
+
+	wrap.appendChild(label);
+	wrap.appendChild(select);
 	presetListEl.appendChild(wrap);
 }
 
@@ -477,6 +478,7 @@ function updateAddonGroupTooltip(select) {
 function renderAddonGroup(groupId, addons, prevSelected) {
 	const wrap = document.createElement('div');
 	wrap.className = 'addon-group';
+	const disc = selectedDisc();
 
 	const title = exclusiveGroupTitle(addons);
 	const selectId = `addon-group-${groupId}`;
@@ -504,11 +506,19 @@ function renderAddonGroup(groupId, addons, prevSelected) {
 		opt.value = addon.id;
 		opt.textContent = exclusiveOptionLabel(addon);
 		opt.title = addon.blurb || '';
+		const compatible = addonHasLayerForDisc(addon, disc);
+		opt.disabled = !compatible;
+		if (!compatible) {
+			opt.textContent += ' (not available for this disc)';
+		}
 		select.appendChild(opt);
 	}
 
 	const prevInGroup = [...prevSelected].find((id) => ids.has(id));
-	select.value = prevInGroup || '';
+	const prevStillValid = prevInGroup && addonHasLayerForDisc(
+		addons.find(a => a.id === prevInGroup), disc
+	);
+	select.value = prevStillValid ? prevInGroup : '';
 
 	wrap.appendChild(label);
 	wrap.appendChild(select);
@@ -517,13 +527,24 @@ function renderAddonGroup(groupId, addons, prevSelected) {
 }
 
 function renderFreeAddon(addon, prevSelected) {
+	const disc = selectedDisc();
+	const compatible = addonHasLayerForDisc(addon, disc);
+	const wasChecked = prevSelected.has(addon.id);
+	const checked = wasChecked && compatible ? 'checked' : '';
+	const disabled = !compatible ? 'disabled' : '';
+
 	const label = document.createElement('label');
 	label.className = 'choice';
+	if (!compatible) {
+		label.classList.add('is-disabled');
+	}
 	label.title = addon.blurb || '';
-	const checked = prevSelected.has(addon.id) ? 'checked' : '';
+
+	const displayName = compatible ? addon.name : `${addon.name} (not available for this disc)`;
+
 	label.innerHTML = `
-		<input type="checkbox" name="addon" value="${addon.id}" ${checked} />
-		<span><strong>${addon.name}</strong></span>
+		<input type="checkbox" name="addon" value="${addon.id}" ${checked} ${disabled} />
+		<span><strong>${displayName}</strong></span>
 	`;
 	return label;
 }
@@ -607,7 +628,7 @@ function renderManifest() {
 	});
 	if (presetListEl) {
 		presetListEl.addEventListener('change', (ev) => {
-			if (ev.target && ev.target.name === 'preset') {
+			if (ev.target && ev.target.id === 'preset-select') {
 				savePresetPref(selectedBaseId(), ev.target.value);
 				applyActivePresetToAddons();
 				updatePlan();
