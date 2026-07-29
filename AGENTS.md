@@ -23,7 +23,7 @@ Remote pack sources (Pages CDN):
 - No demo packs / sample.bin UI in production builder.
 - Show an error banner if remote manifests fail — do not silently fall back to demos.
 - No PPF / RomPatcher on this site.
-- Highwind copy: a full playthrough compressed to ~2-3 hours — its own separate base/mod, not a bigger CSR+ (story mechanics, option choices, complete dialogue removal cut; doesn't stack with CSR+ scene add-ons).
+- Highwind copy: an aggressively trimmed playthrough — its own separate base/mod, not a bigger CSR+ (story mechanics, option choices, complete dialogue removal cut; doesn't stack with CSR+ scene add-ons).
 
 ## Layout
 
