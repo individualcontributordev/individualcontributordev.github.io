@@ -348,14 +348,16 @@ select#preset-select option:disabled {
 
 #addon-list {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-	gap: 4px 20px;
+	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+	gap: 12px 20px;
 	align-items: start;
 }
 
 #addon-list .addon-group,
 #addon-list .choice {
 	margin: 0;
+	display: flex;
+	flex-direction: column;
 }
 
 .preset-dropdown-wrap {
