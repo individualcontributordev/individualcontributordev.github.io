@@ -395,6 +395,13 @@ function presetManagedAddonIds(baseId) {
 	return ids;
 }
 
+function addonSelectableNow(addonId) {
+	const addon = (manifest?.addons || []).find((a) => a.id === addonId);
+	if (!addon) return false;
+	return addonCompatibleWithBase(addon, selectedBaseId())
+		&& addonHasLayerForDisc(addon, selectedDisc());
+}
+
 function applyActivePresetToAddons() {
 	if (!manifest || !addonListEl) return;
 	const baseId = selectedBaseId();
@@ -415,12 +422,14 @@ function applyActivePresetToAddons() {
 	const memberIds = new Set(preset.addons || []);
 
 	for (const select of addonListEl.querySelectorAll('select[name="addon-group"]')) {
-		const match = [...select.options].find((o) => memberIds.has(o.value) && !o.disabled);
+		const match = [...select.options].find(
+			(o) => memberIds.has(o.value) && addonSelectableNow(o.value)
+		);
 		if (match) select.value = match.value;
 	}
 	for (const input of addonListEl.querySelectorAll('input[name="addon"]')) {
-		// Only check if it's in the preset AND not disabled
-		if (memberIds.has(input.value) && !input.disabled) {
+		// Preset membership alone is not enough — skip base/disc-incompatible add-ons.
+		if (memberIds.has(input.value) && addonSelectableNow(input.value)) {
 			input.checked = true;
 		}
 	}
@@ -592,7 +601,17 @@ function setSectionLocked(panel, locked) {
 	if (!panel) return;
 	panel.classList.toggle('is-locked', locked);
 	for (const control of panel.querySelectorAll('select, input, button')) {
-		control.disabled = locked;
+		if (locked) {
+			control.disabled = true;
+			continue;
+		}
+		// Unlocking must not wipe per-add-on compatibility disables.
+		// Free add-ons mark their label with .is-disabled when unavailable.
+		if (control.closest('.is-disabled')) {
+			control.disabled = true;
+			continue;
+		}
+		control.disabled = false;
 	}
 }
 
