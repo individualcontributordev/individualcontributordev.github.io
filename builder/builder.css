@@ -215,14 +215,6 @@ main {
 	letter-spacing: 1px;
 }
 
-.choice small {
-	display: block;
-	color: #c8d0e0;
-	font-size: 0.75rem;
-	margin-top: 1px;
-	letter-spacing: 0.8px;
-}
-
 .choice.is-disabled {
 	opacity: 0.45;
 	cursor: not-allowed;
@@ -326,9 +318,16 @@ select[name="addon-group"] option {
 	color: var(--ff7-text);
 }
 
-.addon-group-blurb {
-	margin-top: 6px;
-	margin-bottom: 0;
+#addon-list {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+	gap: 4px 20px;
+	align-items: start;
+}
+
+#addon-list .addon-group,
+#addon-list .choice {
+	margin: 0;
 }
 
 input[type="file"] {

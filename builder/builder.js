@@ -207,13 +207,15 @@ function rememberImage(bytes, label) {
 function baseFamily(base) {
 	const id = String(base?.id || '');
 	if (id === 'clean' || /unmodified/i.test(base?.name || '')) return 'Unmodified';
-	if (id.startsWith('csr-plusplus') || /^csrplusplus/i.test(id)) return 'CSR++';
+	// Highwind (csr-plusplus-*) is its own separate mod, not a bigger CSR+ — don't
+	// group it under a "CSR" family label.
+	if (id.startsWith('csr-plusplus') || /^csrplusplus/i.test(id)) return 'Highwind';
 	if (id.startsWith('csr-plus') || /^csrplus/i.test(id)) return 'CSR+';
 	if (id.startsWith('csr-') || id === 'csr' || /^csr-v/i.test(id)) return 'CSR';
 	return 'Other';
 }
 
-const BASE_FAMILY_ORDER = ['Unmodified', 'CSR', 'CSR+', 'CSR++', 'Other'];
+const BASE_FAMILY_ORDER = ['Unmodified', 'CSR', 'CSR+', 'Highwind', 'Other'];
 
 function updateBaseBlurb() {
 	const blurbEl = document.getElementById('base-blurb');
@@ -335,12 +337,10 @@ function selectedPresetId() {
 function renderPresetChoice(value, name, blurb, checked) {
 	const label = document.createElement('label');
 	label.className = 'choice';
+	label.title = blurb || '';
 	label.innerHTML = `
 		<input type="radio" name="preset" value="${value}" ${checked ? 'checked' : ''} />
-		<span>
-			<strong>${name}</strong>
-			<small>${blurb || ''}</small>
-		</span>
+		<span><strong>${name}</strong></span>
 	`;
 	return label;
 }
@@ -463,15 +463,14 @@ function exclusiveOptionLabel(addon) {
 	return cleaned || addon.name;
 }
 
-function updateAddonGroupBlurb(select) {
-	const blurbEl = select.parentElement?.querySelector('.addon-group-blurb');
-	if (!blurbEl || !manifest) return;
+function updateAddonGroupTooltip(select) {
+	if (!select) return;
 	if (!select.value) {
-		blurbEl.textContent = 'None — skip this group.';
+		select.title = 'None — skip this group.';
 		return;
 	}
-	const addon = manifest.addons.find((a) => a.id === select.value);
-	blurbEl.textContent = addon?.blurb || '';
+	const addon = manifest?.addons.find((a) => a.id === select.value);
+	select.title = addon?.blurb || '';
 }
 
 function renderAddonGroup(groupId, addons, prevSelected) {
@@ -495,6 +494,7 @@ function renderAddonGroup(groupId, addons, prevSelected) {
 	const off = document.createElement('option');
 	off.value = '';
 	off.textContent = 'None';
+	off.title = 'Skip this group.';
 	select.appendChild(off);
 
 	const ids = new Set(addons.map((a) => a.id));
@@ -502,32 +502,27 @@ function renderAddonGroup(groupId, addons, prevSelected) {
 		const opt = document.createElement('option');
 		opt.value = addon.id;
 		opt.textContent = exclusiveOptionLabel(addon);
+		opt.title = addon.blurb || '';
 		select.appendChild(opt);
 	}
 
 	const prevInGroup = [...prevSelected].find((id) => ids.has(id));
 	select.value = prevInGroup || '';
 
-	const blurb = document.createElement('p');
-	blurb.className = 'explainer addon-group-blurb';
-
 	wrap.appendChild(label);
 	wrap.appendChild(select);
-	wrap.appendChild(blurb);
-	updateAddonGroupBlurb(select);
+	updateAddonGroupTooltip(select);
 	return wrap;
 }
 
 function renderFreeAddon(addon, prevSelected) {
 	const label = document.createElement('label');
 	label.className = 'choice';
+	label.title = addon.blurb || '';
 	const checked = prevSelected.has(addon.id) ? 'checked' : '';
 	label.innerHTML = `
 		<input type="checkbox" name="addon" value="${addon.id}" ${checked} />
-		<span>
-			<strong>${addon.name}</strong>
-			<small>${addon.blurb || ''}</small>
-		</span>
+		<span><strong>${addon.name}</strong></span>
 	`;
 	return label;
 }
@@ -619,7 +614,7 @@ function renderManifest() {
 	}
 	addonListEl.addEventListener('change', (ev) => {
 		const t = ev.target;
-		if (t && t.name === 'addon-group') updateAddonGroupBlurb(t);
+		if (t && t.name === 'addon-group') updateAddonGroupTooltip(t);
 		updatePlan();
 	});
 
