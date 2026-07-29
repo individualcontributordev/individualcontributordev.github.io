@@ -194,7 +194,7 @@ main {
 .choice {
 	display: flex;
 	gap: 8px;
-	align-items: flex-start;
+	align-items: center;
 	margin: 0 0 6px;
 	cursor: pointer;
 	font-size: 0.85rem;
@@ -205,8 +205,8 @@ main {
 .choice:last-child { margin-bottom: 0; }
 
 .choice input {
-	margin-top: 4px;
 	accent-color: var(--ff7-link);
+	flex: none;
 }
 
 .choice strong {
@@ -314,11 +314,20 @@ select[name="addon-group"] option {
 	margin: 0 0 5px;
 	font-family: "DogicaPixelBold", Arial, sans-serif;
 	font-size: 0.85rem;
+	line-height: 1.3;
 	letter-spacing: 1px;
 	color: var(--ff7-text);
 }
 
-#addon-list {
+/* Reserve two lines for every group label (inside the grid) so a longer,
+   wrapping label doesn't push its select further down than its neighbors'
+   single-line labels — keeps every select aligned on the same row. */
+#addon-list .addon-group-label {
+	min-height: calc(1.3em * 2);
+}
+
+#addon-list,
+#preset-list .addon-group {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 	gap: 4px 20px;
@@ -326,8 +335,18 @@ select[name="addon-group"] option {
 }
 
 #addon-list .addon-group,
-#addon-list .choice {
+#addon-list .choice,
+#preset-list .addon-group,
+#preset-list .choice {
 	margin: 0;
+}
+
+#preset-list .addon-group-label {
+	grid-column: 1 / -1;
+}
+
+#preset-list {
+	margin-bottom: 14px;
 }
 
 input[type="file"] {
