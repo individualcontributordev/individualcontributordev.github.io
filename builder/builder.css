@@ -228,12 +228,18 @@ main {
 }
 
 .choice.is-disabled {
-	opacity: 0.45;
+	opacity: 0.5;
 	cursor: not-allowed;
+	pointer-events: none;
 }
 
 .choice input:disabled {
 	cursor: not-allowed;
+	pointer-events: none;
+}
+
+.choice.is-disabled input {
+	pointer-events: none;
 }
 
 .row {
