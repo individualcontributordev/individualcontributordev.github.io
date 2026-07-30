@@ -309,12 +309,13 @@ select[name="addon-group"] {
 	cursor: pointer;
 }
 
-select#base-select:hover,
-select#base-select:focus,
-select#preset-select:hover,
-select#preset-select:focus,
-select[name="addon-group"]:hover,
-select[name="addon-group"]:focus {
+/* Hover/focus only when enabled — disabled selects match .choice.is-disabled (no glow). */
+select#base-select:hover:not(:disabled),
+select#base-select:focus:not(:disabled),
+select#preset-select:hover:not(:disabled),
+select#preset-select:focus:not(:disabled),
+select[name="addon-group"]:hover:not(:disabled),
+select[name="addon-group"]:focus:not(:disabled) {
 	border-color: var(--ff7-link);
 	outline: none;
 }
@@ -395,10 +396,19 @@ select#preset-select option:disabled {
 	text-transform: uppercase;
 }
 
+/* Match .choice.is-disabled: dim + not-allowed + no hover/click (opacity on wrap only). */
 select#preset-select:disabled,
-select[name="addon-group"]:disabled {
-	opacity: 0.45;
+select[name="addon-group"]:disabled,
+select#base-select:disabled {
 	cursor: not-allowed;
+	pointer-events: none;
+}
+
+.preset-dropdown-wrap.is-disabled,
+.addon-group.is-disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+	pointer-events: none;
 }
 
 input[type="file"] {
