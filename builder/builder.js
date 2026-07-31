@@ -611,12 +611,93 @@ function renderFreeAddon(addon, prevSelected) {
 	return label;
 }
 
+/** Disc keys from pack.discs, as sorted strings "1"|"2"|"3". */
+function addonDiscKeys(addon) {
+	const discs = addon?.discs;
+	if (!discs || typeof discs !== 'object') return [];
+	return Object.keys(discs)
+		.map(String)
+		.filter((d) => d === '1' || d === '2' || d === '3')
+		.sort();
+}
+
+/** True when the pack covers every disc (or has no discs map). */
+function addonIsAllDiscs(addon) {
+	const keys = addonDiscKeys(addon);
+	if (!keys.length) return true;
+	return keys.length >= 3 && keys[0] === '1' && keys[1] === '2' && keys[2] === '3';
+}
+
+/** Single-disc column 1|2|3, or null if multi/all. */
+function addonSoleDisc(addon) {
+	const keys = addonDiscKeys(addon);
+	if (keys.length === 1) return Number(keys[0]);
+	return null;
+}
+
+/**
+ * Layout buckets:
+ *  - allDisc: exclusive groups + free checkboxes that apply to all discs
+ *  - byDisc[1|2|3]: single-disc packs only
+ */
+function partitionAddonsByDisc(visible) {
+	const { groups, groupOrder, free } = partitionAddons(visible);
+	const allDisc = { groupIds: [], groups: new Map(), free: [] };
+	const byDisc = {
+		1: { groupIds: [], groups: new Map(), free: [] },
+		2: { groupIds: [], groups: new Map(), free: [] },
+		3: { groupIds: [], groups: new Map(), free: [] },
+	};
+
+	for (const groupId of groupOrder) {
+		const members = groups.get(groupId) || [];
+		if (!members.length) continue;
+		// Group stays together: all-disc if any member is multi/all, else sole disc of first.
+		const all = members.some((a) => addonIsAllDiscs(a) || addonSoleDisc(a) == null);
+		if (all) {
+			allDisc.groupIds.push(groupId);
+			allDisc.groups.set(groupId, members);
+			continue;
+		}
+		const disc = addonSoleDisc(members[0]) || 1;
+		byDisc[disc].groupIds.push(groupId);
+		byDisc[disc].groups.set(groupId, members);
+	}
+
+	for (const addon of free) {
+		if (addonIsAllDiscs(addon)) {
+			allDisc.free.push(addon);
+			continue;
+		}
+		const sole = addonSoleDisc(addon);
+		if (sole) {
+			byDisc[sole].free.push(addon);
+		} else {
+			// Multi-disc but not all three — treat as all-disc row.
+			allDisc.free.push(addon);
+		}
+	}
+
+	return { allDisc, byDisc };
+}
+
+function appendAddonBucket(container, bucket, prevSelected) {
+	for (const groupId of bucket.groupIds) {
+		container.appendChild(
+			renderAddonGroup(groupId, bucket.groups.get(groupId), prevSelected)
+		);
+	}
+	for (const addon of bucket.free) {
+		container.appendChild(renderFreeAddon(addon, prevSelected));
+	}
+}
+
 function renderAddons() {
 	if (!manifest || !addonListEl) return;
 	const baseId = selectedBaseId();
 	const prevSelected = new Set(selectedAddonIds());
 	const visible = addonsForBase(baseId);
-	const { groups, groupOrder, free } = partitionAddons(visible);
+	const { allDisc, byDisc } = partitionAddonsByDisc(visible);
 
 	addonListEl.innerHTML = '';
 	if (!visible.length) {
@@ -628,11 +709,52 @@ function renderAddons() {
 		return;
 	}
 
-	for (const groupId of groupOrder) {
-		addonListEl.appendChild(renderAddonGroup(groupId, groups.get(groupId), prevSelected));
+	const hasAll =
+		allDisc.groupIds.length > 0 || allDisc.free.length > 0;
+	const hasDiscCols = [1, 2, 3].some(
+		(d) => byDisc[d].groupIds.length > 0 || byDisc[d].free.length > 0
+	);
+
+	if (hasAll) {
+		const allSection = document.createElement('div');
+		allSection.className = 'addon-section addon-section-all';
+		const allHead = document.createElement('h3');
+		allHead.className = 'addon-section-title';
+		allHead.textContent = 'All discs';
+		allSection.appendChild(allHead);
+		const allBody = document.createElement('div');
+		allBody.className = 'addon-all-grid';
+		appendAddonBucket(allBody, allDisc, prevSelected);
+		allSection.appendChild(allBody);
+		addonListEl.appendChild(allSection);
 	}
-	for (const addon of free) {
-		addonListEl.appendChild(renderFreeAddon(addon, prevSelected));
+
+	if (hasDiscCols) {
+		const cols = document.createElement('div');
+		cols.className = 'addon-disc-columns';
+		for (const disc of [1, 2, 3]) {
+			const bucket = byDisc[disc];
+			const col = document.createElement('div');
+			col.className = 'addon-disc-col';
+			col.dataset.disc = String(disc);
+			const head = document.createElement('h3');
+			head.className = 'addon-section-title';
+			head.textContent = `Disc ${disc}`;
+			col.appendChild(head);
+			const body = document.createElement('div');
+			body.className = 'addon-disc-col-body';
+			if (bucket.groupIds.length || bucket.free.length) {
+				appendAddonBucket(body, bucket, prevSelected);
+			} else {
+				const empty = document.createElement('p');
+				empty.className = 'addon-col-empty';
+				empty.textContent = 'None yet';
+				body.appendChild(empty);
+			}
+			col.appendChild(body);
+			cols.appendChild(col);
+		}
+		addonListEl.appendChild(cols);
 	}
 }
 
