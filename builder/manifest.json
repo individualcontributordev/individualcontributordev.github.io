@@ -2,8 +2,9 @@
   "version": 1,
   "title": "Disc builder",
   "explainer": {
-    "base": "Base experience — only one applies (Unmodified, CSR, Highwind, …).",
-    "addon": "Optional mods. Conflicting choices share a dropdown (None = skip). Other add-ons can stack."
+    "base": "Base experience \u2014 only one applies (Unmodified, CSR, Highwind, \u2026).",
+    "packs": "Optional CSR+ scene packs on CSR. Stack any combination. Organized by disc.",
+    "mods": "Optional mods. Compatible with Unmodified, CSR, and Highwind. Conflicting choices share a dropdown (None = skip)."
   },
   "bases": [
     {
@@ -11,7 +12,7 @@
       "name": "Unmodified",
       "kind": "base",
       "exclusiveGroup": "cutscenes",
-      "blurb": "No cutscene pack — add-ons only.",
+      "blurb": "No cutscene pack \u2014 add-ons only.",
       "layer": null
     }
   ],

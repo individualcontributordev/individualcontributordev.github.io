@@ -5,10 +5,13 @@ import { repairMode2EdcInImage } from './edc.js';
 
 const statusEl = document.getElementById('status');
 const baseListEl = document.getElementById('base-list');
-const presetListEl = document.getElementById('preset-list');
-const addonListEl = document.getElementById('addon-list');
+const packPresetListEl = document.getElementById('pack-preset-list');
+const modPresetListEl = document.getElementById('mod-preset-list');
+const packListEl = document.getElementById('pack-list');
+const modListEl = document.getElementById('mod-list');
 const panelBaseEl = document.getElementById('panel-base');
-const panelAddonsEl = document.getElementById('panel-addons');
+const panelPacksEl = document.getElementById('panel-packs');
+const panelModsEl = document.getElementById('panel-mods');
 const panelBuildEl = document.getElementById('panel-build');
 const discInfoEl = document.getElementById('disc-info');
 const fileInput = document.getElementById('bin-file');
@@ -178,6 +181,42 @@ function selectedAddonIds() {
 	return ids;
 }
 
+/** pack = CSR+ scene layers (CSR only). mod = gameplay layers (all bases). */
+function layerKind(entry) {
+	if (!entry) return 'mod';
+	const k = String(entry.kind || '').toLowerCase();
+	if (k === 'pack' || k === 'scene' || k === 'csr-plus-scene') return 'pack';
+	if (k === 'mod') return 'mod';
+	const id = String(entry.id || '');
+	if (id.startsWith('csr-plus-scene-') || id.startsWith('csr-plus-')) return 'pack';
+	const eg = String(entry.exclusiveGroup || '');
+	const gl = String(entry.groupLabel || '');
+	const name = String(entry.name || '');
+	if (/encounter/i.test(eg) || /encounter/i.test(gl) || /encounter/i.test(name)) return 'mod';
+	return 'mod';
+}
+
+function presetKind(preset) {
+	if (!preset) return 'mod';
+	const k = String(preset.kind || '').toLowerCase();
+	if (k === 'pack' || k === 'mod') return k;
+	const members = (preset.addons || [])
+		.map((id) => (manifest?.addons || []).find((a) => a.id === id))
+		.filter(Boolean);
+	if (!members.length) return 'mod';
+	const kinds = new Set(members.map(layerKind));
+	if (kinds.size === 1 && kinds.has('pack')) return 'pack';
+	return 'mod';
+}
+
+function layersOfKind(kind) {
+	return (manifest?.addons || []).filter((a) => layerKind(a) === kind);
+}
+
+function entryById(id) {
+	return (manifest?.addons || []).find((a) => a.id === id) || null;
+}
+
 function selectedDisc() {
 	return detectedDisc;
 }
@@ -292,67 +331,68 @@ function addonHasLayerForDisc(addon, disc) {
 	return Boolean(addon.url);
 }
 
-function addonsForBase(baseId) {
+function addonsForBase(baseId, kind = null) {
 	if (!manifest) return [];
-	// Show ALL addons regardless of base - we'll disable incompatible ones in the UI
-	return (manifest.addons || []);
+	// Only layers compatible with the selected base (hide the rest).
+	return (manifest.addons || []).filter((a) => {
+		if (kind && layerKind(a) !== kind) return false;
+		return addonCompatibleWithBase(a, baseId);
+	});
 }
 
 // Presets bundle several add-ons under one choice.
 // Page load, disc load, and Base Experience change all start at Preset = None
 // unless we re-render the same base (keep the current choice).
 
-function presetsForBase(baseId) {
+function presetsForBase(baseId, kind = null) {
 	if (!manifest) return [];
-	return (manifest.presets || []).filter((p) => addonCompatibleWithBase(p, baseId));
+	return (manifest.presets || []).filter((p) => {
+		if (kind && presetKind(p) !== kind) return false;
+		return addonCompatibleWithBase(p, baseId);
+	});
 }
 
-function selectedPresetId() {
-	const select = document.getElementById('preset-select');
+function selectedPresetId(kind) {
+	const id = kind === 'pack' ? 'pack-preset-select' : kind === 'mod' ? 'mod-preset-select' : null;
+	if (!id) {
+		const el = document.getElementById('pack-preset-select') || document.getElementById('mod-preset-select');
+		return el ? el.value : '';
+	}
+	const select = document.getElementById(id);
 	return select ? select.value : '';
 }
 
-/**
- * @param {{ resetToNone?: boolean }} [opts]
- * - resetToNone: force Preset = None (base change, page load).
- * - otherwise: keep current preset if still valid for this base (disc re-render).
- */
-function renderPresets(opts = {}) {
+function renderPresets(kind, opts = {}) {
 	const resetToNone = !!opts.resetToNone;
-	if (!manifest || !presetListEl) return;
+	const host = kind === 'pack' ? packPresetListEl : modPresetListEl;
+	const selectId = kind === 'pack' ? 'pack-preset-select' : 'mod-preset-select';
+	if (!manifest || !host) return;
 	const baseId = selectedBaseId();
-	const presets = presetsForBase(baseId);
+	const presets = presetsForBase(baseId, kind);
 	const ids = new Set(presets.map((p) => p.id));
-
-	const prevSelect = document.getElementById('preset-select');
+	const prevSelect = document.getElementById(selectId);
 	const currentVal = prevSelect && prevSelect.value ? prevSelect.value : '';
-
 	let activeId = '';
-	if (!resetToNone && currentVal && ids.has(currentVal)) {
-		activeId = currentVal;
-	}
-
-	presetListEl.innerHTML = '';
+	if (!resetToNone && currentVal && ids.has(currentVal)) activeId = currentVal;
+	host.innerHTML = '';
+	if (!presets.length) return;
 
 	const wrap = document.createElement('div');
 	wrap.className = 'preset-dropdown-wrap';
-
 	const label = document.createElement('label');
 	label.className = 'preset-label';
-	label.htmlFor = 'preset-select';
+	label.htmlFor = selectId;
 	label.textContent = 'Preset';
-
 	const select = document.createElement('select');
-	select.id = 'preset-select';
-	select.name = 'preset';
-	select.setAttribute('aria-label', 'Preset');
-
+	select.id = selectId;
+	select.name = kind + '-preset';
+	select.dataset.kind = kind;
+	select.setAttribute('aria-label', kind === 'pack' ? 'Pack preset' : 'Mod preset');
 	const noneOpt = document.createElement('option');
 	noneOpt.value = '';
 	noneOpt.textContent = 'None';
-	noneOpt.title = 'Pick add-ons manually below.';
+	noneOpt.title = kind === 'pack' ? 'Pick packs manually below.' : 'Pick mods manually below.';
 	select.appendChild(noneOpt);
-
 	for (const preset of presets) {
 		const opt = document.createElement('option');
 		opt.value = preset.id;
@@ -360,89 +400,79 @@ function renderPresets(opts = {}) {
 		opt.title = preset.blurb || '';
 		select.appendChild(opt);
 	}
-
 	select.value = activeId;
-
-	// Disable when nothing can be chosen: no disc, or no presets for this base.
 	const disc = selectedDisc();
 	if (!disc) {
 		select.disabled = true;
 		select.title = 'Load a disc image to use presets.';
 		wrap.classList.add('is-disabled');
-	} else if (!presets.length) {
-		select.disabled = true;
-		select.title = 'No presets for this base.';
-		wrap.classList.add('is-disabled');
 	}
-
 	wrap.appendChild(label);
 	wrap.appendChild(select);
-	presetListEl.appendChild(wrap);
+	host.appendChild(wrap);
 }
 
-function presetManagedAddonIds(baseId) {
+function presetManagedAddonIds(baseId, kind = null) {
 	const ids = new Set();
-	for (const preset of presetsForBase(baseId)) {
+	for (const preset of presetsForBase(baseId, kind)) {
 		for (const id of preset.addons || []) ids.add(id);
 	}
 	return ids;
 }
 
 function addonSelectableNow(addonId) {
-	const addon = (manifest?.addons || []).find((a) => a.id === addonId);
+	const addon = entryById(addonId);
 	if (!addon) return false;
 	return addonCompatibleWithBase(addon, selectedBaseId())
 		&& addonHasLayerForDisc(addon, selectedDisc());
 }
 
-/**
- * Apply the Preset dropdown to add-on controls.
- * @param {{ clearManagedIfNone?: boolean }} [opts]
- * - clearManagedIfNone: when Preset is None, clear packs that belong to any
- *   preset for this base (use when the user picks None or Base changes).
- * - When Preset is None and clearManagedIfNone is false (e.g. disc reload),
- *   leave add-on selections alone — renderAddons already restored them.
- */
-function applyActivePresetToAddons(opts = {}) {
+function applyActivePresetToAddons(kind, opts = {}) {
 	const clearManagedIfNone = !!opts.clearManagedIfNone;
-	if (!manifest || !addonListEl) return;
+	const listEl = kind === 'pack' ? packListEl : modListEl;
+	if (!manifest || !listEl) return;
 	const baseId = selectedBaseId();
-	const managed = presetManagedAddonIds(baseId);
-	const preset = (manifest.presets || []).find((p) => p.id === selectedPresetId());
-
+	const managed = presetManagedAddonIds(baseId, kind);
+	const presetId = selectedPresetId(kind);
+	const preset = (manifest.presets || []).find((p) => p.id === presetId);
 	if (!preset) {
 		if (!clearManagedIfNone) return;
-		// Explicit None: drop packs that presets own so leftover Light rates
-		// do not stick after the user chooses None.
-		for (const select of addonListEl.querySelectorAll('select[name="addon-group"]')) {
+		for (const select of listEl.querySelectorAll('select[name="addon-group"]')) {
 			if ([...select.options].some((o) => managed.has(o.value))) select.value = '';
 		}
-		for (const input of addonListEl.querySelectorAll('input[name="addon"]')) {
+		for (const input of listEl.querySelectorAll('input[name="addon"]')) {
 			if (managed.has(input.value)) input.checked = false;
 		}
 		return;
 	}
-
-	// Switching to / re-applying a preset: clear managed, then select members.
-	for (const select of addonListEl.querySelectorAll('select[name="addon-group"]')) {
+	for (const select of listEl.querySelectorAll('select[name="addon-group"]')) {
 		if ([...select.options].some((o) => managed.has(o.value))) select.value = '';
 	}
-	for (const input of addonListEl.querySelectorAll('input[name="addon"]')) {
+	for (const input of listEl.querySelectorAll('input[name="addon"]')) {
 		if (managed.has(input.value)) input.checked = false;
 	}
-
 	const memberIds = new Set(preset.addons || []);
-	for (const select of addonListEl.querySelectorAll('select[name="addon-group"]')) {
+	for (const select of listEl.querySelectorAll('select[name="addon-group"]')) {
 		const match = [...select.options].find(
 			(o) => memberIds.has(o.value) && addonSelectableNow(o.value)
 		);
 		if (match) select.value = match.value;
 	}
-	for (const input of addonListEl.querySelectorAll('input[name="addon"]')) {
+	for (const input of listEl.querySelectorAll('input[name="addon"]')) {
 		if (memberIds.has(input.value) && addonSelectableNow(input.value)) {
 			input.checked = true;
 		}
 	}
+}
+
+function renderAllPresets(opts = {}) {
+	renderPresets('pack', opts);
+	renderPresets('mod', opts);
+}
+
+function applyAllPresets(opts = {}) {
+	applyActivePresetToAddons('pack', opts);
+	applyActivePresetToAddons('mod', opts);
 }
 
 function partitionAddons(visible) {
@@ -697,25 +727,74 @@ function appendAddonBucket(container, bucket, prevSelected) {
 	}
 }
 
-function renderAddons() {
-	if (!manifest || !addonListEl) return;
+function updateSectionExplainers(baseId) {
+	const packsEl = document.getElementById('explainer-packs');
+	const modsEl = document.getElementById('explainer-mods');
+	const baseEl = document.getElementById('explainer-base');
+	if (baseEl) {
+		baseEl.textContent =
+			manifest.explainer?.base ||
+			'Base experience — only one applies (Unmodified, CSR, Highwind, …).';
+	}
+	const isCsr = String(baseId || '').startsWith('csr-') || baseId === 'csr';
+	const isHighwind = String(baseId || '').startsWith('highwind');
+	if (packsEl) {
+		if (isCsr) {
+			packsEl.textContent =
+				manifest.explainer?.packs ||
+				'Optional CSR+ scene packs on CSR. Stack any combination. Organized by disc.';
+		} else if (isHighwind) {
+			packsEl.textContent =
+				'CSR+ scene packs require the CSR base. Highwind is a separate full experience.';
+		} else {
+			packsEl.textContent =
+				'CSR+ scene packs require the CSR base. Switch Base Experience to CSR to enable them.';
+		}
+	}
+	if (modsEl) {
+		modsEl.textContent =
+			manifest.explainer?.mods ||
+			'Optional mods. Compatible with Unmodified, CSR, and Highwind. Conflicting choices share a dropdown (None = skip).';
+	}
+}
+
+function renderLayerList(kind) {
+	const listEl = kind === 'pack' ? packListEl : modListEl;
+	const panelEl = kind === 'pack' ? panelPacksEl : panelModsEl;
+	if (!manifest || !listEl) return;
 	const baseId = selectedBaseId();
 	const prevSelected = new Set(selectedAddonIds());
-	const visible = addonsForBase(baseId);
+	const visible = addonsForBase(baseId, kind);
 	const { allDisc, byDisc } = partitionAddonsByDisc(visible);
+	listEl.innerHTML = '';
 
-	addonListEl.innerHTML = '';
-	if (!visible.length) {
+	if (kind === 'pack') {
+		const anyPacksExist = layersOfKind('pack').length > 0;
+		const show = visible.length > 0;
+		if (panelEl) {
+			panelEl.hidden = !anyPacksExist;
+			panelEl.classList.toggle('is-empty', !show);
+		}
+		if (!show) {
+			const empty = document.createElement('p');
+			empty.className = 'explainer';
+			empty.style.marginBottom = '0';
+			empty.textContent = anyPacksExist
+				? 'No packs for this base — choose CSR above.'
+				: 'No packs published yet.';
+			listEl.appendChild(empty);
+			return;
+		}
+	} else if (!visible.length) {
 		const empty = document.createElement('p');
 		empty.className = 'explainer';
 		empty.style.marginBottom = '0';
-		empty.textContent = 'No add-ons for this base yet.';
-		addonListEl.appendChild(empty);
+		empty.textContent = 'No mods for this base yet.';
+		listEl.appendChild(empty);
 		return;
 	}
 
-	const hasAll =
-		allDisc.groupIds.length > 0 || allDisc.free.length > 0;
+	const hasAll = allDisc.groupIds.length > 0 || allDisc.free.length > 0;
 	const hasDiscCols = [1, 2, 3].some(
 		(d) => byDisc[d].groupIds.length > 0 || byDisc[d].free.length > 0
 	);
@@ -731,7 +810,7 @@ function renderAddons() {
 		allBody.className = 'addon-all-grid';
 		appendAddonBucket(allBody, allDisc, prevSelected);
 		allSection.appendChild(allBody);
-		addonListEl.appendChild(allSection);
+		listEl.appendChild(allSection);
 	}
 
 	if (hasDiscCols) {
@@ -739,7 +818,6 @@ function renderAddons() {
 		const cols = document.createElement('div');
 		cols.className = 'addon-disc-columns';
 		if (loadedDisc) cols.dataset.loadedDisc = String(loadedDisc);
-
 		for (const disc of [1, 2, 3]) {
 			const bucket = byDisc[disc];
 			const col = document.createElement('div');
@@ -749,20 +827,17 @@ function renderAddons() {
 				if (disc === loadedDisc) col.classList.add('is-active');
 				else col.classList.add('is-inactive');
 			}
-
 			const head = document.createElement('h3');
 			head.className = 'addon-section-title';
 			if (loadedDisc && disc === loadedDisc) {
-				head.innerHTML =
-					`Disc ${disc} <span class="addon-disc-badge">loaded</span>`;
+				head.innerHTML = 'Disc ' + disc + ' <span class="addon-disc-badge">loaded</span>';
 			} else if (loadedDisc) {
 				head.innerHTML =
-					`Disc ${disc} <span class="addon-disc-badge is-muted">not loaded</span>`;
+					'Disc ' + disc + ' <span class="addon-disc-badge is-muted">not loaded</span>';
 			} else {
-				head.textContent = `Disc ${disc}`;
+				head.textContent = 'Disc ' + disc;
 			}
 			col.appendChild(head);
-
 			const body = document.createElement('div');
 			body.className = 'addon-disc-col-body';
 			if (bucket.groupIds.length || bucket.free.length) {
@@ -771,16 +846,20 @@ function renderAddons() {
 				const empty = document.createElement('p');
 				empty.className = 'addon-col-empty';
 				empty.textContent =
-					loadedDisc && disc !== loadedDisc
-						? 'Load this disc to use'
-						: 'None yet';
+					loadedDisc && disc !== loadedDisc ? 'Load this disc to use' : 'None yet';
 				body.appendChild(empty);
 			}
 			col.appendChild(body);
 			cols.appendChild(col);
 		}
-		addonListEl.appendChild(cols);
+		listEl.appendChild(cols);
 	}
+}
+
+function renderAddons() {
+	updateSectionExplainers(selectedBaseId());
+	renderLayerList('pack');
+	renderLayerList('mod');
 }
 
 function setSectionLocked(panel, locked) {
@@ -805,74 +884,75 @@ function updatePlan() {
 	if (!manifest) return;
 	const disc = selectedDisc();
 	setSectionLocked(panelBaseEl, !disc);
-	setSectionLocked(panelAddonsEl, !disc);
+	setSectionLocked(panelPacksEl, !disc);
+	setSectionLocked(panelModsEl, !disc);
 	setSectionLocked(panelBuildEl, !disc);
 	const baseId = selectedBaseId();
 	const base = manifest.bases.find((b) => b.id === baseId);
-	const addons = selectedAddonIds()
-		.map((id) => manifest.addons.find((a) => a.id === id))
-		.filter(Boolean);
-
+	const selected = selectedAddonIds().map((id) => entryById(id)).filter(Boolean);
+	const packs = selected.filter((a) => layerKind(a) === 'pack');
+	const mods = selected.filter((a) => layerKind(a) === 'mod');
 	const steps = [];
 	steps.push(sourceBytes ? `Input: ${sourceBytes.length} bytes` : 'Input: (none yet)');
 	steps.push(disc ? `Disc: ${disc} (auto)` : 'Disc: (not detected)');
 	steps.push(`Base Experience: ${base ? base.name : baseId}`);
-	if (addons.length) {
-		addons.forEach((a, i) => steps.push(`Add-on ${i + 1}: ${freeAddonLabel(a)}`));
-	} else {
-		steps.push('Add-ons: (none)');
-	}
+	if (packs.length) packs.forEach((a, i) => steps.push(`Pack ${i + 1}: ${freeAddonLabel(a)}`));
+	else steps.push('Packs: (none)');
+	if (mods.length) mods.forEach((a, i) => steps.push(`Mod ${i + 1}: ${freeAddonLabel(a)}`));
+	else steps.push('Mods: (none)');
 	steps.push('Output: .zip (.bin + .cue + APPLIED.txt)');
 	planEl.textContent = steps.join('\n');
 	applyBtn.disabled = building || !(sourceBytes && disc);
 	applyBtn.classList.toggle('is-busy', building);
 }
 
+
 function renderManifest() {
 	baseListEl.innerHTML = '';
-	if (presetListEl) presetListEl.innerHTML = '';
-	addonListEl.innerHTML = '';
-
-	document.getElementById('explainer-base').textContent = manifest.explainer?.base || '';
-	document.getElementById('explainer-addon').textContent = manifest.explainer?.addon || '';
-
+	if (packPresetListEl) packPresetListEl.innerHTML = '';
+	if (modPresetListEl) modPresetListEl.innerHTML = '';
+	if (packListEl) packListEl.innerHTML = '';
+	if (modListEl) modListEl.innerHTML = '';
 	baseListEl.addEventListener('change', (ev) => {
 		if (ev.target && ev.target.id === 'base-select') {
 			updateBaseBlurb();
-			renderPresets({ resetToNone: true });
+			renderAllPresets({ resetToNone: true });
 			renderAddons();
-			// New base → clear preset-managed packs (Preset is None).
-			applyActivePresetToAddons({ clearManagedIfNone: true });
+			applyAllPresets({ clearManagedIfNone: true });
 			updatePlan();
 		}
 	});
-	if (presetListEl) {
-		presetListEl.addEventListener('change', (ev) => {
-			if (ev.target && ev.target.id === 'preset-select') {
-				// User picked a preset or None — apply or clear managed packs.
-				applyActivePresetToAddons({ clearManagedIfNone: true });
-				updatePlan();
-			}
-		});
-	}
-	addonListEl.addEventListener('change', (ev) => {
+	const onPresetChange = (ev) => {
+		const t = ev.target;
+		if (!t || !t.id) return;
+		if (t.id === 'pack-preset-select') {
+			applyActivePresetToAddons('pack', { clearManagedIfNone: true });
+			updatePlan();
+		} else if (t.id === 'mod-preset-select') {
+			applyActivePresetToAddons('mod', { clearManagedIfNone: true });
+			updatePlan();
+		}
+	};
+	if (packPresetListEl) packPresetListEl.addEventListener('change', onPresetChange);
+	if (modPresetListEl) modPresetListEl.addEventListener('change', onPresetChange);
+	const onLayerChange = (kind) => (ev) => {
 		const t = ev.target;
 		if (t && t.name === 'addon-group') updateAddonGroupTooltip(t);
-		// Manual add-on edit breaks the preset pairing → show None, keep selections.
-		const presetEl = document.getElementById('preset-select');
-		if (presetEl && presetEl.value) {
-			presetEl.value = '';
-		}
+		const presetEl = document.getElementById(
+			kind === 'pack' ? 'pack-preset-select' : 'mod-preset-select'
+		);
+		if (presetEl && presetEl.value) presetEl.value = '';
 		updatePlan();
-	});
-
+	};
+	if (packListEl) packListEl.addEventListener('change', onLayerChange('pack'));
+	if (modListEl) modListEl.addEventListener('change', onLayerChange('mod'));
 	renderBases();
-	renderPresets();
+	renderAllPresets();
 	renderAddons();
-	// Initial load: no managed packs selected yet.
-	applyActivePresetToAddons();
+	applyAllPresets();
 	updatePlan();
 }
+
 
 async function onFileChosen(file) {
 	if (!file) return;
@@ -880,17 +960,14 @@ async function onFileChosen(file) {
 	const buf = await file.arrayBuffer();
 	const bytes = new Uint8Array(buf);
 	rememberImage(bytes, `${file.name} (${bytes.length} bytes)`);
-	// Rebuild UI for new disc; keep add-on + preset choices (do not clear).
-	renderPresets();
+	renderAllPresets();
 	renderAddons();
-	applyActivePresetToAddons();
-	if (!detectedDisc) {
-		setStatus('Image loaded, but disc could not be detected.', true);
-	} else {
-		setStatus(`Image ready — NTSC-U Disc ${detectedDisc}.`);
-	}
+	applyAllPresets();
+	if (!detectedDisc) setStatus('Image loaded, but disc could not be detected.', true);
+	else setStatus(`Image ready — NTSC-U Disc ${detectedDisc}.`);
 	updatePlan();
 }
+
 
 async function applySelection() {
 	if (building || !sourceBytes || !manifest) return;
@@ -996,14 +1073,16 @@ function buildAppliedReport({ disc, base, baseId, addons, edcFixed }) {
 		`Base: ${baseName}`,
 	];
 
-	if (addons.length) {
-		lines.push('Add-ons:');
-		for (const addon of addons) {
-			lines.push(`  - ${freeAddonLabel(addon)}`);
-		}
-	} else {
-		lines.push('Add-ons: none');
-	}
+	const packs = addons.filter((a) => layerKind(a) === 'pack');
+	const mods = addons.filter((a) => layerKind(a) === 'mod');
+	if (packs.length) {
+		lines.push('Packs:');
+		for (const addon of packs) lines.push(`  - ${freeAddonLabel(addon)}`);
+	} else lines.push('Packs: none');
+	if (mods.length) {
+		lines.push('Mods:');
+		for (const addon of mods) lines.push(`  - ${freeAddonLabel(addon)}`);
+	} else lines.push('Mods: none');
 
 	if (edcFixed != null) {
 		lines.push(`EDC/ECC sectors repaired: ${edcFixed}`);
@@ -1053,7 +1132,7 @@ async function init() {
 			applySelection();
 		});
 
-		setStatus('Choose an NTSC-U .bin, then pick base and add-ons.');
+		setStatus('Choose an NTSC-U .bin, then pick base, packs, and mods.');
 	} catch (err) {
 		setStatus(err.message || String(err), true);
 	}
