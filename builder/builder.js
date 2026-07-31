@@ -298,29 +298,9 @@ function addonsForBase(baseId) {
 	return (manifest.addons || []);
 }
 
-// Presets bundle several add-ons under one choice. Last choice is stored per
-// base in localStorage and restored when the player switches Base Experience.
-// Fresh page load always starts at Preset = None (with default Unmodified).
-const PRESET_STORAGE_KEY = 'ff7builder.presetByBase';
-
-function loadPresetPrefs() {
-	try {
-		return JSON.parse(localStorage.getItem(PRESET_STORAGE_KEY) || '{}');
-	} catch {
-		return {};
-	}
-}
-
-function savePresetPref(baseId, presetId) {
-	const prefs = loadPresetPrefs();
-	if (presetId) prefs[baseId] = presetId;
-	else delete prefs[baseId];
-	try {
-		localStorage.setItem(PRESET_STORAGE_KEY, JSON.stringify(prefs));
-	} catch {
-		// Private browsing / storage disabled — preset just won't persist.
-	}
-}
+// Presets bundle several add-ons under one choice.
+// Page load, disc load, and Base Experience change all start at Preset = None
+// unless we re-render the same base (keep the current choice).
 
 function presetsForBase(baseId) {
 	if (!manifest) return [];
@@ -333,30 +313,24 @@ function selectedPresetId() {
 }
 
 /**
- * @param {{ fromBaseChange?: boolean }} [opts]
- * - Page load / disc load: default Preset to None (or keep current if re-render same base).
- * - Base change: restore last preset for that base from localStorage.
+ * @param {{ resetToNone?: boolean }} [opts]
+ * - resetToNone: force Preset = None (base change, page load).
+ * - otherwise: keep current preset if still valid for this base (disc re-render).
  */
 function renderPresets(opts = {}) {
-	const fromBaseChange = !!opts.fromBaseChange;
+	const resetToNone = !!opts.resetToNone;
 	if (!manifest || !presetListEl) return;
 	const baseId = selectedBaseId();
 	const presets = presetsForBase(baseId);
-	const prefs = loadPresetPrefs();
 	const ids = new Set(presets.map((p) => p.id));
 
-	// Preserve current choice only when re-rendering the same base (e.g. disc load).
 	const prevSelect = document.getElementById('preset-select');
 	const currentVal = prevSelect && prevSelect.value ? prevSelect.value : '';
 
 	let activeId = '';
-	if (fromBaseChange) {
-		const stored = prefs[baseId] || '';
-		activeId = ids.has(stored) ? stored : '';
-	} else if (currentVal && ids.has(currentVal)) {
+	if (!resetToNone && currentVal && ids.has(currentVal)) {
 		activeId = currentVal;
 	}
-	// else leave '' → None (fresh page load)
 
 	presetListEl.innerHTML = '';
 
@@ -848,7 +822,7 @@ function renderManifest() {
 	baseListEl.addEventListener('change', (ev) => {
 		if (ev.target && ev.target.id === 'base-select') {
 			updateBaseBlurb();
-			renderPresets({ fromBaseChange: true });
+			renderPresets({ resetToNone: true });
 			renderAddons();
 			applyActivePresetToAddons();
 			updatePlan();
@@ -857,7 +831,6 @@ function renderManifest() {
 	if (presetListEl) {
 		presetListEl.addEventListener('change', (ev) => {
 			if (ev.target && ev.target.id === 'preset-select') {
-				savePresetPref(selectedBaseId(), ev.target.value);
 				applyActivePresetToAddons();
 				updatePlan();
 			}
