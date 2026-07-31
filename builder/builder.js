@@ -395,14 +395,35 @@ function addonSelectableNow(addonId) {
 		&& addonHasLayerForDisc(addon, selectedDisc());
 }
 
-function applyActivePresetToAddons() {
+/**
+ * Apply the Preset dropdown to add-on controls.
+ * @param {{ clearManagedIfNone?: boolean }} [opts]
+ * - clearManagedIfNone: when Preset is None, clear packs that belong to any
+ *   preset for this base (use when the user picks None or Base changes).
+ * - When Preset is None and clearManagedIfNone is false (e.g. disc reload),
+ *   leave add-on selections alone — renderAddons already restored them.
+ */
+function applyActivePresetToAddons(opts = {}) {
+	const clearManagedIfNone = !!opts.clearManagedIfNone;
 	if (!manifest || !addonListEl) return;
 	const baseId = selectedBaseId();
 	const managed = presetManagedAddonIds(baseId);
+	const preset = (manifest.presets || []).find((p) => p.id === selectedPresetId());
 
-	// Clear anything any preset could have set (including the previously active
-	// one) before applying the current choice, so picking "None" — or switching
-	// presets — doesn't leave a stale add-on selected.
+	if (!preset) {
+		if (!clearManagedIfNone) return;
+		// Explicit None: drop packs that presets own so leftover Light rates
+		// do not stick after the user chooses None.
+		for (const select of addonListEl.querySelectorAll('select[name="addon-group"]')) {
+			if ([...select.options].some((o) => managed.has(o.value))) select.value = '';
+		}
+		for (const input of addonListEl.querySelectorAll('input[name="addon"]')) {
+			if (managed.has(input.value)) input.checked = false;
+		}
+		return;
+	}
+
+	// Switching to / re-applying a preset: clear managed, then select members.
 	for (const select of addonListEl.querySelectorAll('select[name="addon-group"]')) {
 		if ([...select.options].some((o) => managed.has(o.value))) select.value = '';
 	}
@@ -410,10 +431,7 @@ function applyActivePresetToAddons() {
 		if (managed.has(input.value)) input.checked = false;
 	}
 
-	const preset = (manifest.presets || []).find((p) => p.id === selectedPresetId());
-	if (!preset) return;
 	const memberIds = new Set(preset.addons || []);
-
 	for (const select of addonListEl.querySelectorAll('select[name="addon-group"]')) {
 		const match = [...select.options].find(
 			(o) => memberIds.has(o.value) && addonSelectableNow(o.value)
@@ -421,7 +439,6 @@ function applyActivePresetToAddons() {
 		if (match) select.value = match.value;
 	}
 	for (const input of addonListEl.querySelectorAll('input[name="addon"]')) {
-		// Preset membership alone is not enough — skip base/disc-incompatible add-ons.
 		if (memberIds.has(input.value) && addonSelectableNow(input.value)) {
 			input.checked = true;
 		}
@@ -824,14 +841,16 @@ function renderManifest() {
 			updateBaseBlurb();
 			renderPresets({ resetToNone: true });
 			renderAddons();
-			applyActivePresetToAddons();
+			// New base → clear preset-managed packs (Preset is None).
+			applyActivePresetToAddons({ clearManagedIfNone: true });
 			updatePlan();
 		}
 	});
 	if (presetListEl) {
 		presetListEl.addEventListener('change', (ev) => {
 			if (ev.target && ev.target.id === 'preset-select') {
-				applyActivePresetToAddons();
+				// User picked a preset or None — apply or clear managed packs.
+				applyActivePresetToAddons({ clearManagedIfNone: true });
 				updatePlan();
 			}
 		});
@@ -850,6 +869,7 @@ function renderManifest() {
 	renderBases();
 	renderPresets();
 	renderAddons();
+	// Initial load: no managed packs selected yet.
 	applyActivePresetToAddons();
 	updatePlan();
 }
@@ -860,7 +880,7 @@ async function onFileChosen(file) {
 	const buf = await file.arrayBuffer();
 	const bytes = new Uint8Array(buf);
 	rememberImage(bytes, `${file.name} (${bytes.length} bytes)`);
-	// Presets/addons were built with no disc (disabled). Rebuild now that disc is known.
+	// Rebuild UI for new disc; keep add-on + preset choices (do not clear).
 	renderPresets();
 	renderAddons();
 	applyActivePresetToAddons();
