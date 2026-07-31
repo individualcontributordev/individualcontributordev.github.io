@@ -298,10 +298,9 @@ function addonsForBase(baseId) {
 	return (manifest.addons || []);
 }
 
-// Presets bundle several per-disc add-ons (e.g. one scene per disc) under one
-// choice so a player doesn't have to remember/re-pick the right add-on each
-// time they load the next disc of the set. Selection persists per-base in
-// localStorage across file loads and page reloads.
+// Presets bundle several add-ons under one choice. Last choice is stored per
+// base in localStorage and restored when the player switches Base Experience.
+// Fresh page load always starts at Preset = None (with default Unmodified).
 const PRESET_STORAGE_KEY = 'ff7builder.presetByBase';
 
 function loadPresetPrefs() {
@@ -333,18 +332,33 @@ function selectedPresetId() {
 	return select ? select.value : '';
 }
 
-function renderPresets() {
+/**
+ * @param {{ fromBaseChange?: boolean }} [opts]
+ * - Page load / disc load: default Preset to None (or keep current if re-render same base).
+ * - Base change: restore last preset for that base from localStorage.
+ */
+function renderPresets(opts = {}) {
+	const fromBaseChange = !!opts.fromBaseChange;
 	if (!manifest || !presetListEl) return;
 	const baseId = selectedBaseId();
 	const presets = presetsForBase(baseId);
-	presetListEl.innerHTML = '';
-	// Always show preset dropdown even if no presets for this base
-	// if (!presets.length) return;
-
 	const prefs = loadPresetPrefs();
-	const prevId = prefs[baseId] || '';
 	const ids = new Set(presets.map((p) => p.id));
-	const activeId = ids.has(prevId) ? prevId : '';
+
+	// Preserve current choice only when re-rendering the same base (e.g. disc load).
+	const prevSelect = document.getElementById('preset-select');
+	const currentVal = prevSelect && prevSelect.value ? prevSelect.value : '';
+
+	let activeId = '';
+	if (fromBaseChange) {
+		const stored = prefs[baseId] || '';
+		activeId = ids.has(stored) ? stored : '';
+	} else if (currentVal && ids.has(currentVal)) {
+		activeId = currentVal;
+	}
+	// else leave '' → None (fresh page load)
+
+	presetListEl.innerHTML = '';
 
 	const wrap = document.createElement('div');
 	wrap.className = 'preset-dropdown-wrap';
@@ -834,7 +848,7 @@ function renderManifest() {
 	baseListEl.addEventListener('change', (ev) => {
 		if (ev.target && ev.target.id === 'base-select') {
 			updateBaseBlurb();
-			renderPresets();
+			renderPresets({ fromBaseChange: true });
 			renderAddons();
 			applyActivePresetToAddons();
 			updatePlan();
