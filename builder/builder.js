@@ -730,17 +730,34 @@ function renderAddons() {
 	}
 
 	if (hasDiscCols) {
+		const loadedDisc = selectedDisc();
 		const cols = document.createElement('div');
 		cols.className = 'addon-disc-columns';
+		if (loadedDisc) cols.dataset.loadedDisc = String(loadedDisc);
+
 		for (const disc of [1, 2, 3]) {
 			const bucket = byDisc[disc];
 			const col = document.createElement('div');
 			col.className = 'addon-disc-col';
 			col.dataset.disc = String(disc);
+			if (loadedDisc) {
+				if (disc === loadedDisc) col.classList.add('is-active');
+				else col.classList.add('is-inactive');
+			}
+
 			const head = document.createElement('h3');
 			head.className = 'addon-section-title';
-			head.textContent = `Disc ${disc}`;
+			if (loadedDisc && disc === loadedDisc) {
+				head.innerHTML =
+					`Disc ${disc} <span class="addon-disc-badge">loaded</span>`;
+			} else if (loadedDisc) {
+				head.innerHTML =
+					`Disc ${disc} <span class="addon-disc-badge is-muted">not loaded</span>`;
+			} else {
+				head.textContent = `Disc ${disc}`;
+			}
 			col.appendChild(head);
+
 			const body = document.createElement('div');
 			body.className = 'addon-disc-col-body';
 			if (bucket.groupIds.length || bucket.free.length) {
@@ -748,7 +765,10 @@ function renderAddons() {
 			} else {
 				const empty = document.createElement('p');
 				empty.className = 'addon-col-empty';
-				empty.textContent = 'None yet';
+				empty.textContent =
+					loadedDisc && disc !== loadedDisc
+						? 'Load this disc to use'
+						: 'None yet';
 				body.appendChild(empty);
 			}
 			col.appendChild(body);
