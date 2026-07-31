@@ -292,7 +292,8 @@ button#apply.is-busy:disabled {
 }
 
 select#base-select,
-select#preset-select,
+select#pack-preset-select,
+select#mod-preset-select,
 select[name="addon-group"] {
 	display: block;
 	width: 100%;
@@ -309,29 +310,33 @@ select[name="addon-group"] {
 	cursor: pointer;
 }
 
-/* Hover/focus only when enabled — disabled selects match .choice.is-disabled (no glow). */
-select#base-select:hover:not(:disabled),
-select#base-select:focus:not(:disabled),
-select#preset-select:hover:not(:disabled),
-select#preset-select:focus:not(:disabled),
-select[name="addon-group"]:hover:not(:disabled),
-select[name="addon-group"]:focus:not(:disabled) {
-	border-color: var(--ff7-link);
-	outline: none;
-}
+	/* Hover/focus only when enabled — disabled selects match .choice.is-disabled (no glow). */
+	select#base-select:hover:not(:disabled),
+	select#base-select:focus:not(:disabled),
+	select#pack-preset-select:hover:not(:disabled),
+	select#pack-preset-select:focus:not(:disabled),
+	select#mod-preset-select:hover:not(:disabled),
+	select#mod-preset-select:focus:not(:disabled),
+	select[name="addon-group"]:hover:not(:disabled),
+	select[name="addon-group"]:focus:not(:disabled) {
+		border-color: var(--ff7-link);
+		outline: none;
+	}
 
-select#base-select option,
-select#base-select optgroup,
-select#preset-select option,
-select[name="addon-group"] option {
-	background: #000051;
-	color: var(--ff7-text);
-}
+	select#base-select option,
+	select#base-select optgroup,
+	select#pack-preset-select option,
+	select#mod-preset-select option,
+	select[name="addon-group"] option {
+		background: #000051;
+		color: var(--ff7-text);
+	}
 
-select[name="addon-group"] option:disabled,
-select#preset-select option:disabled {
-	opacity: 0.5;
-}
+	select[name="addon-group"] option:disabled,
+	select#pack-preset-select option:disabled,
+	select#mod-preset-select option:disabled {
+		opacity: 0.5;
+	}
 
 .addon-group {
 	margin: 0 0 10px;
@@ -356,12 +361,12 @@ select#preset-select option:disabled {
 }
 
 /* Single line for labels since we prevent wrapping */
-#addon-list .addon-group-label {
+.layer-list .addon-group-label {
 	min-height: 1.3em;
 }
 
 /* Add-ons: all-disc row on top, then Disc 1 | 2 | 3 columns */
-#addon-list {
+.layer-list {
 	display: flex;
 	flex-direction: column;
 	gap: 18px;
@@ -476,17 +481,17 @@ select#preset-select option:disabled {
 	opacity: 0.75;
 }
 
-#addon-list .addon-group {
+.layer-list .addon-group {
 	margin: 0;
 	display: flex;
 	flex-direction: column;
 }
 
-#addon-list select[name="addon-group"] {
+.layer-list select[name="addon-group"] {
 	max-width: none;
 }
 
-#addon-list .choice {
+.layer-list .choice {
 	margin: 0;
 	padding: 8px;
 	background: rgba(0, 0, 40, 0.3);
@@ -517,7 +522,8 @@ select#preset-select option:disabled {
 }
 
 /* Match .choice.is-disabled: dim + not-allowed + no hover/click (opacity on wrap only). */
-select#preset-select:disabled,
+select#pack-preset-select:disabled,
+select#mod-preset-select:disabled,
 select[name="addon-group"]:disabled,
 select#base-select:disabled {
 	cursor: not-allowed;
@@ -594,3 +600,7 @@ footer p { margin: 0; }
 footer a { color: var(--ff7-link); }
 
 footer a:hover { color: var(--ff7-text); }
+
+.panel.is-empty .layer-list {
+	opacity: 0.85;
+}

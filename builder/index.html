@@ -4,7 +4,7 @@
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>Disc builder — IndividualContributor</title>
-	<meta name="description" content="Apply CSR and Field encounter packs to your Final Fantasy VII NTSC-U .bin in the browser." />
+	<meta name="description" content="Apply CSR packs and mods to your Final Fantasy VII NTSC-U .bin in the browser." />
 	<link rel="icon" href="/favicon.ico" type="image/x-icon" />
 	<link rel="stylesheet" href="./builder.css" />
 </head>
@@ -34,9 +34,9 @@
 				<h1 id="page-title">Disc builder</h1>
 				<p class="lede">
 					Choose a clean NTSC-U <strong>.bin</strong> (disc is detected automatically).
-					Pick a base experience and optional add-ons. Downloads one zip with
-					<strong>.bin</strong>, <strong>.cue</strong>, and <strong>APPLIED.txt</strong>.
-					Nothing is uploaded.
+					Pick a base experience, optional CSR+ packs, and optional mods.
+					Downloads one zip with <strong>.bin</strong>, <strong>.cue</strong>, and
+					<strong>APPLIED.txt</strong>. Nothing is uploaded.
 				</p>
 			</header>
 
@@ -60,15 +60,22 @@
 				<div id="base-list"></div>
 			</section>
 
-			<section class="panel" id="panel-addons">
-				<h2>3. Add-ons</h2>
-				<p class="explainer" id="explainer-addon"></p>
-				<div id="preset-list"></div>
-				<div id="addon-list"></div>
+			<section class="panel" id="panel-packs">
+				<h2>3. Packs</h2>
+				<p class="explainer" id="explainer-packs"></p>
+				<div id="pack-preset-list"></div>
+				<div id="pack-list" class="layer-list"></div>
+			</section>
+
+			<section class="panel" id="panel-mods">
+				<h2>4. Mods</h2>
+				<p class="explainer" id="explainer-mods"></p>
+				<div id="mod-preset-list"></div>
+				<div id="mod-list" class="layer-list"></div>
 			</section>
 
 			<section class="panel" id="panel-build">
-				<h2>4. Build</h2>
+				<h2>5. Build</h2>
 				<pre class="plan" id="plan"></pre>
 				<div class="row" style="margin-top:16px;margin-bottom:0;">
 					<button type="button" id="apply" disabled>Build zip</button>
