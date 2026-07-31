@@ -476,18 +476,50 @@ function exclusiveGroupTitle(addons) {
 	return addons[0]?.exclusiveGroup || 'Add-on';
 }
 
+/** Semver from pack.version, trailing " vX.Y.Z" in name, or id suffix -vX.Y.Z. */
+function addonVersion(addon) {
+	if (!addon) return '';
+	const explicit = addon.version != null && String(addon.version).trim();
+	if (explicit) return String(explicit).replace(/^v/i, '');
+	const name = String(addon.name || '');
+	const fromName = name.match(/\bv(\d+\.\d+\.\d+)\s*$/i);
+	if (fromName) return fromName[1];
+	const fromId = String(addon.id || '').match(/-v(\d+\.\d+\.\d+)$/i);
+	if (fromId) return fromId[1];
+	return '';
+}
+
+/** Label with version when known; avoids doubling if name already ends with vX.Y.Z. */
+function withAddonVersion(label, addon) {
+	const base = String(label || '').trim() || String(addon?.name || addon?.id || '');
+	const ver = addonVersion(addon);
+	if (!ver) return base;
+	if (new RegExp(`\\bv${ver.replace(/\./g, '\\.')}\\s*$`, 'i').test(base)) return base;
+	if (/\bv\d+\.\d+\.\d+\s*$/i.test(base)) return base;
+	return `${base} v${ver}`;
+}
+
 function exclusiveOptionLabel(addon) {
-	if (addon.optionLabel) return String(addon.optionLabel);
-	const after = String(addon.name || '')
-		.split('—')
-		.slice(1)
-		.join('—')
-		.trim();
-	const cleaned = after
-		.replace(/\s*\(on [^)]+\)/gi, '')
-		.replace(/\s+v[\d.]+$/i, '')
-		.trim();
-	return cleaned || addon.name;
+	let core;
+	if (addon.optionLabel) {
+		core = String(addon.optionLabel);
+	} else {
+		const after = String(addon.name || '')
+			.split('—')
+			.slice(1)
+			.join('—')
+			.trim();
+		const cleaned = after
+			.replace(/\s*\(on [^)]+\)/gi, '')
+			.replace(/\s+v[\d.]+$/i, '')
+			.trim();
+		core = cleaned || addon.name;
+	}
+	return withAddonVersion(core, addon);
+}
+
+function freeAddonLabel(addon) {
+	return withAddonVersion(addon.name || addon.id, addon);
 }
 
 function updateAddonGroupTooltip(select) {
@@ -570,9 +602,11 @@ function renderFreeAddon(addon, prevSelected) {
 	}
 	label.title = addon.blurb || '';
 
+	const displayName = freeAddonLabel(addon);
+	// Escape is unnecessary for our catalog strings; keep simple like before.
 	label.innerHTML = `
 		<input type="checkbox" name="addon" value="${addon.id}" ${checked} ${disabled} />
-		<span><strong>${addon.name}</strong></span>
+		<span><strong>${displayName}</strong></span>
 	`;
 	return label;
 }
@@ -637,7 +671,7 @@ function updatePlan() {
 	steps.push(disc ? `Disc: ${disc} (auto)` : 'Disc: (not detected)');
 	steps.push(`Base: ${base ? base.name : baseId}`);
 	if (addons.length) {
-		addons.forEach((a, i) => steps.push(`Add-on ${i + 1}: ${a.name}`));
+		addons.forEach((a, i) => steps.push(`Add-on ${i + 1}: ${freeAddonLabel(a)}`));
 	} else {
 		steps.push('Add-ons: (none)');
 	}
@@ -809,7 +843,7 @@ function buildAppliedReport({ disc, base, baseId, addons, edcFixed }) {
 	if (addons.length) {
 		lines.push('Add-ons:');
 		for (const addon of addons) {
-			lines.push(`  - ${addon.name}`);
+			lines.push(`  - ${freeAddonLabel(addon)}`);
 		}
 	} else {
 		lines.push('Add-ons: none');
