@@ -839,6 +839,11 @@ function renderManifest() {
 	addonListEl.addEventListener('change', (ev) => {
 		const t = ev.target;
 		if (t && t.name === 'addon-group') updateAddonGroupTooltip(t);
+		// Manual add-on edit breaks the preset pairing → show None, keep selections.
+		const presetEl = document.getElementById('preset-select');
+		if (presetEl && presetEl.value) {
+			presetEl.value = '';
+		}
 		updatePlan();
 	});
 
