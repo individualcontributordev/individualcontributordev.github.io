@@ -848,6 +848,8 @@ async function onFileChosen(file) {
 	const buf = await file.arrayBuffer();
 	const bytes = new Uint8Array(buf);
 	rememberImage(bytes, `${file.name} (${bytes.length} bytes)`);
+	// Presets/addons were built with no disc (disabled). Rebuild now that disc is known.
+	renderPresets();
 	renderAddons();
 	applyActivePresetToAddons();
 	if (!detectedDisc) {
