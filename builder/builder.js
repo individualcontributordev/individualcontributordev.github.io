@@ -240,7 +240,7 @@ function renderBases() {
 	const select = document.createElement('select');
 	select.id = 'base-select';
 	select.name = 'base';
-	select.setAttribute('aria-label', 'Base');
+	select.setAttribute('aria-label', 'Base Experience');
 
 	for (const family of BASE_FAMILY_ORDER) {
 		const bases = byFamily.get(family);
@@ -791,7 +791,7 @@ function updatePlan() {
 	const steps = [];
 	steps.push(sourceBytes ? `Input: ${sourceBytes.length} bytes` : 'Input: (none yet)');
 	steps.push(disc ? `Disc: ${disc} (auto)` : 'Disc: (not detected)');
-	steps.push(`Base: ${base ? base.name : baseId}`);
+	steps.push(`Base Experience: ${base ? base.name : baseId}`);
 	if (addons.length) {
 		addons.forEach((a, i) => steps.push(`Add-on ${i + 1}: ${freeAddonLabel(a)}`));
 	} else {
