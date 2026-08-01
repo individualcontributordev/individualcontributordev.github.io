@@ -1,6 +1,74 @@
 {
   "archives": [
     {
+      "slug": "2022-08-csr-mentions-search",
+      "title": "CSR mentions (server search)",
+      "note": "Discord search for \u201ccsr\u201d in a general/resource channel, plus hits from the CSR thread. Includes early announcements, hardware testing callouts, and related practice tools (e.g. Hope\u2019s step-route ISO).",
+      "channelIds": [
+        "1288235003901120586",
+        "944817091737964644"
+      ],
+      "messageCount": 150,
+      "dateRange": [
+        "2022-08-05",
+        "2025-05-04"
+      ],
+      "archive": "history/archive/2022-08-csr-mentions-search.sanitized.har.gz",
+      "messagesJson": "history/chats/2022-08-csr-mentions-search-messages.json",
+      "messagesMarkdown": "history/chats/2022-08-csr-mentions-search-messages.txt",
+      "topAuthors": [
+        [
+          "individualcontributor",
+          93
+        ],
+        [
+          "awesomewaves",
+          25
+        ],
+        [
+          ".okamikaze",
+          11
+        ],
+        [
+          ".rendall",
+          6
+        ],
+        [
+          "hopeproductions",
+          4
+        ],
+        [
+          "Deleted User",
+          3
+        ],
+        [
+          "lemon6559",
+          2
+        ],
+        [
+          "phek1200",
+          2
+        ],
+        [
+          "kitkatbars",
+          1
+        ],
+        [
+          "doumeis",
+          1
+        ],
+        [
+          "teeejj0102",
+          1
+        ],
+        [
+          "themattdavis",
+          1
+        ]
+      ],
+      "gzipBytes": 37500
+    },
+    {
       "slug": "2024-09-csr-dev-thread",
       "title": "CSR development thread (pre-channel)",
       "note": "Original forum-style thread where PSX CSR was born (Sep\u2013Nov 2024).",
@@ -14,7 +82,7 @@
       ],
       "archive": "history/archive/2024-09-csr-dev-thread.sanitized.har.gz",
       "messagesJson": "history/chats/2024-09-csr-dev-thread-messages.json",
-      "messagesMarkdown": "history/chats/2024-09-csr-dev-thread-messages.md",
+      "messagesMarkdown": "history/chats/2024-09-csr-dev-thread-messages.txt",
       "topAuthors": [
         [
           "individualcontributor",
@@ -57,7 +125,6 @@
           4
         ]
       ],
-      "originalBytes": 2352363,
       "gzipBytes": 155173
     },
     {
@@ -74,7 +141,7 @@
       ],
       "archive": "history/archive/2024-11-csr-channel.sanitized.har.gz",
       "messagesJson": "history/chats/2024-11-csr-channel-messages.json",
-      "messagesMarkdown": "history/chats/2024-11-csr-channel-messages.md",
+      "messagesMarkdown": "history/chats/2024-11-csr-channel-messages.txt",
       "topAuthors": [
         [
           "individualcontributor",
@@ -123,14 +190,24 @@
         [
           "lemon6559",
           15
+        ],
+        [
+          "dylwingo",
+          15
+        ],
+        [
+          "zheal",
+          14
+        ],
+        [
+          "themattdavis",
+          13
         ]
       ],
-      "originalBytes": 3291737,
       "gzipBytes": 273362
     }
   ],
-  "totalMessages": 3055,
-  "generated": "2026-08-01",
-  "mergedMessagesJson": "history/chats/all-messages-merged.json",
-  "site": "https://individualcontributor.dev/history/"
+  "site": "https://individualcontributor.dev/history/",
+  "totalMessages": 3074,
+  "mergedMessagesJson": "history/chats/all-messages-merged.json"
 }
