@@ -215,11 +215,7 @@ the engine-side patches work on disc.
 
 ## Credits
 
-People who appear in the archived chats (Discord usernames, order randomized):
-
-Deleted User, uzuki7777, hopeproductions, chuky500, kitkatbars, fr3akzilla, luzbel, lemon6559, individualcontributor, kumatv, musclebelt, dylwingo, awesomewaves, bigspill, .okamikaze, dashretro, asleepyjake, blake.is.blue, mcswirls, petfriendamy, jayrod316, primitivedeath, acezephyr, katombaz, wedgiroth, kleinestennis, thebroodles, muttski, themattdavis, snake1982, phek1200, .rendall, doumeis, teeejj0102, cornfed, zheal, .theretrojay, rjthedestroyer
-
-Names are limited to these archives.
+jayrod316, awesomewaves, themattdavis, doumeis, uzuki7777, asleepyjake, katombaz, individualcontributor, .okamikaze, dashretro, wedgiroth, kumatv, muttski, .rendall, thebroodles, chuky500, kitkatbars, mcswirls, phek1200, musclebelt, teeejj0102, petfriendamy, kleinestennis, dylwingo, primitivedeath, lemon6559, blake.is.blue, rjthedestroyer, acezephyr, .theretrojay, cornfed, snake1982, luzbel, zheal, bigspill, fr3akzilla, hopeproductions
 
 
 ## How to read the logs
