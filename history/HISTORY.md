@@ -131,13 +131,10 @@ Not only minutes saved:
 
 - A **shared language** for trims vs skill checks vs category packs  
 - A **hardware-first** QA culture  
-- **Runner-as-QA**: practice attempts as continuous integration  
+- **Runner-as-QA**: practice attempts doubling as testing  
 - An ethic of **putting boxes back** when the short path forgot the human  
 - A path from chaotic PPF threads to **versioned packs, bases, and mods**
 
-If you only remember one line from the chats, remember this mood:
-
-*We’re not erasing FF7. We’re making more of life fit around loving it.*
 
 ---
 
@@ -161,14 +158,3 @@ On this site:
 
 Living backlog: CSR and Modding `docs/SUGGESTIONS.md`. History lives at https://individualcontributor.dev/history/ .
 
----
-
-## Credit, without a scoreboard
-
-This history is deliberately light on “who won an argument.”  
-It is heavy on the fact that **many people** showed up—maintainers, practice
-maniacs, hardware tinkerers, category specialists, joke-posters who still filed
-a crisp bug. The archives name them in their own words. The products still
-shipping are the dedication.
-
-— Compiled 2026-08-01 from sanitized Discord HAR exports.
