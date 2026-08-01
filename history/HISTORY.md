@@ -8,11 +8,17 @@ community.
 
 ## Sources
 
+Each log is ordered **oldest message first** (newest at the bottom of that file).
+The three archives cover different windows — only the **discussion channel**
+runs through **2026**. For one continuous read from 2022 through 2026-07, use
+the [merged timeline](chats/all-messages-merged.txt).
+
 | Archive | Description | Date range | Messages |
 |---------|-------------|------------|----------:|
+| [Merged timeline (all sources)](chats/all-messages-merged.txt) | Full chronological merge | 2022-08 – 2026-07 | ~3,000 |
 | [CSR mentions (server search)](chats/2022-08-csr-mentions-search-messages.txt) | Search hits for “csr” plus related practice-tool posts | 2022-08 – 2025-05 | 150 |
 | [CSR development thread](chats/2024-09-csr-dev-thread-messages.txt) | Forum-style thread where PSX CSR was built day to day | 2024-09 – 2024-11 | 1,355 |
-| [CSR discussion channel](chats/2024-11-csr-channel-messages.txt) | Dedicated channel after the thread | 2024-11 – 2026-07 | 1,700 |
+| [CSR discussion channel](chats/2024-11-csr-channel-messages.txt) | Dedicated channel after the thread (**includes 2025–2026**) | 2024-11 – 2026-07 | 1,700 |
 
 ---
 
