@@ -1,7 +1,5 @@
 # A history of FF7 PSX CSR and the mods around it
 
-Written so it still makes sense decades later.
-
 This is the story of a **PlayStation disc cutscene-reduced** path for
 *Final Fantasy VII*, grown in public with the FF7 speedrunning community,
 then split into cleaner products: a skill-check-preserving **CSR**, optional
