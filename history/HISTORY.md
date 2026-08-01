@@ -16,7 +16,7 @@ Sanitized Discord exports (cookies and auth headers removed; message text kept):
 | [CSR development thread](chats/2024-09-csr-dev-thread-messages.txt) | Thread used for day-to-day CSR patch development | 2024-09 – 2024-11 | 1,355 |
 | [CSR discussion channel](chats/2024-11-csr-channel-messages.txt) | Dedicated channel after the thread | 2024-11 – 2026-07 | 1,700 |
 
-Also available: [JSON extracts](chats/), [gzipped HAR archives](archive/), [MANIFEST.json](archive/MANIFEST.json).  
+Also available: [Chat extracts](chats/), [HAR archives](archive/), [MANIFEST.json](archive/MANIFEST.json).  
 Chat logs are ordered **oldest message first**.
 
 Repos: Final-Fantasy-7-CSR (bases and scene packs), Final-Fantasy-7-Modding (encounter and engine mods), individualcontributordev.github.io (builder UI and this archive).
