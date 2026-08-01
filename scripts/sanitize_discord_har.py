@@ -119,7 +119,7 @@ def extract_messages(har: dict):
                     for a in (msg.get("attachments") or [])
                 ],
             }
-    msgs = sorted(by_id.values(), key=lambda m: m.get("timestamp") or "")
+    msgs = sorted(by_id.values(), key=lambda m: m.get("timestamp") or "")  # earliest first
     return sorted(channels), msgs
 
 
