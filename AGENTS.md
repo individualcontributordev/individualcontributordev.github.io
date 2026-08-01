@@ -5,7 +5,8 @@ Public site for the IndividualContributor FF7 PS1 stack.
 | Path | Role |
 |------|------|
 | `/` | Brand homepage — quiet copy; CSR/Modding → GitHub |
-| `/builder/` | **Only** player tool — apply base + packs + mods in-browser |
+| `/builder/` | Player tool — apply base + packs + mods in-browser |
+| `/history/` | CSR / Highwind / mods history + sanitized chat archives |
 
 Remote pack sources (Pages CDN):
 
@@ -30,6 +31,8 @@ Remote pack sources (Pages CDN):
 ```
 index.html          homepage (inline CSS — match builder tokens)
 builder/            builder UI (builder.css / builder.js / layer.js / …)
+history/            public history page + archive/ + chats/
+scripts/            sanitize_discord_har.py (history maintenance)
 DogicaPixel*.ttf    shared pixel font
 meteor.png          logo
 ```
