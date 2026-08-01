@@ -217,9 +217,9 @@ the engine-side patches work on disc.
 
 People who appear in the archived chats (Discord usernames, order randomized):
 
-jayrod316, lemon6559, snake1982, doumeis, kumatv, petfriendamy, .theretrojay, luzbel, katombaz, musclebelt, dashretro, thebroodles, hopeproductions, .okamikaze, mcswirls, teeejj0102, blake.is.blue, rjthedestroyer, zheal, bigspill, themattdavis, kleinestennis, awesomewaves, individualcontributor, .rendall, wedgiroth, muttski, dylwingo, asleepyjake, phek1200, primitivedeath, fr3akzilla, uzuki7777, acezephyr, chuky500, kitkatbars, cornfed
+Deleted User, uzuki7777, hopeproductions, chuky500, kitkatbars, fr3akzilla, luzbel, lemon6559, individualcontributor, kumatv, musclebelt, dylwingo, awesomewaves, bigspill, .okamikaze, dashretro, asleepyjake, blake.is.blue, mcswirls, petfriendamy, jayrod316, primitivedeath, acezephyr, katombaz, wedgiroth, kleinestennis, thebroodles, muttski, themattdavis, snake1982, phek1200, .rendall, doumeis, teeejj0102, cornfed, zheal, .theretrojay, rjthedestroyer
 
-“Deleted User” entries are omitted. Names are limited to these archives.
+Names are limited to these archives.
 
 
 ## How to read the logs
