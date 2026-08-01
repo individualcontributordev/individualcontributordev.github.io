@@ -1,10 +1,39 @@
 {
-  "messageCount": 3055,
+  "messageCount": 3074,
   "archives": [
+    "2022-08-csr-mentions-search",
     "2024-09-csr-dev-thread",
     "2024-11-csr-channel"
   ],
   "messages": [
+    {
+      "archive": "2022-08-csr-mentions-search",
+      "id": "1004967190593818754",
+      "timestamp": "2022-08-05T04:20:49.625000+00:00",
+      "author": "kitkatbars",
+      "content": "Nice. I also remembered the ffx discord having them too, that's how I learned how to do CSR"
+    },
+    {
+      "archive": "2022-08-csr-mentions-search",
+      "id": "1246198257361879200",
+      "timestamp": "2024-05-31T20:26:57.799000+00:00",
+      "author": "lemon6559",
+      "content": "Would it make sense to post the CSR into resources-no-discussion?"
+    },
+    {
+      "archive": "2022-08-csr-mentions-search",
+      "id": "1288235003901120586",
+      "timestamp": "2024-09-24T20:25:59.179000+00:00",
+      "author": "individualcontributor",
+      "content": "I made a CSR for any% and 100% (including variants NMS, All Bosses, etc.). I've only made patches for disc 1 and 2, I didn't touch disc 3 because there was no point. I've tested these by burning them to a disc and running it in my PS2 Slim (MechaPwn'd to play NTSC and backups).  But they also work for Emulator/Digital. Curious to know if anyone would be interested in further testing these? and if you have any suggestions?  \n\nApply the patches to your FF7 NTSC/US PS1 .bin files.\n\n## Steps\n\n1. Go to https://www.romhacking.net/patch/\n2. Select your original .bin file, ignore the \"file too big\" warning\n3. Select the patch .ppf file\n4. Click the \"Apply patch\" button\n\nYour browser should download a new patched version of the disc.\n\nYou can burn the patched version to disc or load it up in an emulator (I used duckstation version 0.1-7371-gb2577ef8b (dev) for testing). I used ImgBurn with write speed 16x on Verbatim CD-R 700MB discs.\n\n## Details\n\nThese patches remove most if not all FMVs, shortens some in-game cutscenes, and reduces some mashing sequences.\n\n**All \"skill checks\" are present in this CSR, if not let me know and I'll fix it.**\n\nLatest patch releases are on GitHub https://github.com/individualcontributordev/Final-Fantasy-7-CSR\n\nChange log https://github.com/individualcontributordev/Final-Fantasy-7-CSR/blob/main/CHANGELOG.md\n\nDiscussion on bugs and fixes in thread 🧵"
+    },
+    {
+      "archive": "2022-08-csr-mentions-search",
+      "id": "1289962712410882053",
+      "timestamp": "2024-09-29T14:51:16.987000+00:00",
+      "author": "individualcontributor",
+      "content": "Final Fantasy 7 PS1 Disc CSR Patches (IndividualContributor)"
+    },
     {
       "archive": "2024-09-csr-dev-thread",
       "id": "1289962712410882048",
@@ -90,7 +119,7 @@
       "content": "I've updated the main message of this thread to include a link to my GitHub where I'll keep the latest release of the patches."
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1292105919961894955",
       "timestamp": "2024-10-05T12:47:37.486000+00:00",
       "author": "individualcontributor",
@@ -202,14 +231,14 @@
       "content": "I haven't touched that section lol, I'll have to test the latest version. Is there any chance you just had the wrong disc loaded at that point?"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1296080257048252498",
       "timestamp": "2024-10-16T12:00:13.287000+00:00",
       "author": "awesomewaves",
       "content": "No i don't think so, I only pointed Duckstation to the CSR files folder for the entire time I was making these saves"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1296081309944254494",
       "timestamp": "2024-10-16T12:04:24.317000+00:00",
       "author": "individualcontributor",
@@ -293,7 +322,7 @@
       "content": "My goat"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1296448582773112832",
       "timestamp": "2024-10-17T12:23:48.983000+00:00",
       "author": ".okamikaze",
@@ -328,14 +357,14 @@
       "content": "Do you happen to have a DS save state for this? I think I know why you saw it, there is code to \"save the next frame of a movie\" before a movie is played, so it essentially fast forwards the movies to the next one each time one is played. So I may have skipped this fast forwarding to an elevator clip so when you hit the elevator the little clip of the elevator moving is not read from the right place on disc. It just happened to me before the gas chamber stuff on disc 2.\n\nAnd just to clarify, you're using the elevator for \"Return to Junon\"? which is after \"Cloud's Dreams\"? on Disc 2?\n\nUPDATE: I've just been trying to reproduce the issue and I can't get it to play the Cloud giving Seph the black materia video, but I can play the Golden Saucer videos if I switch to Disc 1 before going in the elevator before Carry Armor. The code also correctly sets the video stuff before hitting the button so with the right disc in it plays as normal on my save state. I'm wondering if some variable during the \"Cloud's dream\" scenes was skipped causing an issue in the elevator but I've tested from gas chamber up to the elevator before Carry Armor now and can't reproduce. So it's likely something before the gas chamber section messing with the elevator later on."
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1297492946068836433",
       "timestamp": "2024-10-20T09:33:44.596000+00:00",
       "author": "individualcontributor",
       "content": "Final Fantasy 7 CSR Patches (IndividualContributor)"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1297569246036885515",
       "timestamp": "2024-10-20T14:36:55.926000+00:00",
       "author": "awesomewaves",
@@ -377,7 +406,7 @@
       "content": "if anyone else has a moment to test"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1297597776380825752",
       "timestamp": "2024-10-20T16:30:18.090000+00:00",
       "author": "awesomewaves",
@@ -398,14 +427,14 @@
       "content": "Thanks for checking, not just me then."
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1297634066350342148",
       "timestamp": "2024-10-20T18:54:30.293000+00:00",
       "author": ".okamikaze",
       "content": "Yw. It's even giving me black screens after loading save states I would normally swap in csr for"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1297640175266169025",
       "timestamp": "2024-10-20T19:18:46.772000+00:00",
       "author": "individualcontributor",
@@ -636,7 +665,7 @@
       "content": "perfect thanks"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1298995990941925436",
       "timestamp": "2024-10-24T13:06:18.419000+00:00",
       "author": "individualcontributor",
@@ -692,7 +721,28 @@
       "content": "New release v0.2.0"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
+      "id": "1299400830423797830",
+      "timestamp": "2024-10-25T15:54:59.673000+00:00",
+      "author": "doumeis",
+      "content": "so I'm a bit confused about the CSR versions that we have"
+    },
+    {
+      "archive": "2022-08-csr-mentions-search",
+      "id": "1299403195558400092",
+      "timestamp": "2024-10-25T16:04:23.565000+00:00",
+      "author": "awesomewaves",
+      "content": "if you check the threads of this channel, there is one for IC's CSR"
+    },
+    {
+      "archive": "2022-08-csr-mentions-search",
+      "id": "1299403580381462609",
+      "timestamp": "2024-10-25T16:05:55.314000+00:00",
+      "author": "awesomewaves",
+      "content": "I've been actively testing and providing feedback to IndividualContributor on the CSR. It has all the skill checks and plays true to full Any% routes"
+    },
+    {
+      "archive": "2022-08-csr-mentions-search",
       "id": "1299874432084344832",
       "timestamp": "2024-10-26T23:16:55.108000+00:00",
       "author": "individualcontributor",
@@ -741,7 +791,7 @@
       "content": "I'll try do it tomorrow but my next week is quite busy and tied up so fingers crossed"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1300070949437309000",
       "timestamp": "2024-10-27T12:17:48.496000+00:00",
       "author": "individualcontributor",
@@ -783,7 +833,7 @@
       "content": "Notes from the preview run above that I'll be doing next:\n\nAfter materia tutorial \nWall market fat guy to the right after menu\nAfter eating Korean BBQ \nScene before shinra building speed up\nAfter key card in shinra building \nAfter mayor password \nBefore Sample\nChocobo billy\nEntering Junon\nJunon granny's house"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1300141356433281114",
       "timestamp": "2024-10-27T16:57:34.832000+00:00",
       "author": "awesomewaves",
@@ -802,6 +852,13 @@
       "timestamp": "2024-10-27T17:23:40.120000+00:00",
       "author": "awesomewaves",
       "content": "I just noticed it went up on SRC so I'll send a ping <@183261151746850816> because it's a critical error I would say"
+    },
+    {
+      "archive": "2022-08-csr-mentions-search",
+      "id": "1300157583549792357",
+      "timestamp": "2024-10-27T18:02:03.678000+00:00",
+      "author": "awesomewaves",
+      "content": "Hey I was wondering if the script to generate chocobo times is available anywhere? I tried searching for it but I don't see any public release of it.\n\nI ask because I'm running on IC's PSX CSR on PS2 and as the CSR might get shorter the IGTs might change. So rather than asking multiple times for a set of IGTs I thought it might be easier if I could generate my own. Thanks"
     },
     {
       "archive": "2024-09-csr-dev-thread",
@@ -853,7 +910,7 @@
       "content": "It's a Golden Saucer FMV thats playing in the background"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1300248885515522080",
       "timestamp": "2024-10-28T00:04:51.763000+00:00",
       "author": "awesomewaves",
@@ -1147,7 +1204,7 @@
       "content": "I'm going to put the break after DG and before Gongaga where Cloud wakes up, so where it is now basically."
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1300928349031632968",
       "timestamp": "2024-10-29T21:04:48.489000+00:00",
       "author": "individualcontributor",
@@ -1231,7 +1288,7 @@
       "content": ""
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1300938193352527952",
       "timestamp": "2024-10-29T21:43:55.558000+00:00",
       "author": "awesomewaves",
@@ -1294,7 +1351,7 @@
       "content": "Cool I'll likely have it pushed tomorrow night, or maybe before if I can find a few hours."
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1300953075607015456",
       "timestamp": "2024-10-29T22:43:03.764000+00:00",
       "author": "individualcontributor",
@@ -1350,7 +1407,7 @@
       "content": "I fully look forward to running this when its done"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1300982163986186251",
       "timestamp": "2024-10-30T00:38:38.974000+00:00",
       "author": "individualcontributor",
@@ -1413,7 +1470,7 @@
       "content": "I know it's class! lol"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1300996400603205726",
       "timestamp": "2024-10-30T01:35:13.248000+00:00",
       "author": "individualcontributor",
@@ -1518,7 +1575,7 @@
       "content": "On entering the elevator it went down, instead of up lol"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1301329103328247869",
       "timestamp": "2024-10-30T23:37:15.759000+00:00",
       "author": "awesomewaves",
@@ -1546,7 +1603,7 @@
       "content": "but it's up to the mods if/when the board is created"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1301330488254009485",
       "timestamp": "2024-10-30T23:42:45.951000+00:00",
       "author": "awesomewaves",
@@ -1560,7 +1617,7 @@
       "content": "So there should be a good guideline of implementation shortly"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1301332615751794708",
       "timestamp": "2024-10-30T23:51:13.186000+00:00",
       "author": "individualcontributor",
@@ -1693,7 +1750,7 @@
       "content": "just a reminder to have a look at this also"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1301336325366087760",
       "timestamp": "2024-10-31T00:05:57.627000+00:00",
       "author": "individualcontributor",
@@ -1721,7 +1778,7 @@
       "content": "I did trim the \"setting the bomb\" in the GS part I'll check it out tomorrow"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1301488797699276840",
       "timestamp": "2024-10-31T10:11:49.864000+00:00",
       "author": "individualcontributor",
@@ -1735,7 +1792,7 @@
       "content": "Insert Disc 2 image was on point with the music lol"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1301494861051990090",
       "timestamp": "2024-10-31T10:35:55.480000+00:00",
       "author": "individualcontributor",
@@ -1875,28 +1932,28 @@
       "content": "I can always fast forward those anyway for now"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1301606099442597990",
       "timestamp": "2024-10-31T17:57:56.779000+00:00",
       "author": "individualcontributor",
       "content": "Release v0.4.3 fixes the Reactor 5 bug and shortens some stuff on D2 https://github.com/individualcontributordev/Final-Fantasy-7-CSR/tree/main/v0.4.3"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1301689579912298620",
       "timestamp": "2024-10-31T23:29:40.074000+00:00",
       "author": "individualcontributor",
       "content": "Release v0.4.4 https://github.com/individualcontributordev/Final-Fantasy-7-CSR/tree/main/v0.4.4\n\n- Added back in the scene where Cloud is upside down and Sephiroth is in a big blue egg (after JDeath)\n\nReasoning for this change is  because there is player movement here and you can save 1 to 3 seconds (I think) depending on where you position Cloud before he moves automatically"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1301864739558785117",
       "timestamp": "2024-11-01T11:05:41.388000+00:00",
       "author": "individualcontributor",
       "content": "Release v0.4.5 https://github.com/individualcontributordev/Final-Fantasy-7-CSR/tree/main/v0.4.5\n\n- Fixed bug with 5 minute break scene where the Game Moment was being incorrectly set after the timer ended causing an issue on Disc 2\n- Added a version number to the first scene in Disc 1 and Disc 2"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1301994311797178474",
       "timestamp": "2024-11-01T19:40:33.817000+00:00",
       "author": "individualcontributor",
@@ -1973,7 +2030,7 @@
       "content": "I did that same thing with Cait Sith, got to Prison and into a battle and Caits HP slowly drops to 0 and he dies, weird bug but happened because I didn't name him lol"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1302413039236288643",
       "timestamp": "2024-11-02T23:24:26.218000+00:00",
       "author": "individualcontributor",
@@ -2330,7 +2387,7 @@
       "content": "0 chance of that, I just cycled through my states and there was none around that point"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1303159526375030854",
       "timestamp": "2024-11-05T00:50:42.621000+00:00",
       "author": ".okamikaze",
@@ -2344,7 +2401,7 @@
       "content": "And then because the run was already invalid I opened cheat engine for bone village just to make sure stone was set to 49"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1303160301654507642",
       "timestamp": "2024-11-05T00:53:47.462000+00:00",
       "author": ".okamikaze",
@@ -2365,7 +2422,7 @@
       "content": "Its very interesting to me that there is any difference on console for softlock/crashing."
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1303168621291503690",
       "timestamp": "2024-11-05T01:26:51.018000+00:00",
       "author": ".okamikaze",
@@ -2708,7 +2765,7 @@
       "content": "Reno also has two I think, I can remove the first"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1303526790874005525",
       "timestamp": "2024-11-06T01:10:05.301000+00:00",
       "author": "individualcontributor",
@@ -3009,7 +3066,7 @@
       "content": "ok so, I've verified that changes in CoTA as of v0.4.7 have caused the issue, this includes the break scene. So somewhere between Bone Village and D2 swap on the patch is borking something. So I'll try to add the break scene to a D1 normal and then play through to D2 swap. This should tell me if the break scene specifically is causing the issue."
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1303770835810652322",
       "timestamp": "2024-11-06T17:19:50.148000+00:00",
       "author": "teeejj0102",
@@ -3100,7 +3157,7 @@
       "content": "Yup, stellar effort man."
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1303771861041287289",
       "timestamp": "2024-11-06T17:23:54.582000+00:00",
       "author": "awesomewaves",
@@ -3716,7 +3773,7 @@
       "content": "So I won't need to burn a new D2 for a while then"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1303887519414358036",
       "timestamp": "2024-11-07T01:03:29.687000+00:00",
       "author": "individualcontributor",
@@ -3898,7 +3955,7 @@
       "content": "Thanks man! I'll have any feedback for you"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304012791929372676",
       "timestamp": "2024-11-07T09:21:16.982000+00:00",
       "author": "individualcontributor",
@@ -3933,7 +3990,7 @@
       "content": "- Tifa slap fight > Highwind deck, there should be at least 1 text box here for mashing/turbo muscle memory"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304110160389603449",
       "timestamp": "2024-11-07T15:48:11.432000+00:00",
       "author": "themattdavis",
@@ -3968,7 +4025,7 @@
       "content": "I've used the same window used for the potion text"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304152808219475969",
       "timestamp": "2024-11-07T18:37:39.467000+00:00",
       "author": "individualcontributor",
@@ -4087,7 +4144,7 @@
       "content": "On USB I had no such luck with FF7 in the past, though I've heard there's a patch now for it on POPStarter"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304196366112657470",
       "timestamp": "2024-11-07T21:30:44.478000+00:00",
       "author": ".okamikaze",
@@ -4122,14 +4179,14 @@
       "content": "i.e. if I put in my normal FF7 disc its loaded into Pop"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304206798319779962",
       "timestamp": "2024-11-07T22:12:11.710000+00:00",
       "author": "individualcontributor",
       "content": "ChatGPT FTW\n\nPOPS (PopStation Emulator)\nPOPS stands for PlayStation Operating System, and it's the name of the software emulator that the PS2 uses when running PS1 games from other sources, like burned discs, or digital versions of PS1 games stored on a memory card or external storage.\n\nSo this tells me that the burned CSR discs are running on Pops?"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304207082790322289",
       "timestamp": "2024-11-07T22:13:19.533000+00:00",
       "author": "individualcontributor",
@@ -4150,7 +4207,7 @@
       "content": "Ain't no way dude, POPStarter ff7 doesn't even let you get to the presents splash. You need to patch it with something that was made the start of this year to get it to work"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304207952999092284",
       "timestamp": "2024-11-07T22:16:47.007000+00:00",
       "author": ".okamikaze",
@@ -4234,7 +4291,7 @@
       "content": "IC is way more motivated a person if he wants to do it. I'd finish like next year lol"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304225424598896732",
       "timestamp": "2024-11-07T23:26:12.561000+00:00",
       "author": "individualcontributor",
@@ -4248,7 +4305,7 @@
       "content": "I'll see if I can skip to Disc 2 swap"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304231657829695621",
       "timestamp": "2024-11-07T23:50:58.679000+00:00",
       "author": "individualcontributor",
@@ -4311,7 +4368,7 @@
       "content": "https://tenor.com/view/hacker-typing-hacking-computer-codes-gif-17417874"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304233665215074384",
       "timestamp": "2024-11-07T23:58:57.277000+00:00",
       "author": "individualcontributor",
@@ -4353,7 +4410,7 @@
       "content": "but I'm hoping that this Popstarter emulator acts more like the ps2 emulator than Duckstation, given Popstarter is literally running on the Ps2 hardware"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304264681841623050",
       "timestamp": "2024-11-08T02:02:12.217000+00:00",
       "author": "individualcontributor",
@@ -4458,7 +4515,7 @@
       "content": "I mean just remove the Break Scene entirely from the code/scripts, burn it to disc and test it"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304266340076355708",
       "timestamp": "2024-11-08T02:08:47.571000+00:00",
       "author": "awesomewaves",
@@ -4654,7 +4711,7 @@
       "content": "not even joking, it was already in there <:LUL:586302674513690636>"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304274643825463368",
       "timestamp": "2024-11-08T02:41:47.339000+00:00",
       "author": "individualcontributor",
@@ -4717,7 +4774,7 @@
       "content": "<a:wavesYEET:1303691556305244212> Disc back in the bin"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304276140298338425",
       "timestamp": "2024-11-08T02:47:44.126000+00:00",
       "author": "individualcontributor",
@@ -4745,7 +4802,7 @@
       "content": "The fact it's not working from loading a save and there is no break scene means either the save is holding onto some broken RAM stuff or it's breaking between the load and the swap. But there is very little changes now without the break"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304277807236517888",
       "timestamp": "2024-11-08T02:54:21.555000+00:00",
       "author": "individualcontributor",
@@ -4766,7 +4823,7 @@
       "content": "makes sense"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304352572383166535",
       "timestamp": "2024-11-08T07:51:26.955000+00:00",
       "author": "individualcontributor",
@@ -4815,7 +4872,7 @@
       "content": "yup"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304415559106170913",
       "timestamp": "2024-11-08T12:01:44.160000+00:00",
       "author": "awesomewaves",
@@ -4885,7 +4942,7 @@
       "content": "https://tenor.com/view/this-is-fine-fire-house-burning-okay-gif-5263684"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304504429881589884",
       "timestamp": "2024-11-08T17:54:52.604000+00:00",
       "author": "individualcontributor",
@@ -4913,7 +4970,7 @@
       "content": "it seems to be specifically burned D2s from that save don't work"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304505012898238496",
       "timestamp": "2024-11-08T17:57:11.606000+00:00",
       "author": "individualcontributor",
@@ -4934,28 +4991,28 @@
       "content": "> So it's somewhere along the way through D1 something is corrupted?\nI'm not sure because a normal D2 loads (non-burned)"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304506911412064358",
       "timestamp": "2024-11-08T18:04:44.247000+00:00",
       "author": "individualcontributor",
       "content": "What might be the difference between a normal D2 and a burned D2? ignoring CSR"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304509166303314000",
       "timestamp": "2024-11-08T18:13:41.855000+00:00",
       "author": "individualcontributor",
       "content": "Ok I've just tested this:\n\n- put in latest CSR D1\n- mash through to D2 swap\n- put in non-CSR burned D2\n- error noise won't load\n- put back in CSR D1\n- it loads fine\n\n\n... wtf"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304519391873863691",
       "timestamp": "2024-11-08T18:54:19.821000+00:00",
       "author": "individualcontributor",
       "content": "> D1 burned > load save > fight jenova > D2 burned > not working (error noise)\n\nThis one is weird, this tells me there is something wrong with the save that is preventing burned D2 from loading, not related to CSR (other than the save being made on a D1 CSR run). So likely the CSR broke the save which is then preventing burned discs from loading."
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304520787314606124",
       "timestamp": "2024-11-08T18:59:52.520000+00:00",
       "author": "individualcontributor",
@@ -4969,14 +5026,14 @@
       "content": "Is it normal for D1 regular swapping to D2 burned to not work? Regardless of CSRs or save files.\n\nOr can we mix and match regular and burned discs?"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304531990485139489",
       "timestamp": "2024-11-08T19:44:23.564000+00:00",
       "author": "individualcontributor",
       "content": "My assumption for remaining tests is that using a non CSR save state converted to PS1 memory card file and running through the above scenarios will show different results. Comparing the results of both save files will show that awesomeWaves save file was borked by D1 CSR. If this is true I'll need to compare the common RAM variables in both saves to determine the differences and hopefully find the issue. It's very likely going to be that a variable was not set correctly, let's see."
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304560715297718365",
       "timestamp": "2024-11-08T21:38:32.093000+00:00",
       "author": "individualcontributor",
@@ -4997,7 +5054,7 @@
       "content": "And if you get an error noise during a disc swap that's a good thing, just means you need to put in a regular D2 for it to load, as opposed to no error noise during the disc swap which means it's borked and you have to reset and reload the save"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304596616166113361",
       "timestamp": "2024-11-09T00:01:11.527000+00:00",
       "author": "individualcontributor",
@@ -5032,7 +5089,7 @@
       "content": "Sorry i actually meant to read back over all the stuff from earlier, I spotted it while i was streaming but didn't read it properly."
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304600358013763634",
       "timestamp": "2024-11-09T00:16:03.653000+00:00",
       "author": "individualcontributor",
@@ -5060,7 +5117,7 @@
       "content": "let me check my VODs"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304600687786594385",
       "timestamp": "2024-11-09T00:17:22.277000+00:00",
       "author": "individualcontributor",
@@ -5123,14 +5180,14 @@
       "content": "that's reallly bad"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304601891635728425",
       "timestamp": "2024-11-09T00:22:09.297000+00:00",
       "author": "individualcontributor",
       "content": "there is something very wrong with the CSR then if that is the case, if it was borked since v0.1.1, that's literally the first version 😭"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304602011588759643",
       "timestamp": "2024-11-09T00:22:37.896000+00:00",
       "author": "individualcontributor",
@@ -5193,7 +5250,7 @@
       "content": "so I recalled it working as intended"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304602762583212092",
       "timestamp": "2024-11-09T00:25:36.947000+00:00",
       "author": "individualcontributor",
@@ -5256,7 +5313,7 @@
       "content": "what if we put in an OG D1 during the break"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304603315484622951",
       "timestamp": "2024-11-09T00:27:48.769000+00:00",
       "author": "awesomewaves",
@@ -5277,7 +5334,7 @@
       "content": "It's worth a test, but I think it won't work because it's the RAM that F'd not the disc, and putting in a regular D1 at the break means you get all the text boxes of the spiral scene then into disc swap but the RAM values are still borked. That's be my guess"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304604104949104650",
       "timestamp": "2024-11-09T00:30:56.992000+00:00",
       "author": "individualcontributor",
@@ -5298,7 +5355,7 @@
       "content": "all game code is on all discs"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304604387041083455",
       "timestamp": "2024-11-09T00:32:04.248000+00:00",
       "author": "individualcontributor",
@@ -5312,7 +5369,7 @@
       "content": "I actually had pondered this earlier but I don't know enough"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304604483371663430",
       "timestamp": "2024-11-09T00:32:27.215000+00:00",
       "author": "awesomewaves",
@@ -5396,7 +5453,7 @@
       "content": "Exactly. It's not the world map boat scene too lol"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304607103381409885",
       "timestamp": "2024-11-09T00:42:51.874000+00:00",
       "author": "individualcontributor",
@@ -5550,7 +5607,7 @@
       "content": "FF9 works on Disc, but 99% run on Duck"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304609816706289686",
       "timestamp": "2024-11-09T00:53:38.781000+00:00",
       "author": "awesomewaves",
@@ -5578,7 +5635,7 @@
       "content": "I'll pause the timer and soft reset or whatever finding a way to make it work"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304610166863433779",
       "timestamp": "2024-11-09T00:55:02.265000+00:00",
       "author": "individualcontributor",
@@ -5627,21 +5684,21 @@
       "content": "I'll post the result here in a few mins"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304611768936693781",
       "timestamp": "2024-11-09T01:01:24.229000+00:00",
       "author": "individualcontributor",
       "content": "So the save is not borked from D1 CSR"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304611917414797424",
       "timestamp": "2024-11-09T01:01:59.629000+00:00",
       "author": "individualcontributor",
       "content": "It's actually jus the CSR kekw, and loading your save on regular or burned discs works fine on disc swap"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304612868699717696",
       "timestamp": "2024-11-09T01:05:46.433000+00:00",
       "author": "individualcontributor",
@@ -5655,35 +5712,35 @@
       "content": "imagine it was because I removed the intro..."
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304615387534721025",
       "timestamp": "2024-11-09T01:15:46.970000+00:00",
       "author": ".okamikaze",
       "content": "So I managed to swap to burned disc 2 from the original CSR disc 1 (with the Don Corneo basement softlock) just fine"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304615560683716678",
       "timestamp": "2024-11-09T01:16:28.252000+00:00",
       "author": ".okamikaze",
       "content": "Not sure which iteration this disc 2 is though, can you remember where the first place you trimmed disc 2 on the first csr version was?"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304615985260527626",
       "timestamp": "2024-11-09T01:18:09.479000+00:00",
       "author": "individualcontributor",
       "content": "If we can get a full run of v0.1.1 CSR all the way to disc swap on PSX into a regular burned D2 and continue that would eliminate v0.1.1 being the problem."
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304616103376588830",
       "timestamp": "2024-11-09T01:18:37.640000+00:00",
       "author": "individualcontributor",
       "content": "Here are my test results from today:\n\nTested on PS2 Slim MechaPwn'd NTSC/U using physical discs and physical memory card with save files\n\n\nD1 -> Disc 1\nD2 -> Disc 2\nregular -> not burned discs\nburned -> burned discs with no modifications\nCSR -> burned discs with modifications\n\n\n**awesomeWaves CSR PS1 memcard file converted to .mcd then converted back to PS1 memcard file, before Jenova**\n\nD1 regular > load save > fight jenova > D2 regular > works fine\nD1 regular > load save > fight jenova > D2 burned > works fine\n\nD1 burned > load save > fight jenova > D2 regular > works fine\nD1 burned > load save > fight jenova > D2 burned > works fine\n\nD1 CSR > load save > skipped jenova > D2 regular > not working (no error noise)\nD1 CSR > load save > skipped jenova > D2 burned > not working (no error noise)\n\n\n \n**IC non-CSR savestate file converted to PS1 memcard file, before Jenova**\n\nD1 regular > load save > fight jenova > D2 regular > works fine\nD1 regular > load save > fight jenova > D2 burned > works fine\n\nD1 burned > load save > fight jenova > D2 regular > works fine\nD1 burned > load save > fight jenova > D2 burned > works fine\n\nD1 CSR > load save > skipped jenova > D2 regular > not working (no error noise)\nD1 CSR > load save > skipped jenova > D2 burned > not working (no error noise)\n\nThere are no differences between the results sets for 1) CSR save file and 2) non-CSR save file"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304616478624190525",
       "timestamp": "2024-11-09T01:20:07.106000+00:00",
       "author": ".okamikaze",
@@ -5746,7 +5803,7 @@
       "content": "Yeah sorry, just I recently moved some discs from my binder into a spindle so they were all stacked with no indication as to which was which"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304619765175685121",
       "timestamp": "2024-11-09T01:33:10.681000+00:00",
       "author": "individualcontributor",
@@ -5949,7 +6006,7 @@
       "content": "I'm doing a quick test now of v0.1.1 and loading into the Jenova fight to see what happens"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304628053028245525",
       "timestamp": "2024-11-09T02:06:06.659000+00:00",
       "author": "individualcontributor",
@@ -6033,14 +6090,14 @@
       "content": ""
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304751727932739616",
       "timestamp": "2024-11-09T10:17:33.054000+00:00",
       "author": "individualcontributor",
       "content": "CSR workstation lol"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304764732380680212",
       "timestamp": "2024-11-09T11:09:13.556000+00:00",
       "author": "individualcontributor",
@@ -6068,7 +6125,7 @@
       "content": "Could you test a specific patch for me on disc? I'll get the link"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304818215200886804",
       "timestamp": "2024-11-09T14:41:44.854000+00:00",
       "author": "individualcontributor",
@@ -6131,7 +6188,7 @@
       "content": "Mine has C and T lv 99"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304822629919621170",
       "timestamp": "2024-11-09T14:59:17.405000+00:00",
       "author": "individualcontributor",
@@ -6166,7 +6223,7 @@
       "content": "Yours should be grand"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304823056866344970",
       "timestamp": "2024-11-09T15:00:59.197000+00:00",
       "author": "awesomewaves",
@@ -6299,7 +6356,7 @@
       "content": "I can get uLaunch through my FMcB memory card I guess?"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304827772266348625",
       "timestamp": "2024-11-09T15:19:43.436000+00:00",
       "author": ".okamikaze",
@@ -6376,7 +6433,7 @@
       "content": "Huh"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304829935130771477",
       "timestamp": "2024-11-09T15:28:19.103000+00:00",
       "author": "individualcontributor",
@@ -6530,7 +6587,7 @@
       "content": "Nice thank you"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304838566068883516",
       "timestamp": "2024-11-09T16:02:36.879000+00:00",
       "author": "individualcontributor",
@@ -6593,7 +6650,7 @@
       "content": "https://discord.com/channels/936291902133796955/1288235003901120586/1304764732380680212"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304844383513870347",
       "timestamp": "2024-11-09T16:25:43.866000+00:00",
       "author": "individualcontributor",
@@ -6663,14 +6720,14 @@
       "content": "6b20e5a is working"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304936280559194194",
       "timestamp": "2024-11-09T22:30:53.829000+00:00",
       "author": "individualcontributor",
       "content": "These are the versions left to test:\n\n\n**Oct 13th, '24**\nhttps://github.com/individualcontributordev/Final-Fantasy-7-CSR/commits/main/?after=a131f848142391ef38630fc89c3e6b6c84cd7c44+34\n\n4946a25d49a2d5516a518d6bd58f373003f26087 new updates for junon\n\n588a8c5eff40c9bcd59a06e85cc6a46fb3fac1be moved part where you name Aeris in any%\n\n3119511f0fb2adebaa601f69e3c565895abfaf74 updates to shinra building and prisons\n\n51293858fbe23cc8a27f3cd6b2d921d65a3993bd added the sleep music back in for 7th heaven and prisons\n\n**Oct 14th, '24**\n\nhttps://github.com/individualcontributordev/Final-Fantasy-7-CSR/commits/main/?before=a131f848142391ef38630fc89c3e6b6c84cd7c44+35\n\n51653270222384e3dd132aade02d8872ab87583b fixed a bug at jenova on the boat\n\ne433176b2728b80242468c6497185eed4bd377df reduced after jenova dialogues\n\n6bf4c1bb4e730cc97ff1678846e5ab5d2990f155 reduced rufus and after motorball scenes\n\n**Oct 15th, '24**\n\nhttps://github.com/individualcontributordev/Final-Fantasy-7-CSR/commits/main/?before=a131f848142391ef38630fc89c3e6b6c84cd7c44+35\n\n7e3097f71627a7b62e789930c8ed9953761d3955 from jenny on the block until dyne reviewed and shortened\n\n\nAnd next one I'm testing is the middle of these, so **51293858fbe23cc8a27f3cd6b2d921d65a3993bd added the sleep music back in for 7th heaven and prisons**, put your bets in now! Pass ✅  or Fail ❌  <:KEKW:1074810897308069948>\n\nCurrent result set https://discord.com/channels/936291902133796955/1288235003901120586/1304940556312379492"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304940556312379492",
       "timestamp": "2024-11-09T22:47:53.248000+00:00",
       "author": "individualcontributor",
@@ -6824,7 +6881,7 @@
       "content": "vs what you have when you load the screen before"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304954316754391063",
       "timestamp": "2024-11-09T23:42:33.993000+00:00",
       "author": "hopeproductions",
@@ -6985,7 +7042,7 @@
       "content": "That or it might be the 80 frames thats important for the prior transition to finish?"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304967301908664350",
       "timestamp": "2024-11-10T00:34:09.895000+00:00",
       "author": "individualcontributor",
@@ -7223,7 +7280,7 @@
       "content": "I'll test skipping the music again tomorrow but instead of deleting the 80 frames I'll move them down with the play music #0 to see if it was actually changing the number of lines in the script that borked it"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1304974054557745295",
       "timestamp": "2024-11-10T01:00:59.852000+00:00",
       "author": "individualcontributor",
@@ -7244,7 +7301,7 @@
       "content": "Ah ok yeah my brain is a bit melted <:KEKW:1074810897308069948>"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1305178768179990528",
       "timestamp": "2024-11-10T14:34:27.383000+00:00",
       "author": "individualcontributor",
@@ -7258,11 +7315,18 @@
       "content": "<@248225699909861376> your notes above\n\n•You gain control immediately after putting Cait in the party for the first time, I normally use that parallysis to buffer movement\n\nThe end of the scene where Cait joins you hasn't been changed, Cloud leans forward and Cait walks into his pocket, then Tifa climbs in too, then you get control. Or are you talking about a different part?\n\n•Esther comes out immediately with a text box after the jockeys. Wasn't used to it but maybe not necessary to change\n\nDo you mean when all the jockey's leave the room, then a few seconds later she comes back in? I've check this and there is no change. A text box pops up saying \"Cloud\" and then she appears walking slowly. Let me know if you mean some other part. \n\n•On the Gold Saucer revisit I personally use Cid putting his arm out as visual cue to anticipate for the dialogue choice rather than Barret\n\nThis is the part where Barret puts up both his hands and then you need to pick an option? I just checked and when the scene loads in Cid raises his hand, then Barret, then the options. Would you prefer to have 1 text box before Cid raises his hand? so when the scene loads 1 text box, Cid raises hand, Barret, options?\n\n•After you see the highwind for the first time and you see the leader I personally look for a Cloud shrug as a visual cue to buffer my inputs\n\nThis one is related to the locker room in Junon right? where the captain brings in a copule of guards to show you how to the Rufus mood mini-game?"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1305226142231433256",
       "timestamp": "2024-11-10T17:42:42.237000+00:00",
       "author": "individualcontributor",
       "content": "🎮 Release v0.4.11 https://github.com/individualcontributordev/Final-Fantasy-7-CSR\n\n- Removed the Junon to Jenova boat World Map scene again\n- Removed the slow scroll when you first get to the Shinra building\n- Top of Wall Market first visit talking to the doorman, 1 text box added back when talking to Aeris\n- Sped up handing over the energy drink in wall market\n- Added 1 text box before Cid raises hand in the Hotel Lobby for Golden Saucer keystone visit, some runners use Cid as the queue instead of Barret raising his two hands for the option choice\n- In Junon after the Dolphin, added back in Cloud shrug when talking to the leader about getting dressed\n- Trimmed after Rufus mood mini-game at Junon a bit more \n\nNo changes to Disc 2 or 3 in this release. I also burned this one to disc and tested starting a new game and also the Disc 1 to Disc 2 disc swap after JenovaLife fight, both working as expected. I'll be playing through this patch on disc before making anymore changes, and I'll take some notes for a final trim while I'm doing it. Let me know if you have any further suggestions for changes to disc 1 because I'll be moving onto further trimming disc 2 very soon."
+    },
+    {
+      "archive": "2022-08-csr-mentions-search",
+      "id": "1305227844305162434",
+      "timestamp": "2024-11-10T17:49:28.043000+00:00",
+      "author": "individualcontributor",
+      "content": "Quick update on the FF7 CSR that is currently being made, the latest release is out and you can get the patches here https://github.com/individualcontributordev/Final-Fantasy-7-CSR, we're nearly finished with Disc 1, and Disc 2 has already got some significant changes. Disc 3 will be trimmed but not until Disc 2 is finished. \n\nAlso this is the thread where we are discussing changes and bugs https://discord.com/channels/936291902133796955/1288235003901120586/1305226142231433256\n\nMessage me for more detail."
     },
     {
       "archive": "2024-09-csr-dev-thread",
@@ -7363,7 +7427,7 @@
       "content": "After JenovaBirth on the junon boat after the fight what are the queues to choose the option not to explain to Tifa?"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1305662903055155210",
       "timestamp": "2024-11-11T22:38:14.132000+00:00",
       "author": "awesomewaves",
@@ -7580,7 +7644,7 @@
       "content": "@ 2:51:29"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1305671451256557648",
       "timestamp": "2024-11-11T23:12:12.182000+00:00",
       "author": "hopeproductions",
@@ -7741,7 +7805,7 @@
       "content": "I'll run 0.4.11 so today"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1305942686628577352",
       "timestamp": "2024-11-12T17:09:59.734000+00:00",
       "author": ".rendall",
@@ -7818,7 +7882,7 @@
       "content": "Let me know if you have any suggestions <@309356817169776641>"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1305967038728110121",
       "timestamp": "2024-11-12T18:46:45.727000+00:00",
       "author": "individualcontributor",
@@ -7832,7 +7896,7 @@
       "content": "I am by no mean a reference or authority concerning those runs on FF7, but will do if I see something factually off."
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1305980787463553035",
       "timestamp": "2024-11-12T19:41:23.681000+00:00",
       "author": ".rendall",
@@ -7874,7 +7938,7 @@
       "content": "I've seen the end of your run so it seemed that it went thru whatever version you used ! 5:17 right ?"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1305981338540707910",
       "timestamp": "2024-11-12T19:43:35.068000+00:00",
       "author": "awesomewaves",
@@ -7888,7 +7952,7 @@
       "content": "ff9 is so long !"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1305981481881042964",
       "timestamp": "2024-11-12T19:44:09.243000+00:00",
       "author": ".rendall",
@@ -7909,7 +7973,7 @@
       "content": "5:18 today but it was a very poor run to be honest. I've had  a 5:08 or something last week and Okamikaze has had runs closer to 4:30 also."
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1305981833439215646",
       "timestamp": "2024-11-12T19:45:33.061000+00:00",
       "author": ".rendall",
@@ -7923,7 +7987,7 @@
       "content": "Long jrpg are rough on a schedule"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1305988565007732778",
       "timestamp": "2024-11-12T20:12:17.992000+00:00",
       "author": "individualcontributor",
@@ -7951,7 +8015,7 @@
       "content": "I feel with how much activity this has had lately it could get put to vote once you're finished"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1305989406775312506",
       "timestamp": "2024-11-12T20:15:38.685000+00:00",
       "author": "awesomewaves",
@@ -8014,7 +8078,7 @@
       "content": "It's single screen shots only. I thought that maybe it would work due to the drops from bosses being consistent etc, but the blue screen is just too much"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1306007801830572042",
       "timestamp": "2024-11-12T21:28:44.408000+00:00",
       "author": "individualcontributor",
@@ -8056,7 +8120,7 @@
       "content": "No new patches, Bake Off was on last night. I'll probably have time for changes later today."
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1306236759339827260",
       "timestamp": "2024-11-13T12:38:32.132000+00:00",
       "author": "individualcontributor",
@@ -8070,6 +8134,20 @@
       "content": "name me a more british excuse than this"
     },
     {
+      "archive": "2022-08-csr-mentions-search",
+      "id": "1306375957011234920",
+      "timestamp": "2024-11-13T21:51:39.443000+00:00",
+      "author": "Deleted User",
+      "content": "Does the current CSR work with the new skip?"
+    },
+    {
+      "archive": "2022-08-csr-mentions-search",
+      "id": "1306376745842118736",
+      "timestamp": "2024-11-13T21:54:47.515000+00:00",
+      "author": "Deleted User",
+      "content": "Well now that I think about it csr with disc 1 skip might actually be slower than just running the old route 😂"
+    },
+    {
       "archive": "2024-09-csr-dev-thread",
       "id": "1306389997338886206",
       "timestamp": "2024-11-13T22:47:26.918000+00:00",
@@ -8077,11 +8155,32 @@
       "content": "Battle Square to Prison, Cloud jumped down the wrong pipe https://youtu.be/408A4IIqWpA?t=46"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1306403371732963400",
       "timestamp": "2024-11-13T23:40:35.622000+00:00",
       "author": "individualcontributor",
       "content": "🎮 Release v0.5.0 https://github.com/individualcontributordev/Final-Fantasy-7-CSR\n\n- Added back in the scene after Demons Gate where Cloud gives the Black Materia to Sephiroth\n- Added 1 text box before Barret leaves hut in Gongaga where Cloud is lying down\n- Jump down the hole to Battle Square and land in Prison after naming Cait Sith\n- 1.5 seconds added back in before Ester enters the bottom of the scene before the Chocobo race\n- Added back in 1 text box before Bottomswell fight\n- Trimmed bottom of tower\n- Added back in 1 text box on Broken Road\n- Added 4 text boxes back in after Jenova fight on the boat when arm disappears"
+    },
+    {
+      "archive": "2022-08-csr-mentions-search",
+      "id": "1306404431335522305",
+      "timestamp": "2024-11-13T23:44:48.251000+00:00",
+      "author": "individualcontributor",
+      "content": "<@456226577798135808> It does! it will be quicker too because the CSR is exactly like a non-CSR run except a bunch of FMVs are cut and some mashing sections are reduced. Anywhere there is player movement required is left in, but could be trimmed around it while leaving in queues and stuff.\n\nThis is the definition I have on the repo for the CSR:\n\nAll \"skill checks\" remain in this CSR (if not let me know and I'll fix it). A skill check is any action a player must perform in game, e.g. choosing an option in dialogues, movement in cutscenes, skips, manipulating RNG, etc. Most FMVs are removed, some cutscenes are shorter, and long mashing sequences have been reduced. This CSR is exactly like a non-CSR run, just shorter."
+    },
+    {
+      "archive": "2022-08-csr-mentions-search",
+      "id": "1306404983662444635",
+      "timestamp": "2024-11-13T23:46:59.936000+00:00",
+      "author": "individualcontributor",
+      "content": "And I'll be doing the CSR all the way through for 100% too. I'm not sure yet what will be left after any% is done, but I'm sure there will be enough to warrant trimming a bit more. NMS is on the list too. I already have Reactor 5 done lol."
+    },
+    {
+      "archive": "2022-08-csr-mentions-search",
+      "id": "1306405377084231761",
+      "timestamp": "2024-11-13T23:48:33.735000+00:00",
+      "author": "individualcontributor",
+      "content": "If you have any suggestions I'd appreciate them submitted here https://forms.gle/dW9rMCD9kQ3eBPSM8 so I can keep track of what's left to do"
     },
     {
       "archive": "2024-09-csr-dev-thread",
@@ -8105,7 +8204,7 @@
       "content": "Yeah"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1306407403637702707",
       "timestamp": "2024-11-13T23:56:36.903000+00:00",
       "author": "hopeproductions",
@@ -8196,7 +8295,7 @@
       "content": "but its ironically less weird to start a battle and skip the scene"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1306408534887501975",
       "timestamp": "2024-11-14T00:01:06.614000+00:00",
       "author": "awesomewaves",
@@ -8427,14 +8526,14 @@
       "content": "Oh guess threads don't get pins"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1306630148396683305",
       "timestamp": "2024-11-14T14:41:43.392000+00:00",
       "author": "individualcontributor",
       "content": "🎮 Release v0.5.1 https://github.com/individualcontributordev/Final-Fantasy-7-CSR\n\n- Fixed an issue where JenovaBirth fight was skipped, oops"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1306630268039467018",
       "timestamp": "2024-11-14T14:42:11.917000+00:00",
       "author": "individualcontributor",
@@ -8448,11 +8547,25 @@
       "content": "Thanks for fixing that earlier. I'll wait until the morning to burn a new version in case there's any changes later tonight"
     },
     {
+      "archive": "2022-08-csr-mentions-search",
+      "id": "1306657078970023946",
+      "timestamp": "2024-11-14T16:28:44.141000+00:00",
+      "author": "Deleted User",
+      "content": "Ooo 100% CSR exciting"
+    },
+    {
       "archive": "2024-09-csr-dev-thread",
       "id": "1306661590984298508",
       "timestamp": "2024-11-14T16:46:39.889000+00:00",
       "author": "individualcontributor",
       "content": "Yeah do I'll hopefully be making a few more changes later"
+    },
+    {
+      "archive": "2022-08-csr-mentions-search",
+      "id": "1306667670426488862",
+      "timestamp": "2024-11-14T17:10:49.341000+00:00",
+      "author": "lemon6559",
+      "content": "I’ve been playing NMS on CSR  patched roms.  Works fine, but yeah almost all of the NMS specific stuff is still there."
     },
     {
       "archive": "2024-09-csr-dev-thread",
@@ -8679,14 +8792,14 @@
       "content": "look forward to giving it a spin tomorrow"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1306751498704916580",
       "timestamp": "2024-11-14T22:43:55.560000+00:00",
       "author": "individualcontributor",
       "content": "## 🎮 Release v0.5.2 \nhttps://github.com/individualcontributordev/Final-Fantasy-7-CSR\n\n- Lots of small mashing/turbo 1 text boxes added back in, removed, or moved\n- Don's basement sped up a bit\n- Batteries shop trimmed\n- Keycard in Shinra building trimmed\n- Mayor's password trimmed\n- Seeing Jenova in Shinra building sections sped up\n- Bottomswell fight trimmed\n- Arriving at Costa off the boat, cue for options restored\n- Barret's house in Corel Prison cues fixed"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1307363321124749412",
       "timestamp": "2024-11-16T15:15:05.392000+00:00",
       "author": "phek1200",
@@ -8700,7 +8813,7 @@
       "content": "Nice!"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1307424231952355402",
       "timestamp": "2024-11-16T19:17:07.665000+00:00",
       "author": "individualcontributor",
@@ -8714,7 +8827,7 @@
       "content": ""
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1307466843409223721",
       "timestamp": "2024-11-16T22:06:27.028000+00:00",
       "author": "individualcontributor",
@@ -8756,7 +8869,7 @@
       "content": "maybe some others have an input there? If everyone is going to be using Yoshiyuki then its whatever though"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1307478607417049178",
       "timestamp": "2024-11-16T22:53:11.786000+00:00",
       "author": "awesomewaves",
@@ -9071,7 +9184,7 @@
       "content": "I know off the top of my head, you recieve an item at the end of Disc 2 in FF9 completely out of context of the scene its in. I'll grab a clip"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1307757397065863248",
       "timestamp": "2024-11-17T17:21:00.418000+00:00",
       "author": "awesomewaves",
@@ -9169,7 +9282,7 @@
       "content": "speaking from experience there with some other CSRs ha"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1307773911785672847",
       "timestamp": "2024-11-17T18:26:37.834000+00:00",
       "author": "individualcontributor",
@@ -9218,7 +9331,7 @@
       "content": "yeah  .... 😦"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1307774743382065243",
       "timestamp": "2024-11-17T18:29:56.102000+00:00",
       "author": ".rendall",
@@ -9393,14 +9506,14 @@
       "content": "we record the fountain glow during cover and ether pick up all the way to entering Elmyra house. only after entering the house and clear out some of the initial text boxes, there is a ~1min scene of flashback where Elmyra is waiting for the husband at the train station, that is where we will playback the recording at 0.25 speed, write down the pattern and identify the current List value we're on.\nso to do elevator manip, this part needs to be available as well. if need trimming down, we can always trim down half (the 2nd half of it). the whole cutscene is about 2.5mins, normally we'd be done by the first 1 min, however if i run on PSX disc, due to inconsistencies of ps2 graphics sometimes i struggle to find the fountain glow pattern and need to do it 2-3 times, which will take up the entire cutscene.\ni think to keep it standardize, we keep it as is"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1307899939581460542",
       "timestamp": "2024-11-18T02:47:25.202000+00:00",
       "author": "phek1200",
       "content": "i finished a run last night (v0.5.3) with a time 4h 20m <:Kappa:1075235124200886273> \nam writing some of my feedback / comments but i would say generally everything good so far. really great work on this CSR  \n\nhttps://www.youtube.com/watch?v=hszz1VB5ELk"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1307906655844962416",
       "timestamp": "2024-11-18T03:14:06.484000+00:00",
       "author": ".rendall",
@@ -9449,14 +9562,14 @@
       "content": "<@183261151746850816> time to polish the baby!"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1307974952221147166",
       "timestamp": "2024-11-18T07:45:29.609000+00:00",
       "author": "individualcontributor",
       "content": "I appreciate your perspective Rendall thank you for reviewing the CSR, there are a lot of little things like this throughout the run that we're trying to figure out so keep 'em coming! ❤️"
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1307975406489567293",
       "timestamp": "2024-11-18T07:47:17.915000+00:00",
       "author": "individualcontributor",
@@ -10149,7 +10262,7 @@
       "content": "Yes that link is to the GitHub repo where the latest patch will be. \n\nI actually just put the new patches in and delete the old ones so there is only 1 patch per disc at any time, which will be the latest.\n\nThere are no Disc 3 patches yet but there will be soon. I'll try to highlight if there are no changes made to a disc in a release to save you having to repatch, or burn a new disc."
     },
     {
-      "archive": "2024-09-csr-dev-thread",
+      "archive": "2022-08-csr-mentions-search",
       "id": "1308221962883043339",
       "timestamp": "2024-11-19T00:07:01.540000+00:00",
       "author": "individualcontributor",
@@ -13824,6 +13937,13 @@
       "content": "just popped into my head"
     },
     {
+      "archive": "2022-08-csr-mentions-search",
+      "id": "1311851092967034880",
+      "timestamp": "2024-11-29T00:27:53.578000+00:00",
+      "author": "awesomewaves",
+      "content": "Is there any publicly available version of the beachplug script? I've tried searching but I can only find the output of the script by Dash. Once again it's for CSR so if the actual script is available it might be easier so I can alter it if needs be as the CSR time changes. Thanks"
+    },
+    {
       "archive": "2024-11-csr-channel",
       "id": "1311872007146573855",
       "timestamp": "2024-11-29T01:50:59.907000+00:00",
@@ -15495,6 +15615,13 @@
       "timestamp": "2024-12-28T17:28:36.800000+00:00",
       "author": "individualcontributor",
       "content": "It seems to happen randomly which is a pain to reproduce"
+    },
+    {
+      "archive": "2022-08-csr-mentions-search",
+      "id": "1322626609316102165",
+      "timestamp": "2024-12-28T18:05:56.875000+00:00",
+      "author": "individualcontributor",
+      "content": "But I can't seem to figure out the memory address for Var[6] which as you mentioned is a temp storage, I'm trying to debug an issue in the CSR where I suspect some hidden variable is being set/not set correctly causing an issue in the NMS route but not in the no slots route."
     },
     {
       "archive": "2024-11-csr-channel",
@@ -19905,6 +20032,13 @@
       "timestamp": "2025-04-25T09:15:48.269000+00:00",
       "author": "individualcontributor",
       "content": "Another run that died at MK because of steps, swapped to emulator, and used a bunch of save states and reloads to finish. But I finished the run faster this time! Invalid but I enjoyed it and <@934998544971079710> raided with a bunch of awesome peeps 🥰."
+    },
+    {
+      "archive": "2022-08-csr-mentions-search",
+      "id": "1368600657040380054",
+      "timestamp": "2025-05-04T14:50:24.009000+00:00",
+      "author": "hopeproductions",
+      "content": "Hi I made a new thing and am curious if there is any feedback or if people want other versions of it. It's a iso hack for practicing steps or exploring new step routes. Currently it just handles the no slots route. Bosses that aren't pre-emptable have been removed, unecessary inactive step screens have been skipped. Additionally it's all on 'disc 1' so you don't need to change disc.\nHeres the file: https://drive.google.com/file/d/1oJo8Zx2mj32krIWjJzojuACMjff4lv1w/view\nHere's a video of it start to finish:\nhttps://www.youtube.com/watch?v=EevrIl_bwxI"
     },
     {
       "archive": "2024-11-csr-channel",

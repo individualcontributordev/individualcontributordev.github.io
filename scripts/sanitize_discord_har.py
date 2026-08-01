@@ -86,10 +86,21 @@ def extract_messages(har: dict):
             body = json.loads(raw)
         except json.JSONDecodeError:
             continue
-        items = body if isinstance(body, list) else (
-            body.get("messages") if isinstance(body, dict) else []
-        )
-        if not isinstance(items, list):
+        items = []
+        if isinstance(body, list):
+            items = body
+        elif isinstance(body, dict):
+            raw_msgs = body.get("messages")
+            if isinstance(raw_msgs, list):
+                # channel history: list of messages
+                # search API: list of lists of messages
+                if raw_msgs and isinstance(raw_msgs[0], list):
+                    for batch in raw_msgs:
+                        if isinstance(batch, list):
+                            items.extend(batch)
+                else:
+                    items = raw_msgs
+        if not items:
             continue
         for msg in items:
             if not isinstance(msg, dict) or not msg.get("id"):
