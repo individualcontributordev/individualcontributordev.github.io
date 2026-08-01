@@ -10,7 +10,7 @@ description: >-
 
 ## Checklist
 
-- [ ] Homepage and builder share container width, header, type scale, panel/button styling
+- [ ] Homepage, builder, and history share container width, header nav, type scale, panel/button styling via site.css
 - [ ] No empty bordered boxes (`[hidden]` must actually hide; empty `.plan` hidden)
 - [ ] Builder CTAs on homepage: nav + hero only
 - [ ] CSR/Modding sections → GitHub only
@@ -21,9 +21,11 @@ description: >-
 
 | Concern | File |
 |---------|------|
+| Shared chrome | `site.css` |
 | Homepage | `index.html` |
 | Builder shell | `builder/index.html`, `builder/builder.css` |
 | Builder logic | `builder/builder.js`, `builder/layer.js` |
+| History | `history/index.html`, `history/history.css`, archive/chats indexes |
 
 ## Related repos
 
