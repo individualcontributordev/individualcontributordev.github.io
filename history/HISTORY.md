@@ -196,13 +196,13 @@ casual “CSR / CSR+ / CSR++” names:
 | Product | Role |
 |---------|------|
 | **CSR** (base) | Field trims with skill-check scenes kept |
-| **CSR+ scene packs** | Optional extra trims **on CSR only** (checkboxes / all-scenes preset) |
-| **Highwind** (base) | Separate aggressive short playthrough; **not** stacked with CSR+ packs |
+| **CSR+ scene trims** | Optional extra trims **on CSR only** (checkboxes / all-scenes preset) |
+| **Highwind** (base) | Separate aggressive short playthrough; **not** stacked with CSR+ scene trims |
 | **Mods** | Cross-base gameplay layers (field and world encounter density, and more later) |
 
 Early CSR+ ships as a bulk idea (Aerith house and Hojo FD scenes cut on top of
 CSR v0.14). Within days the plan narrows: **CSR+ is not a second full base**.
-It becomes individual **scene packs** (Aerith house, Hojo FD, CoTA / waterfall
+It becomes individual **scene trims** (Aerith house, Hojo FD, CoTA / waterfall
 with explicit List/FD changelog notes) so runners pick what their category can
 spare. Highwind takes the more aggressive short-playthrough direction —
 shorter corridors, freer Wall Market order experiments, less prison and stairs
@@ -211,7 +211,7 @@ filler — without changing the skill-check CSR base.
 ### Browser builder
 
 **https://individualcontributor.dev/builder/** lets you start from your own
-clean NTSC-U `.bin`, pick a base, optional CSR+ packs, and optional mods, and
+clean NTSC-U `.bin`, pick a base, optional CSR+ scene trims, and optional mods, and
 download a zip (`.bin`, `.cue`, `APPLIED.txt`). Nothing uploads. Packs load from
 GitHub Pages manifests on the CSR and Modding repos. The UI learns to separate
 **packs** (CSR+ scenes) from **mods** (encounters on Unmodified / CSR /
