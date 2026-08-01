@@ -102,7 +102,7 @@ parallel version folders.
 
 This episode fixed a hard requirement for console use of multi-disc CSR.
 
-### Late October – mid-November 2024: “skill checks” spelled out
+### Late October – mid-November 2024: skill-check definition in chat
 
 Design goals are stated repeatedly in thread and announcements:
 
