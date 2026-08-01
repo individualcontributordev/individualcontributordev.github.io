@@ -8,18 +8,11 @@ developed and used with the FF7 speedrunning community.
 
 ## Sources
 
-Sanitized Discord exports (cookies and auth headers removed; message text kept):
-
 | Archive | Description | Date range | Messages |
 |---------|-------------|------------|----------:|
 | [CSR mentions (server search)](chats/2022-08-csr-mentions-search-messages.txt) | Search results for “csr” in a general/resource channel, plus related posts | 2022-08 – 2025-05 | 150 |
 | [CSR development thread](chats/2024-09-csr-dev-thread-messages.txt) | Thread used for day-to-day CSR patch development | 2024-09 – 2024-11 | 1,355 |
 | [CSR discussion channel](chats/2024-11-csr-channel-messages.txt) | Dedicated channel after the thread | 2024-11 – 2026-07 | 1,700 |
-
-Also available: [Chat extracts](chats/), [HAR archives](archive/), [MANIFEST.json](archive/MANIFEST.json).  
-Chat logs are ordered **oldest message first**.
-
-Repos: Final-Fantasy-7-CSR (bases and scene packs), Final-Fantasy-7-Modding (encounter and engine mods), individualcontributordev.github.io (builder UI and this archive).
 
 ---
 
@@ -200,7 +193,7 @@ the engine-side patches work on disc.
 
 ---
 
-## Technical notes worth recording
+## Technical notes
 
 | Topic | What happened |
 |-------|----------------|
@@ -216,20 +209,6 @@ the engine-side patches work on disc.
 ## Credits
 
 jayrod316, awesomewaves, themattdavis, doumeis, uzuki7777, asleepyjake, katombaz, individualcontributor, .okamikaze, dashretro, wedgiroth, kumatv, muttski, .rendall, thebroodles, chuky500, kitkatbars, mcswirls, phek1200, musclebelt, teeejj0102, petfriendamy, kleinestennis, dylwingo, primitivedeath, lemon6559, blake.is.blue, rjthedestroyer, acezephyr, .theretrojay, cornfed, snake1982, luzbel, zheal, bigspill, fr3akzilla, hopeproductions
-
-
-## How to read the logs
-
-```text
-# oldest → newest plain text
-history/chats/2024-09-csr-dev-thread-messages.txt
-history/chats/2024-11-csr-channel-messages.txt
-history/chats/2022-08-csr-mentions-search-messages.txt
-```
-
-Or open https://individualcontributor.dev/history/ and use the archive cards.
-
----
 
 ## Related links
 
