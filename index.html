@@ -66,12 +66,14 @@
       padding: 0;
       margin: 14px 0 18px;
     }
-    .variants li {
+    .variants > li {
       margin: 10px 0;
+      padding-left: 0;
       font-size: 0.875rem;
       line-height: 1.65;
       letter-spacing: 0.5px;
     }
+    .variants > li::before { content: none; }
     .variants strong { color: var(--ff7-link); }
     .grid {
       display: grid;
