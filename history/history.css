@@ -14,8 +14,8 @@
 
 .lede-sm {
   font-size: 0.85rem;
-  line-height: 1.95;
-  letter-spacing: 1.2px;
+  line-height: 1.65;
+  letter-spacing: 0.5px;
   margin: 0 0 14px;
 }
 
@@ -29,7 +29,16 @@
   margin: 0;
 }
 
-.toc li { margin: 0 0 6px; font-size: 0.82rem; line-height: 1.8; letter-spacing: 1px; }
+.toc li {
+  margin: 0 0 4px;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  letter-spacing: 0.4px;
+}
+
+.toc a {
+  letter-spacing: 0.4px;
+}
 
 .story h1 { display: none; }
 
@@ -37,20 +46,25 @@
   color: var(--ff7-link);
   border-bottom: 1px solid var(--ff7-border);
   padding-bottom: 8px;
+  letter-spacing: 1px;
 }
 
 .story h3 {
   font-family: "DogicaPixelBold", Arial, sans-serif;
   font-size: 0.85rem;
-  letter-spacing: 1px;
+  letter-spacing: 0.6px;
   margin: 20px 0 10px;
 }
 
 .story p,
 .story li {
   font-size: 0.85rem;
-  line-height: 1.95;
-  letter-spacing: 1.2px;
+  line-height: 1.65;
+  letter-spacing: 0.5px;
+}
+
+.story a {
+  letter-spacing: 0.35px;
 }
 
 pre {
@@ -76,12 +90,13 @@ table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.72rem;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.3px;
+  line-height: 1.45;
 }
 
 th, td {
   border: 1px solid var(--ff7-border);
-  padding: 8px 10px;
+  padding: 6px 8px;
   text-align: left;
   vertical-align: top;
 }
@@ -92,8 +107,17 @@ th {
   background: rgba(0, 0, 0, 0.25);
 }
 
+td a {
+  letter-spacing: 0.3px;
+}
+
 ul { padding-left: 1.2rem; margin: 0 0 14px; }
-li { margin: 0 0 8px; font-size: 0.82rem; line-height: 1.8; letter-spacing: 1px; }
+li {
+  margin: 0 0 6px;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  letter-spacing: 0.45px;
+}
 
 .card-grid {
   display: grid;
@@ -105,17 +129,26 @@ li { margin: 0 0 8px; font-size: 0.82rem; line-height: 1.8; letter-spacing: 1px;
 .chat-card h3 {
   font-family: "DogicaPixelBold", Arial, sans-serif;
   font-size: 0.8rem;
-  margin: 0 0 10px;
-  letter-spacing: 0.8px;
+  margin: 0 0 8px;
+  letter-spacing: 0.5px;
 }
 
-.muted { opacity: 0.8; font-size: 0.75rem !important; }
+.muted {
+  opacity: 0.8;
+  font-size: 0.75rem !important;
+  line-height: 1.45 !important;
+  letter-spacing: 0.35px !important;
+}
+
+.chat-card .actions {
+  gap: 6px 12px;
+}
 
 .chat-card .actions a {
   font-family: "DogicaPixelBold", Arial, sans-serif;
   font-size: 0.72rem;
-  letter-spacing: 1px;
-  border-bottom: none;
+  letter-spacing: 0.35px;
+  border-bottom: 1px solid var(--ff7-link);
 }
 
 hr {

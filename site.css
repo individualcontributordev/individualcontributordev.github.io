@@ -96,9 +96,17 @@ body {
   flex-wrap: wrap;
 }
 
+.nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+}
+
 .nav-links a {
-  margin-right: 15px;
+  margin: 0;
   font-size: 1.05rem;
+  letter-spacing: 0.5px;
   color: var(--ff7-link);
   text-decoration: none;
 }
@@ -107,8 +115,6 @@ body {
   color: var(--ff7-text);
   text-decoration: underline;
 }
-
-.nav-links a:last-child { margin-right: 0; }
 
 .site-logo {
   height: 40px;
@@ -137,8 +143,8 @@ h1.brand {
   margin: 0 0 24px;
   max-width: 40rem;
   font-size: 0.95rem;
-  line-height: 2;
-  letter-spacing: 1.5px;
+  line-height: 1.7;
+  letter-spacing: 0.6px;
   color: var(--ff7-text);
 }
 
@@ -148,20 +154,25 @@ h1.brand {
 a {
   color: var(--ff7-link);
   text-decoration: none;
+  letter-spacing: 0.4px;
 }
 
-a:hover { color: var(--ff7-text); }
+a:hover {
+  color: var(--ff7-text);
+  text-decoration: underline;
+}
 
 code {
   font-family: "DogicaPixelRegular", monospace;
   color: var(--ff7-link);
+  letter-spacing: 0.3px;
 }
 
 p {
   margin: 0 0 14px;
   font-size: 0.875rem;
-  line-height: 2;
-  letter-spacing: 1.5px;
+  line-height: 1.7;
+  letter-spacing: 0.6px;
 }
 
 .panel {
@@ -186,17 +197,22 @@ h2 {
 .actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  align-items: center;
+  gap: 8px 14px;
   margin-top: 8px;
 }
 
 .actions a {
   font-size: 0.8rem;
-  letter-spacing: 1px;
+  letter-spacing: 0.4px;
   border-bottom: 1px solid var(--ff7-link);
+  text-decoration: none;
 }
 
-.actions a:hover { border-bottom-color: var(--ff7-text); }
+.actions a:hover {
+  border-bottom-color: var(--ff7-text);
+  text-decoration: none;
+}
 
 footer {
   padding: 24px 0 40px;
@@ -205,4 +221,13 @@ footer {
   color: var(--ff7-muted);
 }
 
-footer p { margin: 0; font-size: inherit; letter-spacing: 1px; line-height: 1.6; }
+footer p {
+  margin: 0;
+  font-size: inherit;
+  letter-spacing: 0.4px;
+  line-height: 1.5;
+}
+
+footer a {
+  letter-spacing: 0.4px;
+}
