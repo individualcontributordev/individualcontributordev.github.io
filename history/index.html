@@ -31,7 +31,7 @@
     <main>
       <header class="hero">
         <h1 class="brand">History</h1>
-        <p class="tagline">Chronological record of PSX CSR, CSR+ packs, Highwind, and disc mods, with community chat archives.</p>
+        <p class="tagline">How PSX CSR, CSR+ packs, Highwind, and disc mods grew with the community — swap bugs, sub-4 runs, and the builder.</p>
       </header>
       <section class="panel toc-panel"><h2>On this page</h2>
         <ul class="toc">
@@ -45,96 +45,76 @@
         <div class="card-grid"><div class="panel chat-card"><h3>CSR mentions (server search)</h3><p class="muted">Discord search for “csr” in a general/resource channel, plus hits from the CSR thread. Includes early announcements, hardware testing callouts, and related practice tools (e.g. Hope’s step-route ISO).</p><p class="muted">2022-08-05 – 2025-05-04 · 150 messages</p><div class="actions"><a href="chats/2022-08-csr-mentions-search-messages.txt">Read chat</a> <a href="chats/2022-08-csr-mentions-search-messages.json">JSON</a> <a href="archive/2022-08-csr-mentions-search.sanitized.har.gz">HAR.gz</a></div></div><div class="panel chat-card"><h3>CSR development thread (pre-channel)</h3><p class="muted">Original forum-style thread where PSX CSR was born (Sep–Nov 2024).</p><p class="muted">2024-09-29 – 2024-11-19 · 1355 messages</p><div class="actions"><a href="chats/2024-09-csr-dev-thread-messages.txt">Read chat</a> <a href="chats/2024-09-csr-dev-thread-messages.json">JSON</a> <a href="archive/2024-09-csr-dev-thread.sanitized.har.gz">HAR.gz</a></div></div><div class="panel chat-card"><h3>CSR discussion channel</h3><p class="muted">Dedicated CSR channel after thread (Nov 2024–Jul 2026).</p><p class="muted">2024-11-18 – 2026-07-29 · 1700 messages</p><div class="actions"><a href="chats/2024-11-csr-channel-messages.txt">Read chat</a> <a href="chats/2024-11-csr-channel-messages.json">JSON</a> <a href="archive/2024-11-csr-channel.sanitized.har.gz">HAR.gz</a></div></div></div>
       </section>
       <section id="story" class="story"><h1>History of FF7 PSX CSR and related mods</h1>
-<p>A chronological record of how cutscene-reduced <strong>Final Fantasy VII</strong> (PlayStation) disc images, optional scene packs, the Highwind base, and encounter mods were developed and used with the FF7 speedrunning community.</p>
+<p>How cutscene-reduced <strong>Final Fantasy VII</strong> (PlayStation) discs, optional scene packs, the Highwind base, and encounter mods grew with the FF7 speedrunning community.</p>
 <p><strong>Public page:</strong> https://individualcontributor.dev/history/</p>
 <h2 id="sources">Sources</h2>
 <div class="table-wrap"><table>
 <thead><tr><th>Archive</th><th>Description</th><th>Date range</th><th>Messages</th></tr></thead><tbody>
-<tr><td><a href="chats/2022-08-csr-mentions-search-messages.txt">CSR mentions (server search)</a></td><td>Search results for “csr” in a general/resource channel, plus related posts</td><td>2022-08 – 2025-05</td><td>150</td></tr>
-<tr><td><a href="chats/2024-09-csr-dev-thread-messages.txt">CSR development thread</a></td><td>Thread used for day-to-day CSR patch development</td><td>2024-09 – 2024-11</td><td>1,355</td></tr>
+<tr><td><a href="chats/2022-08-csr-mentions-search-messages.txt">CSR mentions (server search)</a></td><td>Search hits for “csr” plus related practice-tool posts</td><td>2022-08 – 2025-05</td><td>150</td></tr>
+<tr><td><a href="chats/2024-09-csr-dev-thread-messages.txt">CSR development thread</a></td><td>Forum-style thread where PSX CSR was built day to day</td><td>2024-09 – 2024-11</td><td>1,355</td></tr>
 <tr><td><a href="chats/2024-11-csr-channel-messages.txt">CSR discussion channel</a></td><td>Dedicated channel after the thread</td><td>2024-11 – 2026-07</td><td>1,700</td></tr>
 </tbody></table></div>
 <hr />
 <h2 id="background">Background</h2>
-<p>Final Fantasy VII Any% on PlayStation is paced by battles, routing, and long <strong>field scripts, FMVs, and dialogue</strong>. Speedrunners already used turbo, save states, and written routes. Separately, <strong>cutscene-reduced</strong> builds (often called CSR in this community) existed for other games and for other FF7 platforms; practice ISOs that stripped or shortened non-gameplay segments were also shared so runners could focus on steps and fights.</p>
-<p>Building the same idea for <strong>PSX retail disc images</strong> adds constraints that do not apply to PC file mods alone: three discs, Mode 2 sectors, field script layout, burned-media and console disc-swap behaviour, and tools such as Makou Reactor for editing field content.</p>
+<p>Any% on PlayStation is already a long fight with battles, routing, and <strong>field scripts, FMVs, and dialogue</strong>. Runners used turbo, save states, and written step routes. Other games in the community already had cutscene-reduced builds (often nicknamed CSR). FF7 had practice images and PC-side experiments too. The missing piece for many console runners was the same idea applied to <strong>NTSC-U retail disc images</strong> you could burn and put in a real machine.</p>
+<p>That is harder than a PC file drop. Three discs, Mode 2 sectors, field layout, disc-swap behaviour on PS2 burns, and field edits through tools like Makou Reactor all matter. Emulator convenience is useful; hardware is the bar many people care about.</p>
 <hr />
-<h2 id="2022-2024-prior-practice-tools">2022–2024: Prior practice tools</h2>
-<p>Archived search hits include discussion of practice-oriented <strong>ISO hacks</strong> shared in the server. One example, posted by <strong>hopeproductions</strong>, describes a disc image arranged for step-route practice: non-preemptable bosses removed, unnecessary inactive step screens skipped, content kept on a single disc image so disc changes are not required during practice. Hope had also worked on earlier CSR-style experiments used by runners.</p>
-<p>Those tools are distinct from the later IndividualContributor CSR line (which keeps skill-check scenes and ships versioned multi-disc patches). They are part of the same problem space: less waiting, more time on gameplay that transfers to real routes.</p>
+<h2 id="before-this-csr-practice-tools-in-the-server">Before this CSR: practice tools in the server</h2>
+<p>Search hits from 2022 onward show the server already talking about CSR-style ideas and practice ISOs. <strong>hopeproductions</strong> shared a step-route-oriented image (non-preemptable bosses removed, inactive step screens skipped, single-disc practice so you are not swapping mid-session) and earlier CSR-style experiments runners actually used.</p>
+<p>Those tools are not the same product as the later IndividualContributor line, but they sit in the same problem: less waiting, more time on the gameplay that still matters when you go back to a full retail disc.</p>
 <hr />
-<h2 id="september-october-2024-psx-csr-thread-opens">September–October 2024: PSX CSR thread opens</h2>
-<p><strong>29 September 2024</strong> — Development concentrates in a Discord thread (archive: development thread).</p>
-<p>Early work includes:</p>
-<ul><li>Field-script trims applied with Makou Reactor  </li><li>Patches distributed as <strong>PPF</strong> (and later cleaner packaging) against NTSC-U <code>.bin</code> files  </li><li>Testing on <strong>DuckStation</strong> and on <strong>burned discs</strong> (PS2 Slim, including MechaPwn setups for NTSC and backups)  </li><li>Public GitHub hosting under Final-Fantasy-7-CSR  </li></ul>
-<p><strong>24 September 2024</strong> (also visible in the search archive) — An announcement of CSR patches for Any% and related categories (NMS, All Bosses, etc.), initially emphasizing discs 1 and 2, with console burn testing called out explicitly.</p>
-<p>Through October, versions move quickly. Examples recorded in chat:</p>
-<div class="table-wrap"><table>
-<thead><tr><th>Approx. date</th><th>Milestone</th></tr></thead><tbody>
-<tr><td>Early–mid Oct</td><td>Repo online; iterative disc 1 patches; practice saves and DuckStation testing</td></tr>
-<tr><td>~26 Oct</td><td><strong>v0.3.0</strong> — larger disc 1 trim pass (e.g. Temple); request for more disc 1 feedback</td></tr>
-<tr><td>~30 Oct</td><td><strong>v0.4.0</strong> — optional mid-run break after Demon’s Gate (later moved)</td></tr>
-<tr><td>Late Oct</td><td>Break relocation experiments; Reactor 5 and disc 2 shortening; scenes restored where movement mattered (e.g. post–Jenova Death positioning)</td></tr>
-</tbody></table></div>
-<p><strong>Feedback pattern:</strong> someone plays a build, notes a softlock, missing cue, or odd timing; a new patch is cut the same day or next. Full practice runs and PS2 burns are used as the real test harness.</p>
-<h3>Disc 1 → disc 2 swap failure (late Oct – 10 Nov 2024)</h3>
-<p>After Jenova Life, some <strong>physical</strong> disc swaps from CSR disc 1 to disc 2 failed on PS2 (error behaviour), while emulators often continued. Investigation included:</p>
-<ul><li>Comparing CSR vs unpatched burns and retail discs  </li><li>Memory-card saves from CSR runs vs clean saves  </li><li>Confirming patched <code>.bin</code> file sizes still matched retail size  </li><li><strong>Binary search</strong> through git commits to find when the regression entered  </li><li>Isolating field-script edits (e.g. around post-Motorball / related scripts)  </li></ul>
-<p><strong>10 November 2024</strong> — <strong>v0.4.10</strong> notes a fix for disc 1→2 swap after Jenova Life (script revert of problematic changes). Afterward the repo standardizes on a single “latest” downloadable patch set with history in git rather than many parallel version folders.</p>
-<p>This episode fixed a hard requirement for console use of multi-disc CSR.</p>
-<h3>Late October – mid-November 2024: skill-check definition in chat</h3>
-<p>Design goals are stated repeatedly in thread and announcements:</p>
-<ul><li>Keep <strong>player-required actions</strong>: dialogue options that matter, movement during</li></ul>
-<p>cutscenes, known skips, RNG-related windows (including elevator manip material tied to sequences such as Aerith’s house / waterfall observation for List).</p>
-<ul><li>Cut or shorten <strong>FMVs and mash-only</strong> stretches where scripts allow.  </li><li>Prefer verification on <strong>hardware</strong>; treat DuckStation as convenient but not final.</li></ul>
-<p>Examples of community-driven script detail: when dialogue box counts before a choice diverge from retail, runners report it; some boxes are <strong>restored</strong> so timing and muscle memory match the retail game more closely. Over-trim that made sections feel empty is walked back in several releases.</p>
-<p><strong>~12–13 November 2024</strong> — Unofficial time tracking / submission links appear on the GitHub README; feedback forms are linked for structured requests.</p>
-<p><strong>~18–19 November 2024</strong> — Discussion moves into a <strong>dedicated Discord channel</strong> (archive: CSR discussion channel). The thread remains historical source material.</p>
+<h2 id="autumn-2024-a-thread-then-a-flood-of-patches">Autumn 2024: a thread, then a flood of patches</h2>
+<p><strong>Late September 2024</strong> — Work concentrates in a Discord thread. Patches start as <strong>PPF</strong> against clean <code>.bin</code> files. Testing is on DuckStation <em>and</em> burned discs (PS2 Slim, MechaPwn, the usual backup setups). The repo goes public under Final-Fantasy-7-CSR.</p>
+<p>An early announcement frames the goal for Any% and related categories (NMS, All Bosses, and friends): cut the dead air, keep what runners still have to <em>do</em>, and prove it on console, not only in an emulator window.</p>
+<p>October is rapid fire. Disc 1 gets iterative passes; Temple and other long sections shrink; an optional <strong>mid-run break</strong> appears after Demon’s Gate and then gets moved as people try different session shapes. Reactor 5 and disc 2 start to open up. When a trim deletes a movement cue runners rely on (for example post–Jenova Death positioning), the next build often puts something back. The loop is simple and loud: someone finishes a stretch, posts a softlock or a weird box count, and a new patch lands the same day or the next.</p>
+<p>Save states from old patches on new builds also create ghost bugs. Clean runs and physical burns become the trusted checks.</p>
+<h3>The disc 1 → disc 2 swap saga</h3>
+<p>Late October into early November, a problem shows up that emulators were happy to hide: after <strong>Jenova Life</strong>, some <strong>physical</strong> swaps from CSR disc 1 to disc 2 fail on PS2 (error behaviour, black screens, “put the other disc back in and it loads” weirdness). DuckStation often sails through the same path.</p>
+<p>The investigation is a multi-day community science project. People compare CSR burns to retail burns, try CSR saves vs clean saves, confirm patched <code>.bin</code> sizes still match retail (so it is not a simple “file grew” story), try mixing burned and retail discs, and float workarounds (swap to a clean disc 2 just to load, then reseat CSR). Hope’s older practice CSR had its own console landmines (for example lifestream hub crashes unless you briefly ran an official disc), so nobody assumes “burned multi-disc” is free.</p>
+<p>Eventually the bug is traced with a <strong>git bisect-style</strong> walk of commits. The smoking gun is not a dedicated “disc swap” edit sitting next to the swap script. It is an earlier field change (around post-Motorball music / wait-frame structure on a script that also participates in later disc-2 flow). A small revert and restore of frames and music playback fixes the path. **10 November 2024 — v0.4.10** ships with the fix called out explicitly.</p>
+<p>After that, the repo stops scattering many parallel version folders for downloads and standardizes on “latest patch + git history.” The swap fight is why console multi-disc CSR is treated as a first-class requirement, not a nice extra.</p>
+<h3>What “skill check” means in this CSR</h3>
+<p>Through the same weeks the design gets stated out loud, over and over:</p>
+<ul><li>Keep <strong>player-required</strong> moments: meaningful dialogue options, movement during</li></ul>
+<p>cutscenes, known skips, and RNG-related windows (elevator mash text, List / FD material around sequences such as Aerith’s house and the waterfall).</p>
+<ul><li>Cut or shorten <strong>FMVs and mash-only</strong> stretches when the scripts allow it.</li><li>Prefer hardware verification; DuckStation is convenient, not final.</li></ul>
+<p>When a choice appears with the wrong number of lead-in boxes, runners say so. Several releases <strong>restore</strong> boxes so muscle memory still matches retail. The CSR is intentionally not “delete every text box and teleport Cloud to the next fight.” Hope’s practice tools and later Highwind sit further down that axis; this base tries to keep the run’s skill spine.</p>
+<p>Unofficial time-tracking and feedback forms appear on the README around mid-November. <strong>~18–19 November 2024</strong> discussion moves into a **dedicated Discord channel**. The old thread stays archive fuel; the channel becomes the daily shop floor.</p>
 <hr />
-<h2 id="november-2024-2025-channel-era-and-multi-category-use">November 2024 – 2025: Channel era and multi-category use</h2>
-<p>The channel archive covers continuous releases and playtesting. Themes:</p>
-<h3>Categories beyond one Any% line</h3>
-<p>Runners and testers exercise <strong>NMS</strong>, <strong>All Bosses</strong>, side content (e.g. Wutai, Gelnika, Gongaga Turks), and route variants. Scene lists and trim notes are often category-specific. That tension shows up repeatedly: a cut that helps one category may remove a sequence another category still uses.</p>
-<h3>Restores and cue tuning</h3>
-<p>Multiple releases put text boxes or short animations <strong>back</strong> after playtests (examples cited in chat include Wall Market cues, post-fight dialogue counts, Highwind bridge / post–Rocket Town movement, Kalm break box counts). The record shows both aggressive trim passes and corrective restores.</p>
-<h3>Hardware matrix</h3>
-<p>Testing spans DuckStation versions, RetroArch, burned PS2 discs, POPStarter/USB or network loads, and later FPGA reports. Bugs that appear only on one stack are tracked separately from pure field-script mistakes.</p>
-<h3>Disc 2 / disc 3 and long segments</h3>
-<p>Work expands through disc 2 (Rocket Town, Midgar return, trains, etc.) and disc 3 segments. Some FMVs remain when the game couples video to movement or flags (e.g. elements of Midgar raid parachute sequences). World-map-linked scenes are handled carefully after bugs such as incorrect world state when boat / Costa transitions are removed incorrectly.</p>
-<h3>Versioning and packaging evolution</h3>
-<p>Distribution moves from ad-hoc PPF lists toward <strong>versioned packs</strong>, changelogs, and eventually (2026) a browser builder. Early repo layout experiments (many version folders) are simplified after the disc-swap bisect showed commit history was more useful.</p>
+<h2 id="channel-era-categories-restores-and-the-sub-4-chase">Channel era: categories, restores, and the sub-4 chase</h2>
+<p>Once there is a channel, playtesting never really stops. Releases tick through the autumn and into 2025. A few threads of story keep coming back.</p>
+<h3>Same CSR, different categories</h3>
+<p>People run more than one Any% flavour. <strong>NMS</strong> gets a written notes dump from cornfed (church, house, reactor 5, train, Kalm flashback arc, Cosmo, Midgar return — scene by scene). Those notes turn into real disc 1 passes. **All Bosses** and side content (Wutai, Gelnika, Gongaga Turks) show the other edge: a cut that is free time for No Slots can still be dead air for a category that never needed the leftover skill-check scene. That tension does not get fully solved in 2024–25; it becomes the later argument for optional packs.</p>
+<h3>Trim hard, then put the cue back</h3>
+<p>The channel is full of tiny craft notes. Wall Market needs an orient box. Kalm after photoskip cannot lose the soldier boxes — mash there and you softlock; that is a skill check, not filler. Junon locker tutorial text comes partly back so options are not a surprise. Highwind bridge after Rocket Town gets shortened until Cloud is already standing and Red runs up, then Cid’s movement is checked again because it drifted from retail. Gold Saucer entry, clothes shop running, date tubes, Fort Condor chatter, Carry Armor and UWR corridors, disc 3 endgame boxes, the naked-Seph FMV — each shows up as a clip or a one-line request and often as a changelog bullet days later.</p>
+<p>IC’s own line captures the design tension: how do you push toward <strong>sub-4</strong> without wrecking the <em>feel</em> of places like the Gold Saucer cart? Fade-to-black is easy; keeping the session fun is the harder part.</p>
+<h3>How much time does this actually save?</h3>
+<p>In late November 2024, <strong>phek1200</strong> estimates a full No Slots–style pace on <strong>v0.6.0</strong> as roughly a <strong>6h35</strong> non-CSR equivalent — about <strong>2h24</strong> saved by the CSR of that week. The room immediately does the arithmetic: a little more trim and sub-4 on CSR is in reach for strong paces; PSX might need a few more minutes of cut than emu. Disc 3 gets an explicit “route done?” release (<strong>v0.7.0</strong>) once endgame boxes and the last FMVs are under control.</p>
+<p><strong>10 January 2025</strong> — phek posts what the channel had been aiming at: a <strong>first sub-4 No Slots on CSR</strong> (emulator, v0.10.0), with the usual runner footnotes (minutes left on the table to Palmer, and so on). That run becomes a reference point; more trims and cue restores continue through the spring as other people grind toward the same number on their own setups.</p>
+<h3>Console keeps scoring own goals</h3>
+<p>Even after the big swap fix, multi-disc on real hardware stays spicy. A later build regresses disc 2 load again; workarounds and version bisection return; Rocket Town–adjacent disc 2 content is implicated and fixed. Midgar raid can lose a lot of talk, but the Highwind jump / parachute FMV stays when movement is wired into the video. Music bugs after jumping back toward Midgar show up on full NMS clears. The lesson never really changes: a green DuckStation path is necessary, not sufficient.</p>
 <hr />
-<h2 id="2026-product-split-csr-packs-highwind-mods">2026: Product split — CSR, packs, Highwind, mods</h2>
-<h3>Structure</h3>
-<p>Chat from mid–late 2026 records a split of what had been one ambiguous “CSR vs CSR+ vs CSR++” idea into explicit builder products:</p>
+<h2 id="2026-why-not-both-packs-highwind-builder-mods">2026: “Why not both?”, packs, Highwind, builder, mods</h2>
+<p>By mid-2026 the CSR base is deep into the 0.14 line. Community talk turns from “can this exist?” to “how many shapes should it come in?”</p>
+<h3>Product split</h3>
+<p>A community pulse lands on <strong>“why not both?”</strong> — keep a skill-check CSR <em>and</em> offer harder cuts for people who do not need elev/FD theatre every run. That forces a cleaner product map than the old casual “CSR / CSR+ / CSR++” slang:</p>
 <div class="table-wrap"><table>
 <thead><tr><th>Product</th><th>Role</th></tr></thead><tbody>
-<tr><td><strong>CSR</strong> (base)</td><td>Field trims with skill-check scenes retained</td></tr>
-<tr><td><strong>CSR+ scene packs</strong></td><td>Optional additional scene trims <strong>on CSR only</strong> (checkbox / preset)</td></tr>
-<tr><td><strong>Highwind</strong> (base)</td><td>Separate aggressive short playthrough; not stacked with CSR+ packs</td></tr>
-<tr><td><strong>Mods</strong></td><td>Cross-base gameplay layers (e.g. field and world encounter density)</td></tr>
+<tr><td><strong>CSR</strong> (base)</td><td>Field trims with skill-check scenes kept</td></tr>
+<tr><td><strong>CSR+ scene packs</strong></td><td>Optional extra trims <strong>on CSR only</strong> (checkboxes / all-scenes preset)</td></tr>
+<tr><td><strong>Highwind</strong> (base)</td><td>Separate aggressive short playthrough — “dad mode,” too-many-IRL-things mode — <strong>not</strong> stacked with CSR+ packs</td></tr>
+<tr><td><strong>Mods</strong></td><td>Cross-base gameplay layers (field and world encounter density, and more later)</td></tr>
 </tbody></table></div>
-<p>Examples of shipped scene packs named in project docs and chat: Aerith house, Hojo FD-related trim, CoTA / waterfall-related trim. Packs that change FD / List behaviour document that impact in changelogs.</p>
+<p>Early CSR+ ships as a bulk idea (Aerith house and Hojo FD scenes cut on top of CSR v0.14). Within days the plan narrows: <strong>CSR+ is not a second full base</strong>. It becomes individual <strong>scene packs</strong> (Aerith house, Hojo FD, CoTA / waterfall with explicit List/FD changelog notes) so runners pick what their category can spare. Highwind absorbs the “go ham on filler” fantasy — shorter corridors, freer Wall Market order experiments, prison and stairs nonsense — without forcing that on the skill-check base.</p>
 <h3>Browser builder</h3>
-<p><strong>individualcontributor.dev/builder/</strong> applies base + packs + mods in the browser and downloads a zip (<code>.bin</code>, <code>.cue</code>, <code>APPLIED.txt</code>). Packs are loaded from GitHub Pages manifests for the CSR and Modding repositories. UI later separates <strong>packs</strong> (CSR+ scenes) from <strong>mods</strong> (e.g. encounters on Unmodified / CSR / Highwind).</p>
-<h3>Encounter mods</h3>
-<p>Final-Fantasy-7-Modding publishes field and world <strong>random encounter density</strong> packs (Light / Standard / Dense) as layers compatible with multiple bases. Console burn tests of CSR/Highwind stacks with these mods are discussed once the engine-side patches work on disc.</p>
-<hr />
-<h2 id="technical-notes">Technical notes</h2>
-<div class="table-wrap"><table>
-<thead><tr><th>Topic</th><th>What happened</th></tr></thead><tbody>
-<tr><td><strong>Field scripts</strong></td><td>Primary CSR work surface via Makou; trims, wait frames, text, movement</td></tr>
-<tr><td><strong>Disc swap</strong></td><td>Multi-week hardware regression; fixed by locating bad script changes via git bisect-style testing</td></tr>
-<tr><td><strong>File size</strong></td><td>Patched discs kept the same overall <code>.bin</code> size as retail in reported tests—swap bugs were not explained by simple “file grew” theories</td></tr>
-<tr><td><strong>Save states</strong></td><td>Loading states from older patches onto newer builds caused false bugs; clean runs preferred for QA</td></tr>
-<tr><td><strong>EDC/ECC</strong></td><td>Builder path repairs Mode 2 sector checksums after layer apply (site builder behaviour)</td></tr>
-<tr><td><strong>Layers</strong></td><td>Later shipping uses <code>ic-layer-v1</code> JSON records rather than only whole-image PPF</td></tr>
-</tbody></table></div>
+<p><strong>https://individualcontributor.dev/builder/</strong> lets you start from your own clean NTSC-U <code>.bin</code>, pick a base, optional CSR+ packs, and optional mods, and download a zip (<code>.bin</code>, <code>.cue</code>, <code>APPLIED.txt</code>). Nothing uploads. Packs load from GitHub Pages manifests on the CSR and Modding repos. The UI learns to separate <strong>packs</strong> (CSR+ scenes) from <strong>mods</strong> (encounters on Unmodified / CSR / Highwind). Console burns of builder stacks, including CSR+ on MechaPwn setups, show up in channel testing.</p>
+<h3>Encounter mods on real discs</h3>
+<p>Field and world <strong>random encounter density</strong> packs (Light / Standard / Dense) ship from Final-Fantasy-7-Modding as engine layers, not Makou day-trip edits. Light is pitched as closer to a routed “few fights” feel; Standard nearer vanilla density; Dense for chaos. When a CSR++/Highwind-era stack with the encounter add-on boots on a <strong>PS2 Slim burn</strong> through Guard Scorpion, the room treats it as proof that disc-level engine mods are not only an emulator party trick — and as a green light for later ideas like battle fanfare or death-anim shortening as optional mods rather than more cutscene work.</p>
 <hr />
 <h2 id="credits">Credits</h2>
 <p>jayrod316, awesomewaves, themattdavis, doumeis, uzuki7777, asleepyjake, katombaz, individualcontributor, .okamikaze, dashretro, wedgiroth, kumatv, muttski, .rendall, thebroodles, chuky500, kitkatbars, mcswirls, phek1200, musclebelt, teeejj0102, petfriendamy, kleinestennis, dylwingo, primitivedeath, lemon6559, blake.is.blue, rjthedestroyer, acezephyr, .theretrojay, cornfed, snake1982, luzbel, zheal, bigspill, fr3akzilla, hopeproductions</p>
 <h2 id="related-links">Related links</h2>
-<ul><li>Disc builder: https://individualcontributor.dev/builder/  </li><li>CSR repository: https://github.com/individualcontributordev/Final-Fantasy-7-CSR  </li><li>Modding repository: https://github.com/individualcontributordev/Final-Fantasy-7-Modding  </li><li>Suggestions backlogs: <code>docs/SUGGESTIONS.md</code> in the CSR and Modding repos  </li></ul></section>
+<ul><li>Disc builder: https://individualcontributor.dev/builder/</li><li>CSR repository: https://github.com/individualcontributordev/Final-Fantasy-7-CSR</li><li>Modding repository: https://github.com/individualcontributordev/Final-Fantasy-7-Modding</li><li>Suggestions backlogs: <code>docs/SUGGESTIONS.md</code> in the CSR and Modding repos</li></ul></section>
       <section id="downloads" class="panel"><h2>Downloads</h2>
         <ul>
           <li><a href="HISTORY.md">HISTORY.md</a></li>
