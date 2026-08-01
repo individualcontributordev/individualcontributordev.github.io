@@ -215,50 +215,52 @@ the engine-side patches work on disc.
 
 ## Credits
 
-People who appear in the archived chats (alphabetical by Discord username).  
-Participation ranges from a single useful note to months of testing and posts.
+People who appear in the archived chats, ordered by **first message date**
+in those archives (oldest first). Names are Discord usernames.
 
-- .okamikaze  
-- .rendall  
-- .theretrojay  
-- acezephyr  
-- asleepyjake  
-- awesomewaves  
-- bigspill  
-- blake.is.blue  
-- chuky500  
-- cornfed  
-- dashretro  
-- doumeis  
-- dylwingo  
-- fr3akzilla  
-- hopeproductions  
-- individualcontributor  
-- jayrod316  
-- katombaz  
-- kitkatbars  
-- kleinestennis  
-- kumatv  
-- lemon6559  
-- luzbel  
-- mcswirls  
-- musclebelt  
-- muttski  
-- petfriendamy  
-- phek1200  
-- primitivedeath  
-- rjthedestroyer  
-- snake1982  
-- teeejj0102  
-- thebroodles  
-- themattdavis  
-- uzuki7777  
-- wedgiroth  
-- zheal  
+| First seen | Username |
+|------------|----------|
+| 2022-08-05 | kitkatbars |
+| 2024-05-31 | lemon6559 |
+| 2024-09-24 | individualcontributor |
+| 2024-10-01 | .okamikaze |
+| 2024-10-15 | awesomewaves |
+| 2024-10-16 | teeejj0102 |
+| 2024-10-25 | doumeis |
+| 2024-10-28 | hopeproductions |
+| 2024-10-28 | dashretro |
+| 2024-11-05 | themattdavis |
+| 2024-11-12 | .rendall |
+| 2024-11-16 | phek1200 |
+| 2024-11-18 | acezephyr |
+| 2024-11-18 | blake.is.blue |
+| 2024-11-18 | cornfed |
+| 2024-11-18 | kumatv |
+| 2024-11-18 | mcswirls |
+| 2024-11-19 | wedgiroth |
+| 2024-11-20 | zheal |
+| 2024-11-24 | luzbel |
+| 2024-11-26 | dylwingo |
+| 2024-11-26 | uzuki7777 |
+| 2024-12-03 | fr3akzilla |
+| 2024-12-05 | petfriendamy |
+| 2024-12-05 | primitivedeath |
+| 2024-12-12 | muttski |
+| 2024-12-19 | thebroodles |
+| 2024-12-26 | katombaz |
+| 2025-01-15 | jayrod316 |
+| 2025-01-20 | musclebelt |
+| 2025-02-15 | snake1982 |
+| 2025-03-02 | chuky500 |
+| 2025-03-03 | rjthedestroyer |
+| 2026-04-29 | .theretrojay |
+| 2026-07-06 | asleepyjake |
+| 2026-07-09 | kleinestennis |
+| 2026-07-17 | bigspill |
 
-If a username is missing or wrong, open an issue or PR on the site repo.
+“Deleted User” entries in the exports are omitted. Dates reflect only these
+archives, not the whole Discord server. Corrections welcome via the site repo.
 
----
 
 ## How to read the logs
 
