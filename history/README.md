@@ -13,3 +13,5 @@ Add a capture from the site repo root with scripts/sanitize_discord_har.py,
 then rebuild index via scratch/build_history_site.py (or copy pattern).
 
 Never commit raw unsanitized HARs.
+
+Chat logs are ordered **earliest message first**.
