@@ -387,11 +387,11 @@ function renderPresets(kind, opts = {}) {
 	select.id = selectId;
 	select.name = kind + '-preset';
 	select.dataset.kind = kind;
-	select.setAttribute('aria-label', kind === 'pack' ? 'Pack preset' : 'Mod preset');
+	select.setAttribute('aria-label', kind === 'pack' ? 'CSR+ trim preset' : 'Mod preset');
 	const noneOpt = document.createElement('option');
 	noneOpt.value = '';
 	noneOpt.textContent = 'None';
-	noneOpt.title = kind === 'pack' ? 'Pick packs manually below.' : 'Pick mods manually below.';
+	noneOpt.title = kind === 'pack' ? 'Pick scene trims manually below.' : 'Pick mods manually below.';
 	select.appendChild(noneOpt);
 	for (const preset of presets) {
 		const opt = document.createElement('option');
@@ -508,7 +508,7 @@ function exclusiveGroupTitle(addons) {
 	const name = String(addons[0]?.name || '');
 	const before = name.split('—')[0].trim();
 	if (before) return before;
-	return addons[0]?.exclusiveGroup || 'Add-on';
+	return addons[0]?.exclusiveGroup || 'Option';
 }
 
 /** Semver from pack.version, trailing " vX.Y.Z" in name, or id suffix -vX.Y.Z. */
@@ -742,13 +742,13 @@ function updateSectionExplainers(baseId) {
 		if (isCsr) {
 			packsEl.textContent =
 				manifest.explainer?.packs ||
-				'Optional CSR+ scene packs on CSR. Stack any combination. Organized by disc.';
+				'Optional extra cutscene trims on CSR only (not new content). Stack any combination. By disc.';
 		} else if (isHighwind) {
 			packsEl.textContent =
-				'CSR+ scene packs require the CSR base. Highwind is a separate full experience.';
+				'CSR+ scene trims apply on the CSR base only. Highwind is a separate full experience.';
 		} else {
 			packsEl.textContent =
-				'CSR+ scene packs require the CSR base. Switch Base Experience to CSR to enable them.';
+				'CSR+ scene trims apply on the CSR base only. Switch Base Experience to CSR to enable them.';
 		}
 	}
 	if (modsEl) {
@@ -780,8 +780,8 @@ function renderLayerList(kind) {
 			empty.className = 'explainer';
 			empty.style.marginBottom = '0';
 			empty.textContent = anyPacksExist
-				? 'No packs for this base — choose CSR above.'
-				: 'No packs published yet.';
+				? 'No CSR+ scene trims for this base — choose CSR above.'
+				: 'No CSR+ scene trims published yet.';
 			listEl.appendChild(empty);
 			return;
 		}
@@ -896,8 +896,8 @@ function updatePlan() {
 	steps.push(sourceBytes ? `Input: ${sourceBytes.length} bytes` : 'Input: (none yet)');
 	steps.push(disc ? `Disc: ${disc} (auto)` : 'Disc: (not detected)');
 	steps.push(`Base Experience: ${base ? base.name : baseId}`);
-	if (packs.length) packs.forEach((a, i) => steps.push(`Pack ${i + 1}: ${freeAddonLabel(a)}`));
-	else steps.push('Packs: (none)');
+	if (packs.length) packs.forEach((a, i) => steps.push(`CSR+ trim ${i + 1}: ${freeAddonLabel(a)}`));
+	else steps.push('CSR+ trims: (none)');
 	if (mods.length) mods.forEach((a, i) => steps.push(`Mod ${i + 1}: ${freeAddonLabel(a)}`));
 	else steps.push('Mods: (none)');
 	steps.push('Output: .zip (.bin + .cue + APPLIED.txt)');
@@ -1076,9 +1076,9 @@ function buildAppliedReport({ disc, base, baseId, addons, edcFixed }) {
 	const packs = addons.filter((a) => layerKind(a) === 'pack');
 	const mods = addons.filter((a) => layerKind(a) === 'mod');
 	if (packs.length) {
-		lines.push('Packs:');
+		lines.push('CSR+ scene trims (on CSR):');
 		for (const addon of packs) lines.push(`  - ${freeAddonLabel(addon)}`);
-	} else lines.push('Packs: none');
+	} else lines.push('CSR+ scene trims: none');
 	if (mods.length) {
 		lines.push('Mods:');
 		for (const addon of mods) lines.push(`  - ${freeAddonLabel(addon)}`);
@@ -1114,7 +1114,7 @@ async function init() {
 			if (remotesOk === 0 && expectedRemotes > 0) {
 				loadBannerEl.hidden = false;
 				loadBannerEl.textContent =
-					'Could not load CSR / Modding packs. Check your connection and try again.';
+					'Could not load CSR / Modding catalogs. Check your connection and try again.';
 			} else if (remotesOk < expectedRemotes) {
 				loadBannerEl.hidden = false;
 				loadBannerEl.textContent =
@@ -1132,7 +1132,7 @@ async function init() {
 			applySelection();
 		});
 
-		setStatus('Choose an NTSC-U .bin, then pick base, packs, and mods.');
+		setStatus('Choose an NTSC-U .bin, then pick base, CSR+ scene trims, and mods.');
 	} catch (err) {
 		setStatus(err.message || String(err), true);
 	}
