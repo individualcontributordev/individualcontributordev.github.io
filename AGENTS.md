@@ -33,7 +33,7 @@ site.css            shared chrome (nav, stars, fonts, panels, footer)
 index.html          homepage (site.css + small home-only styles)
 builder/            builder UI (builder.css imports site.css)
 history/            history page + archive/ + chats/ (history.css imports site.css)
-scripts/            sanitize_discord_har.py (history maintenance)
+scripts/            history HAR sanitize (history maintenance)
 DogicaPixel*.ttf    shared pixel font
 meteor.png          logo
 ```
