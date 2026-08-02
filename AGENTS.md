@@ -36,6 +36,7 @@ history/            history page + archive/ + chats/ (history.css imports site.c
 scripts/            history HAR sanitize (history maintenance)
 DogicaPixel*.ttf    shared pixel font
 meteor.png          logo
+stars.png           static starfield bg
 ```
 
 ## Skills / rules
