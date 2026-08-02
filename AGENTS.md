@@ -5,7 +5,7 @@ Public site for the IndividualContributor FF7 PS1 stack.
 | Path | Role |
 |------|------|
 | `/` | Brand homepage — quiet copy; CSR/Modding → GitHub |
-| `/builder/` | Player tool — apply base + packs + mods in-browser |
+| `/builder/` | PSX Disc Builder — apply base + packs + mods in-browser |
 | `/history/` | CSR / Highwind / mods history + sanitized chat archives |
 
 Remote pack sources (Pages CDN):

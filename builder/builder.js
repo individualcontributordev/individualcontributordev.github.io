@@ -1105,7 +1105,7 @@ function buildAppliedReport({ disc, base, baseId, addons, edcFixed }) {
 async function init() {
 	try {
 		manifest = await loadMergedManifest('./manifest.json');
-		document.getElementById('page-title').textContent = manifest.title || 'Disc builder';
+		document.getElementById('page-title').textContent = manifest.title || 'PSX Disc Builder';
 		renderManifest();
 
 		const expectedRemotes = (manifest.remoteSources || []).length;

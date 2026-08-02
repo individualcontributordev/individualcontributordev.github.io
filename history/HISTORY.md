@@ -235,7 +235,7 @@ jayrod316, awesomewaves, themattdavis, doumeis, uzuki7777, asleepyjake, katombaz
 
 ## Related links
 
-- Disc builder: https://individualcontributor.dev/builder/
+- PSX Disc Builder: https://individualcontributor.dev/builder/
 - CSR repository: https://github.com/individualcontributordev/Final-Fantasy-7-CSR
 - Modding repository: https://github.com/individualcontributordev/Final-Fantasy-7-Modding
 - Suggestions backlogs: `docs/SUGGESTIONS.md` in the CSR and Modding repos
