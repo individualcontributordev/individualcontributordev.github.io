@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "title": "Disc builder",
+  "title": "PSX Disc Builder",
   "explainer": {
     "base": "Base experience \u2014 only one applies (Unmodified, CSR, Highwind, \u2026).",
     "packs": "Optional CSR+ scene packs on CSR. Stack any combination. Organized by disc.",

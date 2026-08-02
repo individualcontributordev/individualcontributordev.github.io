@@ -1,7 +1,7 @@
 ---
 name: polish-site-chrome
 description: >-
-  Keeps individualcontributor.dev homepage and disc builder visually consistent
+  Keeps individualcontributor.dev homepage and PSX Disc Builder visually consistent
   and copy-sparse. Use when editing index.html, builder CSS/HTML/JS, homepage
   CTAs, nav, or site branding on individualcontributordev.github.io.
 ---
