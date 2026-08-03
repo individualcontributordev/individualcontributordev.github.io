@@ -130,17 +130,30 @@ function sectorChanged(a, b, off) {
  */
 export function repairMode2EdcInImage(sourceBytes, patchedBytes) {
 	if (patchedBytes.length % SECTOR !== 0) {
-		throw new Error(`image length ${patchedBytes.length} is not a multiple of 2352`);
+		throw new Error('image length ' + patchedBytes.length + ' is not a multiple of 2352');
 	}
-	if (sourceBytes.length !== patchedBytes.length) {
-		throw new Error('source and patched image sizes differ');
+	if (sourceBytes.length % SECTOR !== 0) {
+		throw new Error('source length ' + sourceBytes.length + ' is not a multiple of 2352');
+	}
+	// Layers may grow the image (append sectors), e.g. no-disc-swap SNOVA inject.
+	// Shrinking is not supported.
+	if (patchedBytes.length < sourceBytes.length) {
+		throw new Error(
+			'patched image smaller than source (' +
+				patchedBytes.length +
+				' < ' +
+				sourceBytes.length +
+				')',
+		);
 	}
 	const sectors = patchedBytes.length / SECTOR;
+	const sourceSectors = sourceBytes.length / SECTOR;
 	let fixed = 0;
 	let changed = 0;
 	for (let lba = 0; lba < sectors; lba++) {
 		const off = lba * SECTOR;
-		if (!sectorChanged(sourceBytes, patchedBytes, off)) continue;
+		const isNew = lba >= sourceSectors;
+		if (!isNew && !sectorChanged(sourceBytes, patchedBytes, off)) continue;
 		changed++;
 		if (!isMode2Form1(patchedBytes, off)) continue;
 		generateMode2Form1EdcEcc(patchedBytes, off);
