@@ -1181,3 +1181,45 @@ async function init() {
 }
 
 init();
+
+/** Latest git commit for builder/ via GitHub API (no manual version string). */
+async function loadBuilderRevision() {
+	const el = document.getElementById('builder-revision');
+	if (!el) return;
+	const repo = 'individualcontributordev/individualcontributordev.github.io';
+	const api =
+		'https://api.github.com/repos/' + repo + '/commits?path=builder&per_page=1';
+	try {
+		const res = await fetch(api, {
+			headers: { Accept: 'application/vnd.github+json' },
+		});
+		if (!res.ok) throw new Error('HTTP ' + res.status);
+		const rows = await res.json();
+		const commit = rows && rows[0];
+		if (!commit || !commit.sha) throw new Error('empty');
+		const sha = String(commit.sha).slice(0, 7);
+		const when =
+			commit.commit && commit.commit.committer && commit.commit.committer.date
+				? String(commit.commit.committer.date).slice(0, 10)
+				: '';
+		const msgRaw =
+			commit.commit && commit.commit.message ? String(commit.commit.message) : '';
+		const msg = msgRaw.split('\\n')[0].slice(0, 80);
+		const url =
+			commit.html_url ||
+			'https://github.com/' + repo + '/commit/' + commit.sha;
+		el.textContent = '';
+		const a = document.createElement('a');
+		a.href = url;
+		a.target = '_blank';
+		a.rel = 'noreferrer';
+		a.textContent = 'builder ' + sha + (when ? ' · ' + when : '');
+		if (msg) a.title = msg;
+		el.appendChild(a);
+	} catch (err) {
+		console.warn('builder revision', err);
+		el.textContent = 'builder (revision unavailable)';
+		el.removeAttribute('title');
+	}
+}
+loadBuilderRevision();
