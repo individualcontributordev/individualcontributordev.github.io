@@ -1204,7 +1204,7 @@ async function loadBuilderRevision() {
 				: '';
 		const msgRaw =
 			commit.commit && commit.commit.message ? String(commit.commit.message) : '';
-		const msg = msgRaw.split('\\n')[0].slice(0, 80);
+		const msg = msgRaw.split('\n')[0].slice(0, 80);
 		const url =
 			commit.html_url ||
 			'https://github.com/' + repo + '/commit/' + commit.sha;
