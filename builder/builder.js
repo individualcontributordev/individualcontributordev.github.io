@@ -707,13 +707,14 @@ function renderFreeAddon(addon, prevSelected) {
 	if (!compatible) {
 		label.classList.add('is-disabled');
 	}
-	label.title = addon.blurb || '';
+	const tipParts = [addon.hint, addon.blurb].filter(Boolean);
+	label.title = tipParts.join(' — ') || '';
 
 	const displayName = freeAddonLabel(addon);
 	// Escape is unnecessary for our catalog strings; keep simple like before.
 	label.innerHTML = `
 		<input type="checkbox" name="addon" value="${addon.id}" ${checked} ${disabled} />
-		<span><strong>${displayName}</strong></span>
+		<span><strong>${displayName}</strong>${addon.hint ? `<span class="choice-hint">${addon.hint}</span>` : ''}</span>
 	`;
 	return label;
 }
@@ -730,6 +731,10 @@ function addonDiscKeys(addon) {
 
 /** True when the pack covers every disc (or has no discs map). */
 function addonIsAllDiscs(addon) {
+	// Whole-game mods (e.g. Single-disc) show in the global list, not a disc column.
+	if (addon && (addon.layout === 'global' || addon.uiScope === 'global')) return true;
+	const id = String(addon && addon.id ? addon.id : '');
+	if (id.startsWith('single-disc-on-') || id === 'single-disc') return true;
 	const keys = addonDiscKeys(addon);
 	if (!keys.length) return true;
 	return keys.length >= 3 && keys[0] === '1' && keys[1] === '2' && keys[2] === '3';

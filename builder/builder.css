@@ -452,6 +452,31 @@ input[type="file"] {
 
 #disc-info.is-error { color: #ff6b8a; }
 
+.verify-code {
+	margin: 12px 0 0;
+	padding: 10px 14px;
+	background: rgba(0, 0, 0, 0.35);
+	border: 2px solid #4a5a80;
+	border-radius: 8px;
+	font-family: "DogicaPixelBold", monospace;
+	font-size: 1.1rem;
+	letter-spacing: 2px;
+	color: #7fffa0;
+}
+
+.verify-code[hidden] { display: none; }
+
 .panel.is-empty .layer-list {
 	opacity: 0.85;
+}
+
+/* Secondary line under free checkboxes (e.g. Single-disc whole-game hint) */
+.choice-hint {
+	display: block;
+	margin-top: 0.2rem;
+	font-size: 0.85em;
+	font-weight: normal;
+	opacity: 0.8;
+	line-height: 1.35;
+	max-width: 36rem;
 }
