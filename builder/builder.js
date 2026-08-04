@@ -19,6 +19,11 @@ const applyBtn = document.getElementById('apply');
 const planEl = document.getElementById('plan');
 const fileLabel = document.getElementById('file-label');
 const loadBannerEl = document.getElementById('load-banner');
+const verifyCheckboxEl = document.getElementById('verify-build');
+const verifyCodeEl = document.getElementById('verify-code');
+
+// Set after `wrangler deploy` — see worker/README.md.
+const VERIFY_ENDPOINT = 'https://ic-ff7-verify.YOUR-SUBDOMAIN.workers.dev';
 
 let manifest = null;
 let sourceBytes = null;
@@ -69,6 +74,40 @@ async function fetchJson(url) {
 	const res = await fetch(url);
 	if (!res.ok) throw new Error(`Failed to load ${url} (${res.status})`);
 	return res.json();
+}
+
+async function sha256Hex(text) {
+	const bytes = new TextEncoder().encode(text);
+	const digest = await crypto.subtle.digest('SHA-256', bytes);
+	return Array.from(new Uint8Array(digest))
+		.map((b) => b.toString(16).padStart(2, '0'))
+		.join('');
+}
+
+/** Canonical string over the exact build config, independent of UI ordering. */
+async function computeModConfigHash(disc, baseId, addonEntries) {
+	const addonIds = addonEntries.map((a) => a.id).sort();
+	return sha256Hex(`disc=${disc}|base=${baseId}|addons=${addonIds.join(',')}`);
+}
+
+/**
+ * Ask the verify Worker to sign this exact build. No identifying info is
+ * sent — uniqueness/unforgeability comes from the HMAC key plus a
+ * server-generated timestamp+nonce, not from anything the runner types.
+ * Throws on any failure — a build that was supposed to be verified should
+ * not silently fall back to unverified.
+ */
+async function requestVerificationCode({ modConfigHash, discNumber }) {
+	const res = await fetch(`${VERIFY_ENDPOINT}/sign`, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ modConfigHash, discNumber }),
+	});
+	const data = await res.json().catch(() => null);
+	if (!res.ok || !data || !data.code) {
+		throw new Error(data?.error || `Verification request failed (${res.status})`);
+	}
+	return data;
 }
 
 function normalizeEntry(entry, manifestUrl) {
@@ -179,6 +218,37 @@ function selectedAddonIds() {
 		if (select.value) ids.push(select.value);
 	}
 	return ids;
+}
+
+/** UI selection plus hidden packs matched by autoIncludeWhen (e.g. single-disc movies on CSR). */
+function effectiveAddonIds() {
+	const ids = selectedAddonIds();
+	const baseId = selectedBaseId();
+	const idSet = new Set(ids);
+	for (const addon of manifest?.addons || []) {
+		if (!addon.autoIncludeWhen) continue;
+		if (idSet.has(addon.id)) continue;
+		if (!addonCompatibleWithBase(addon, baseId)) continue;
+		if (autoIncludeMatches(addon, baseId, ids)) {
+			ids.push(addon.id);
+			idSet.add(addon.id);
+		}
+	}
+	return ids;
+}
+
+function autoIncludeMatches(addon, baseId, selectedIds) {
+	const rule = addon.autoIncludeWhen;
+	if (!rule || typeof rule !== 'object') return false;
+	const bases = rule.bases;
+	if (Array.isArray(bases) && bases.length && !bases.includes(baseId)) return false;
+	const need = rule.addonSelected;
+	if (need && !selectedIds.includes(need)) return false;
+	const prefix = rule.unlessAddonIdPrefix;
+	if (prefix && selectedIds.some((id) => String(id).startsWith(prefix))) return false;
+	const unlessIds = rule.unlessAddonIds;
+	if (Array.isArray(unlessIds) && unlessIds.some((id) => selectedIds.includes(id))) return false;
+	return true;
 }
 
 /** pack = CSR+ scene layers (CSR only). mod = gameplay layers (all bases). */
@@ -334,7 +404,9 @@ function addonHasLayerForDisc(addon, disc) {
 function addonsForBase(baseId, kind = null) {
 	if (!manifest) return [];
 	// Only layers compatible with the selected base (hide the rest).
+	// uiHidden packs stay out of the checklist (still may auto-apply under the hood).
 	return (manifest.addons || []).filter((a) => {
+		if (a.uiHidden) return false;
 		if (kind && layerKind(a) !== kind) return false;
 		return addonCompatibleWithBase(a, baseId);
 	});
@@ -889,7 +961,7 @@ function updatePlan() {
 	setSectionLocked(panelBuildEl, !disc);
 	const baseId = selectedBaseId();
 	const base = manifest.bases.find((b) => b.id === baseId);
-	const selected = selectedAddonIds().map((id) => entryById(id)).filter(Boolean);
+	const selected = effectiveAddonIds().map((id) => entryById(id)).filter(Boolean);
 	const packs = selected.filter((a) => layerKind(a) === 'pack');
 	const mods = selected.filter((a) => layerKind(a) === 'mod');
 	const steps = [];
@@ -985,7 +1057,7 @@ async function applySelection() {
 	try {
 		const baseId = selectedBaseId();
 		const base = manifest.bases.find((b) => b.id === baseId);
-		const addonEntries = selectedAddonIds()
+		const addonEntries = effectiveAddonIds()
 			.map((id) => manifest.addons.find((a) => a.id === id))
 			.filter(Boolean);
 
@@ -995,6 +1067,18 @@ async function applySelection() {
 					`${entry.name} is not available for ${base?.name || baseId}.`
 				);
 			}
+		}
+
+		verifyCodeEl.hidden = true;
+		let verification = null;
+		if (verifyCheckboxEl && verifyCheckboxEl.checked) {
+			setStatus('Requesting verification code…');
+			await yieldToUi();
+			const modConfigHash = await computeModConfigHash(disc, baseId, addonEntries);
+			verification = await requestVerificationCode({ modConfigHash, discNumber: disc });
+			verifyCodeEl.hidden = false;
+			verifyCodeEl.textContent =
+				`Verification code: ${verification.code} — show this on screen at the start of your run.`;
 		}
 
 		const layers = [];
@@ -1039,6 +1123,7 @@ async function applySelection() {
 			baseId,
 			addons: addonEntries,
 			edcFixed: edcStats.fixed,
+			verification,
 		});
 
 		setStatus('Zipping (large file — may take a minute)…');
@@ -1060,7 +1145,7 @@ async function applySelection() {
 	}
 }
 
-function buildAppliedReport({ disc, base, baseId, addons, edcFixed }) {
+function buildAppliedReport({ disc, base, baseId, addons, edcFixed, verification }) {
 	const baseName =
 		!base || baseId === 'clean' || !layerUrlFor(base, disc)
 			? 'Unmodified (retail)'
@@ -1086,6 +1171,16 @@ function buildAppliedReport({ disc, base, baseId, addons, edcFixed }) {
 
 	if (edcFixed != null) {
 		lines.push(`EDC/ECC sectors repaired: ${edcFixed}`);
+	}
+
+	if (verification) {
+		lines.push(
+			'',
+			'Speedrun verification:',
+			`  Code: ${verification.code}`,
+			`  Issued: ${new Date(verification.timestamp).toISOString()}`,
+			'  This code is logged in the moderator verification sheet for this exact build.'
+		);
 	}
 
 	lines.push(
