@@ -245,7 +245,7 @@ select[name="addon-group"] {
 .layer-list {
 	display: flex;
 	flex-direction: column;
-	gap: 18px;
+	gap: 28px;
 }
 
 .addon-section-title {
@@ -258,8 +258,10 @@ select[name="addon-group"] {
 }
 
 .addon-section-all {
-	padding-bottom: 16px;
-	border-bottom: 1px solid var(--ff7-border);
+	/* No header / no divider — rely on .layer-list gap */
+	padding-bottom: 0;
+	border-bottom: none;
+	margin-bottom: 4px;
 }
 
 .addon-all-grid {
@@ -451,20 +453,6 @@ input[type="file"] {
 #status.is-error { color: #ff6b8a; }
 
 #disc-info.is-error { color: #ff6b8a; }
-
-.verify-code {
-	margin: 12px 0 0;
-	padding: 10px 14px;
-	background: rgba(0, 0, 0, 0.35);
-	border: 2px solid #4a5a80;
-	border-radius: 8px;
-	font-family: "DogicaPixelBold", monospace;
-	font-size: 1.1rem;
-	letter-spacing: 2px;
-	color: #7fffa0;
-}
-
-.verify-code[hidden] { display: none; }
 
 .panel.is-empty .layer-list {
 	opacity: 0.85;

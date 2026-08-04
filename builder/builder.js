@@ -880,12 +880,9 @@ function renderLayerList(kind) {
 	);
 
 	if (hasAll) {
+		// Global / whole-game mods — no All discs heading; spacing only.
 		const allSection = document.createElement('div');
 		allSection.className = 'addon-section addon-section-all';
-		const allHead = document.createElement('h3');
-		allHead.className = 'addon-section-title';
-		allHead.textContent = 'All discs';
-		allSection.appendChild(allHead);
 		const allBody = document.createElement('div');
 		allBody.className = 'addon-all-grid';
 		appendAddonBucket(allBody, allDisc, prevSelected);
