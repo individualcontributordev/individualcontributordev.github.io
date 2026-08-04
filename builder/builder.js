@@ -1074,16 +1074,18 @@ async function applySelection() {
 			}
 		}
 
-		verifyCodeEl.hidden = true;
 		let verification = null;
+		if (verifyCodeEl) verifyCodeEl.hidden = true;
 		if (verifyCheckboxEl && verifyCheckboxEl.checked) {
 			setStatus('Requesting verification code…');
 			await yieldToUi();
 			const modConfigHash = await computeModConfigHash(disc, baseId, addonEntries);
 			verification = await requestVerificationCode({ modConfigHash, discNumber: disc });
-			verifyCodeEl.hidden = false;
-			verifyCodeEl.textContent =
-				`Verification code: ${verification.code} — show this on screen at the start of your run.`;
+			if (verifyCodeEl) {
+				verifyCodeEl.hidden = false;
+				verifyCodeEl.textContent =
+					`Verification code: ${verification.code} — show this on screen at the start of your run.`;
+			}
 		}
 
 		const layers = [];
