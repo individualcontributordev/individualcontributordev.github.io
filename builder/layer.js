@@ -45,6 +45,12 @@ export function applyLayer(imageBytes, layer) {
 		size = Math.max(size, offset + data.length);
 		return { offset, data };
 	});
+	// Grown images: trailing zeros may match shorter original pad and be omitted
+	// from records. Honor stats.modifiedBytes so size/alignment match the work bin.
+	const target = layer.stats && Number(layer.stats.modifiedBytes);
+	if (Number.isFinite(target) && target > size) {
+		size = target;
+	}
 
 	const out = new Uint8Array(size);
 	out.set(imageBytes, 0);
