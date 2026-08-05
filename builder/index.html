@@ -4,14 +4,14 @@
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>PSX Disc Builder — IndividualContributor</title>
-	<meta name="description" content="Apply CSR, optional CSR+ scene trims, and mods to your Final Fantasy VII NTSC-U .bin in the browser." />
+	<meta name="description" content="Apply CSR, Highwind, CSR+, and mods to your Final Fantasy VII NTSC-U .bin in the browser." />
 	<link rel="icon" href="/favicon.ico" type="image/x-icon" />
 	<link rel="stylesheet" href="./builder.css" />
 	<meta property="og:type" content="website" />
 	<meta property="og:site_name" content="IndividualContributor" />
 	<meta property="og:url" content="https://individualcontributor.dev/builder/" />
 	<meta property="og:title" content="PSX Disc Builder — IndividualContributor" />
-	<meta property="og:description" content="Apply CSR, optional CSR+ scene trims, and mods to your Final Fantasy VII NTSC-U .bin in the browser." />
+	<meta property="og:description" content="Apply CSR, Highwind, CSR+, and mods to your Final Fantasy VII NTSC-U .bin in the browser." />
 	<meta property="og:image" content="https://individualcontributor.dev/og-builder.png" />
 	<meta property="og:image:type" content="image/png" />
 	<meta property="og:image:width" content="1200" />
@@ -19,7 +19,7 @@
 	<meta property="og:image:alt" content="PSX Disc Builder — Final Fantasy VII PS1 CSR and mods" />
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:title" content="PSX Disc Builder — IndividualContributor" />
-	<meta name="twitter:description" content="Apply CSR, optional CSR+ scene trims, and mods to your Final Fantasy VII NTSC-U .bin in the browser." />
+	<meta name="twitter:description" content="Apply CSR, Highwind, CSR+, and mods to your Final Fantasy VII NTSC-U .bin in the browser." />
 	<meta name="twitter:image" content="https://individualcontributor.dev/og-builder.png" />
 </head>
 <body>
@@ -44,7 +44,7 @@
 				<p id="builder-revision" class="builder-revision" title="Latest commit that touched builder/ on GitHub">…</p>
 				<p class="lede">
 					Choose a clean NTSC-U <strong>.bin</strong> (disc is detected automatically).
-					Pick a base experience, optional CSR+ scene trims (on CSR), and optional mods.
+					Pick a base experience and optional mods (including CSR+ on CSR).
 					Downloads one zip with <strong>.bin</strong>, <strong>.cue</strong>, and
 					<strong>APPLIED.txt</strong>. Nothing is uploaded.
 				</p>
@@ -70,22 +70,15 @@
 				<div id="base-list"></div>
 			</section>
 
-			<section class="panel" id="panel-packs">
-				<h2>3. CSR+ scene trims</h2>
-				<p class="explainer" id="explainer-packs"></p>
-				<div id="pack-preset-list"></div>
-				<div id="pack-list" class="layer-list"></div>
-			</section>
-
 			<section class="panel" id="panel-mods">
-				<h2>4. Mods</h2>
+				<h2>3. Mods</h2>
 				<p class="explainer" id="explainer-mods"></p>
 				<div id="mod-preset-list"></div>
 				<div id="mod-list" class="layer-list"></div>
 			</section>
 
 			<section class="panel" id="panel-build">
-				<h2>5. Build</h2>
+				<h2>4. Build</h2>
 				<pre class="plan" id="plan"></pre>
 				<div class="row" style="margin-top:16px;margin-bottom:0;">
 					<button type="button" id="apply" disabled>Build zip</button>
