@@ -5,12 +5,12 @@ import { repairMode2EdcInImage } from './edc.js';
 
 const statusEl = document.getElementById('status');
 const baseListEl = document.getElementById('base-list');
-const packPresetListEl = document.getElementById('pack-preset-list');
+const packPresetListEl = null; // packs merged into mods (CSR+ all-or-none)
 const modPresetListEl = document.getElementById('mod-preset-list');
-const packListEl = document.getElementById('pack-list');
+const packListEl = null;
 const modListEl = document.getElementById('mod-list');
 const panelBaseEl = document.getElementById('panel-base');
-const panelPacksEl = document.getElementById('panel-packs');
+const panelPacksEl = null;
 const panelModsEl = document.getElementById('panel-mods');
 const panelBuildEl = document.getElementById('panel-build');
 const discInfoEl = document.getElementById('disc-info');
@@ -176,12 +176,63 @@ function selectedBaseId() {
 function selectedAddonIds() {
 	const ids = [];
 	for (const input of document.querySelectorAll('input[name="addon"]:checked')) {
+		// Master CSR+ toggle is not a real layer id.
+		if (input.value === 'csr-plus-all') continue;
 		ids.push(input.value);
 	}
 	for (const select of document.querySelectorAll('select[name="addon-group"]')) {
 		if (select.value) ids.push(select.value);
 	}
+	if (isCsrPlusAllChecked()) {
+		for (const id of csrPlusBundleIdsForDisc(selectedDisc())) {
+			if (!ids.includes(id)) ids.push(id);
+		}
+	}
 	return ids;
+}
+
+/** CSR+ pack addon ids from the csr-plus preset (all-or-none bundle). */
+function csrPlusBundleIds() {
+	if (!manifest) return [];
+	const baseId = selectedBaseId();
+	const preset = (manifest.presets || []).find(
+		(p) => p.id === 'csr-plus' || (presetKind(p) === 'pack' && /csr\+?/i.test(p.name || ''))
+	);
+	let ids = [];
+	if (preset && Array.isArray(preset.addons)) {
+		ids = preset.addons.slice();
+	} else {
+		ids = (manifest.addons || [])
+			.filter((a) => layerKind(a) === 'pack' && !a.uiHidden)
+			.map((a) => a.id);
+	}
+	return ids.filter((id) => {
+		const a = entryById(id);
+		return a && addonCompatibleWithBase(a, baseId);
+	});
+}
+
+/** Pack layers that apply to the loaded disc (or all if disc unknown). */
+function csrPlusBundleIdsForDisc(disc) {
+	return csrPlusBundleIds().filter((id) => {
+		const a = entryById(id);
+		if (!a) return false;
+		if (disc == null) return true;
+		return addonHasLayerForDisc(a, disc);
+	});
+}
+
+function isCsrPlusAllChecked() {
+	const el = document.getElementById('csr-plus-all');
+	return !!(el && el.checked && !el.disabled);
+}
+
+function wasCsrPlusAllSelected(prevSelected) {
+	if (prevSelected.has('csr-plus-all')) return true;
+	// Disc builds only apply the pack layers for that disc — treat any
+	// selected CSR+ pack as the master toggle staying on.
+	const bundle = csrPlusBundleIds();
+	return bundle.some((id) => prevSelected.has(id));
 }
 
 /** UI selection plus hidden packs matched by autoIncludeWhen (e.g. single-disc movies on CSR). */
@@ -399,6 +450,7 @@ function selectedPresetId(kind) {
 }
 
 function renderPresets(kind, opts = {}) {
+	if (kind === 'pack') return; // CSR+ is a mods checkbox
 	const resetToNone = !!opts.resetToNone;
 	const host = kind === 'pack' ? packPresetListEl : modPresetListEl;
 	const selectId = kind === 'pack' ? 'pack-preset-select' : 'mod-preset-select';
@@ -465,7 +517,9 @@ function addonSelectableNow(addonId) {
 
 function applyActivePresetToAddons(kind, opts = {}) {
 	const clearManagedIfNone = !!opts.clearManagedIfNone;
-	const listEl = kind === 'pack' ? packListEl : modListEl;
+	// Packs UI removed — CSR+ is a single mods checkbox, not preset-driven.
+	if (kind === 'pack') return;
+	const listEl = modListEl;
 	if (!manifest || !listEl) return;
 	const baseId = selectedBaseId();
 	const managed = presetManagedAddonIds(baseId, kind);
@@ -502,12 +556,10 @@ function applyActivePresetToAddons(kind, opts = {}) {
 }
 
 function renderAllPresets(opts = {}) {
-	renderPresets('pack', opts);
 	renderPresets('mod', opts);
 }
 
 function applyAllPresets(opts = {}) {
-	applyActivePresetToAddons('pack', opts);
 	applyActivePresetToAddons('mod', opts);
 }
 
@@ -772,7 +824,6 @@ function appendAddonBucket(container, bucket, prevSelected) {
 }
 
 function updateSectionExplainers(baseId) {
-	const packsEl = document.getElementById('explainer-packs');
 	const modsEl = document.getElementById('explainer-mods');
 	const baseEl = document.getElementById('explainer-base');
 	if (baseEl) {
@@ -781,55 +832,86 @@ function updateSectionExplainers(baseId) {
 			'Base experience — only one applies (Unmodified, CSR, Highwind, …).';
 	}
 	const isCsr = String(baseId || '').startsWith('csr-') || baseId === 'csr';
-	const isHighwind = String(baseId || '').startsWith('highwind');
-	if (packsEl) {
-		if (isCsr) {
-			packsEl.textContent =
-				manifest.explainer?.packs ||
-				'Optional extra cutscene trims on CSR only (not new content). Stack any combination. By disc.';
-		} else if (isHighwind) {
-			packsEl.textContent =
-				'CSR+ scene trims apply on the CSR base only. Highwind is a separate full experience.';
-		} else {
-			packsEl.textContent =
-				'CSR+ scene trims apply on the CSR base only. Switch Base Experience to CSR to enable them.';
-		}
-	}
 	if (modsEl) {
-		modsEl.textContent =
-			manifest.explainer?.mods ||
-			'Optional mods. Compatible with Unmodified, CSR, and Highwind. Conflicting choices share a dropdown (None = skip).';
+		if (isCsr) {
+			modsEl.textContent =
+				'Optional mods on this base. CSR+ is all-or-none (every scene trim for the disc, or none).';
+		} else {
+			modsEl.textContent =
+				manifest.explainer?.mods ||
+				'Optional mods. Some are base-specific; CSR+ requires the CSR base.';
+		}
 	}
 }
 
+
+/** One CSR+ checkbox: all scene trims for the loaded disc, or none. */
+function renderCsrPlusToggle(prevSelected) {
+	const baseId = selectedBaseId();
+	const disc = selectedDisc();
+	const bundle = csrPlusBundleIds();
+	if (!bundle.length) return null;
+
+	const baseOk = bundle.some((id) => {
+		const a = entryById(id);
+		return a && addonCompatibleWithBase(a, baseId);
+	});
+	const discIds = csrPlusBundleIdsForDisc(disc);
+	const discOk = disc == null || discIds.length > 0;
+	const compatible = baseOk && discOk;
+
+	const checked = wasCsrPlusAllSelected(prevSelected) && compatible;
+	const label = document.createElement('label');
+	label.className = 'choice';
+	if (!compatible) label.classList.add('is-disabled');
+	label.title =
+		'All optional CSR+ cutscene trims for this disc on CSR. All-or-none.';
+	const input = document.createElement('input');
+	input.type = 'checkbox';
+	input.name = 'addon';
+	input.id = 'csr-plus-all';
+	input.value = 'csr-plus-all';
+	input.checked = checked;
+	input.disabled = !compatible;
+	const span = document.createElement('span');
+	const strong = document.createElement('strong');
+	strong.textContent = 'CSR+';
+	span.appendChild(strong);
+	const hint = document.createElement('span');
+	hint.className = 'choice-hint';
+	if (!baseOk) {
+		hint.textContent = 'CSR base only — all scene trims or none.';
+	} else if (disc != null && !discIds.length) {
+		hint.textContent = 'No CSR+ trims for this disc.';
+	} else {
+		hint.textContent = 'All scene trims for this disc (or none).';
+	}
+	span.appendChild(hint);
+	label.appendChild(input);
+	label.appendChild(span);
+	return label;
+}
+
 function renderLayerList(kind) {
-	const listEl = kind === 'pack' ? packListEl : modListEl;
-	const panelEl = kind === 'pack' ? panelPacksEl : panelModsEl;
+	// Packs are no longer a separate section — CSR+ is one checkbox under mods.
+	if (kind === 'pack') return;
+	const listEl = modListEl;
 	if (!manifest || !listEl) return;
 	const baseId = selectedBaseId();
 	const prevSelected = new Set(selectedAddonIds());
-	const visible = addonsForBase(baseId, kind);
+	if (isCsrPlusAllChecked()) prevSelected.add('csr-plus-all');
+
+	const visible = addonsForBase(baseId, 'mod');
 	const { allDisc, byDisc } = partitionAddonsByDisc(visible);
 	listEl.innerHTML = '';
 
-	if (kind === 'pack') {
-		const anyPacksExist = layersOfKind('pack').length > 0;
-		const show = visible.length > 0;
-		if (panelEl) {
-			panelEl.hidden = !anyPacksExist;
-			panelEl.classList.toggle('is-empty', !show);
-		}
-		if (!show) {
-			const empty = document.createElement('p');
-			empty.className = 'explainer';
-			empty.style.marginBottom = '0';
-			empty.textContent = anyPacksExist
-				? 'No CSR+ scene trims for this base — choose CSR above.'
-				: 'No CSR+ scene trims published yet.';
-			listEl.appendChild(empty);
-			return;
-		}
-	} else if (!visible.length) {
+	const csrToggle = renderCsrPlusToggle(prevSelected);
+	const hasMods =
+		allDisc.groupIds.length > 0 ||
+		allDisc.free.length > 0 ||
+		[1, 2, 3].some((d) => byDisc[d].groupIds.length > 0 || byDisc[d].free.length > 0);
+
+	if (!csrToggle && !hasMods) {
 		const empty = document.createElement('p');
 		empty.className = 'explainer';
 		empty.style.marginBottom = '0';
@@ -838,22 +920,20 @@ function renderLayerList(kind) {
 		return;
 	}
 
-	const hasAll = allDisc.groupIds.length > 0 || allDisc.free.length > 0;
-	const hasDiscCols = [1, 2, 3].some(
-		(d) => byDisc[d].groupIds.length > 0 || byDisc[d].free.length > 0
-	);
-
-	if (hasAll) {
-		// Global / whole-game mods — no All discs heading; spacing only.
-		const allSection = document.createElement('div');
-		allSection.className = 'addon-section addon-section-all';
-		const allBody = document.createElement('div');
-		allBody.className = 'addon-all-grid';
-		appendAddonBucket(allBody, allDisc, prevSelected);
+	const allSection = document.createElement('div');
+	allSection.className = 'addon-section addon-section-all';
+	const allBody = document.createElement('div');
+	allBody.className = 'addon-all-grid';
+	if (csrToggle) allBody.appendChild(csrToggle);
+	appendAddonBucket(allBody, allDisc, prevSelected);
+	if (allBody.childNodes.length) {
 		allSection.appendChild(allBody);
 		listEl.appendChild(allSection);
 	}
 
+	const hasDiscCols = [1, 2, 3].some(
+		(d) => byDisc[d].groupIds.length > 0 || byDisc[d].free.length > 0
+	);
 	if (hasDiscCols) {
 		const loadedDisc = selectedDisc();
 		const cols = document.createElement('div');
@@ -871,10 +951,13 @@ function renderLayerList(kind) {
 			const head = document.createElement('h3');
 			head.className = 'addon-section-title';
 			if (loadedDisc && disc === loadedDisc) {
-				head.innerHTML = 'Disc ' + disc + ' <span class="addon-disc-badge">loaded</span>';
+				head.innerHTML =
+					'Disc ' + disc + ' <span class="addon-disc-badge">loaded</span>';
 			} else if (loadedDisc) {
 				head.innerHTML =
-					'Disc ' + disc + ' <span class="addon-disc-badge is-muted">not loaded</span>';
+					'Disc ' +
+					disc +
+					' <span class="addon-disc-badge is-muted">not loaded</span>';
 			} else {
 				head.textContent = 'Disc ' + disc;
 			}
@@ -899,7 +982,6 @@ function renderLayerList(kind) {
 
 function renderAddons() {
 	updateSectionExplainers(selectedBaseId());
-	renderLayerList('pack');
 	renderLayerList('mod');
 }
 
@@ -925,7 +1007,6 @@ function updatePlan() {
 	if (!manifest) return;
 	const disc = selectedDisc();
 	setSectionLocked(panelBaseEl, !disc);
-	setSectionLocked(panelPacksEl, !disc);
 	setSectionLocked(panelModsEl, !disc);
 	setSectionLocked(panelBuildEl, !disc);
 	const baseId = selectedBaseId();
@@ -934,13 +1015,19 @@ function updatePlan() {
 	const packs = selected.filter((a) => layerKind(a) === 'pack');
 	const mods = selected.filter((a) => layerKind(a) === 'mod');
 	const steps = [];
-	steps.push(sourceBytes ? `Input: ${sourceBytes.length} bytes` : 'Input: (none yet)');
-	steps.push(disc ? `Disc: ${disc} (auto)` : 'Disc: (not detected)');
-	steps.push(`Base Experience: ${base ? base.name : baseId}`);
-	if (packs.length) packs.forEach((a, i) => steps.push(`CSR+ trim ${i + 1}: ${freeAddonLabel(a)}`));
-	else steps.push('CSR+ trims: (none)');
-	if (mods.length) mods.forEach((a, i) => steps.push(`Mod ${i + 1}: ${freeAddonLabel(a)}`));
-	else steps.push('Mods: (none)');
+	steps.push(sourceBytes ? 'Input: ' + sourceBytes.length + ' bytes' : 'Input: (none yet)');
+	steps.push(disc ? 'Disc: ' + disc + ' (auto)' : 'Disc: (not detected)');
+	steps.push('Base Experience: ' + (base ? base.name : baseId));
+	if (packs.length) {
+		steps.push('CSR+: on (' + packs.map((a) => freeAddonLabel(a)).join(', ') + ')');
+	} else {
+		steps.push('CSR+: off');
+	}
+	if (mods.length) {
+		mods.forEach((a, i) => steps.push('Mod ' + (i + 1) + ': ' + freeAddonLabel(a)));
+	} else {
+		steps.push('Mods: (none)');
+	}
 	steps.push('Output: .zip (.bin + .cue + APPLIED.txt)');
 	planEl.textContent = steps.join('\n');
 	applyBtn.disabled = building || !(sourceBytes && disc);
@@ -950,9 +1037,7 @@ function updatePlan() {
 
 function renderManifest() {
 	baseListEl.innerHTML = '';
-	if (packPresetListEl) packPresetListEl.innerHTML = '';
 	if (modPresetListEl) modPresetListEl.innerHTML = '';
-	if (packListEl) packListEl.innerHTML = '';
 	if (modListEl) modListEl.innerHTML = '';
 	baseListEl.addEventListener('change', (ev) => {
 		if (ev.target && ev.target.id === 'base-select') {
@@ -966,15 +1051,11 @@ function renderManifest() {
 	const onPresetChange = (ev) => {
 		const t = ev.target;
 		if (!t || !t.id) return;
-		if (t.id === 'pack-preset-select') {
-			applyActivePresetToAddons('pack', { clearManagedIfNone: true });
-			updatePlan();
-		} else if (t.id === 'mod-preset-select') {
+		if (t.id === 'mod-preset-select') {
 			applyActivePresetToAddons('mod', { clearManagedIfNone: true });
 			updatePlan();
 		}
 	};
-	if (packPresetListEl) packPresetListEl.addEventListener('change', onPresetChange);
 	if (modPresetListEl) modPresetListEl.addEventListener('change', onPresetChange);
 	const onLayerChange = (kind) => (ev) => {
 		const t = ev.target;
@@ -985,7 +1066,6 @@ function renderManifest() {
 		if (presetEl && presetEl.value) presetEl.value = '';
 		updatePlan();
 	};
-	if (packListEl) packListEl.addEventListener('change', onLayerChange('pack'));
 	if (modListEl) modListEl.addEventListener('change', onLayerChange('mod'));
 	renderBases();
 	renderAllPresets();
@@ -1110,22 +1190,26 @@ function buildAppliedReport({ disc, base, baseId, addons, edcFixed }) {
 	const lines = [
 		'Final Fantasy VII — IndividualContributor',
 		'',
-		`Disc: ${disc}`,
-		`Base: ${baseName}`,
+		'Disc: ' + disc,
+		'Base: ' + baseName,
 	];
 
 	const packs = addons.filter((a) => layerKind(a) === 'pack');
 	const mods = addons.filter((a) => layerKind(a) === 'mod');
 	if (packs.length) {
-		lines.push('CSR+ scene trims (on CSR):');
-		for (const addon of packs) lines.push(`  - ${freeAddonLabel(addon)}`);
-	} else lines.push('CSR+ scene trims: none');
+		lines.push('CSR+ (all-or-none scene trims on CSR):');
+		for (const addon of packs) lines.push('  - ' + freeAddonLabel(addon));
+	} else {
+		lines.push('CSR+: off');
+	}
 	if (mods.length) {
 		lines.push('Mods:');
-		for (const addon of mods) lines.push(`  - ${freeAddonLabel(addon)}`);
-	} else lines.push('Mods: none');
+		for (const addon of mods) lines.push('  - ' + freeAddonLabel(addon));
+	} else {
+		lines.push('Mods: none');
+	}
 
-	if (edcFixed != null) {
+if (edcFixed != null) {
 		lines.push(`EDC/ECC sectors repaired: ${edcFixed}`);
 	}
 
@@ -1174,7 +1258,7 @@ async function init() {
 			applySelection();
 		});
 
-		setStatus('Choose an NTSC-U .bin, then pick base, CSR+ scene trims, and mods.');
+		setStatus('Choose an NTSC-U .bin, then pick base and mods.');
 	} catch (err) {
 		setStatus(err.message || String(err), true);
 	}
