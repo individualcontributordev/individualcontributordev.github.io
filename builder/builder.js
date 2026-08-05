@@ -864,13 +864,20 @@ function renderCsrPlusToggle(prevSelected) {
 	const label = document.createElement('label');
 	label.className = 'choice';
 	if (!compatible) label.classList.add('is-disabled');
-	const tipIds = disc != null ? discIds : bundle;
-	const tipNames = tipIds
+	// Tooltip always lists the full CSR+ pack set (every disc). Apply still
+	// only uses packs that have a layer for the loaded disc.
+	const tipNames = bundle
 		.map((id) => entryById(id))
 		.filter(Boolean)
-		.map((a) => freeAddonLabel(a));
+		.map((a) => {
+			const discs = a.discs && Object.keys(a.discs).length
+				? Object.keys(a.discs).sort().join('/')
+				: '?';
+			return freeAddonLabel(a) + ' (D' + discs + ')';
+		});
 	label.title = tipNames.length
-		? 'CSR+ (all-or-none):\n' + tipNames.join('\n')
+		? 'CSR+ (all-or-none) — applied per disc when building each image:\n' +
+			tipNames.join('\n')
 		: 'All optional CSR+ cutscene trims on CSR. All-or-none.';
 	const input = document.createElement('input');
 	input.type = 'checkbox';
@@ -1020,32 +1027,19 @@ function updatePlan() {
 	const selected = effectiveAddonIds().map((id) => entryById(id)).filter(Boolean);
 	const packs = selected.filter((a) => layerKind(a) === 'pack');
 	const mods = selected.filter((a) => layerKind(a) === 'mod');
-	const stepRows = [];
-	stepRows.push({ text: sourceBytes ? 'Input: ' + sourceBytes.length + ' bytes' : 'Input: (none yet)' });
-	stepRows.push({ text: disc ? 'Disc: ' + disc + ' (auto)' : 'Disc: (not detected)' });
-	stepRows.push({ text: 'Base Experience: ' + (base ? base.name : baseId) });
-	stepRows.push({
-		text: packs.length ? 'CSR+: on' : 'CSR+: off',
-		title: packs.length ? packs.map((a) => freeAddonLabel(a)).join('\n') : '',
-	});
+	const steps = [];
+	steps.push(sourceBytes ? 'Input: ' + sourceBytes.length + ' bytes' : 'Input: (none yet)');
+	steps.push(disc ? 'Disc: ' + disc + ' (auto)' : 'Disc: (not detected)');
+	steps.push('Base Experience: ' + (base ? base.name : baseId));
+	steps.push(packs.length ? 'CSR+: on' : 'CSR+: off');
 	if (mods.length) {
-		mods.forEach((a, i) => stepRows.push({ text: 'Mod ' + (i + 1) + ': ' + freeAddonLabel(a) }));
+		mods.forEach((a, i) => steps.push('Mod ' + (i + 1) + ': ' + freeAddonLabel(a)));
 	} else {
-		stepRows.push({ text: 'Mods: (none)' });
+		steps.push('Mods: (none)');
 	}
-	stepRows.push({ text: 'Output: .zip (.bin + .cue + APPLIED.txt)' });
-	planEl.textContent = '';
-	for (let i = 0; i < stepRows.length; i++) {
-		const row = stepRows[i];
-		const line = document.createElement('span');
-		line.textContent = row.text;
-		if (row.title) {
-			line.title = row.title;
-			line.className = 'plan-tip';
-		}
-		planEl.appendChild(line);
-		if (i < stepRows.length - 1) planEl.appendChild(document.createTextNode('\n'));
-	}
+	steps.push('Output: .zip (.bin + .cue + APPLIED.txt)');
+	planEl.textContent = steps.join('\n');
+
 	applyBtn.disabled = building || !(sourceBytes && disc);
 	applyBtn.classList.toggle('is-busy', building);
 }
