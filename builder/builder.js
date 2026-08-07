@@ -29,12 +29,157 @@ let building = false;
 const layerCache = new Map();
 
 function setStatus(msg, isError) {
-	statusEl.textContent = msg || '';
+	stopBuildBanter();
+	statusEl.replaceChildren();
 	statusEl.classList.toggle('is-error', !!isError);
+	statusEl.classList.remove('is-building-status');
+	if (msg) statusEl.textContent = msg;
 }
 
 function yieldToUi() {
 	return new Promise((resolve) => setTimeout(resolve, 0));
+}
+
+/** Short download names; full pack list stays in APPLIED.txt */
+function shortBaseToken(baseId) {
+	const id = String(baseId || 'clean');
+	if (id === 'clean') return 'clean';
+	if (id.startsWith('csr')) return 'csr';
+	if (id.startsWith('highwind')) return 'hw';
+	return id.replace(/[^a-z0-9]+/gi, '').slice(0, 8).toLowerCase() || 'base';
+}
+
+function shortAddonToken(addon) {
+	const id = String(addon?.id || '');
+	if (id.includes('single-disc-endings')) return 'end';
+	if (id.includes('manip-movies') || id.includes('csr-movies')) return 'mov';
+	if (id.includes('single-disc')) return 'sd';
+	if (id.includes('field-encounter')) {
+		const m = id.match(/-(\d+)-v/);
+		return 'f' + (m ? m[1] : 'enc');
+	}
+	if (id.includes('world-encounter')) {
+		const m = id.match(/-(\d+)-v/);
+		return 'w' + (m ? m[1] : 'enc');
+	}
+	if (id.includes('csr-plus') || layerKind(addon) === 'pack') return 'cplus';
+	const compact = id.replace(/[^a-z0-9]+/gi, '').slice(0, 6).toLowerCase();
+	return compact || 'mod';
+}
+
+function buildOutputNames(disc, baseId, addonEntries) {
+	const tokens = [];
+	const seen = new Set();
+	const push = (t) => {
+		if (!t || seen.has(t)) return;
+		seen.add(t);
+		tokens.push(t);
+	};
+	push('d' + disc);
+	push(shortBaseToken(baseId));
+	for (const a of addonEntries) push(shortAddonToken(a));
+	let body = tokens.join('-');
+	if (body.length > 40) body = body.slice(0, 40).replace(/-+$/, '');
+	const stem = 'ff7-' + (body || 'build');
+	return {
+		binName: stem + '.bin',
+		cueName: stem + '.cue',
+		zipName: stem + '.zip',
+		appliedName: 'APPLIED.txt',
+	};
+}
+
+const BUILD_BANTER = {
+	start: [
+		'This guy are sick… warming up the disc forge.',
+		'Behold! A great phase of building begins.',
+		"Out of my way — I've got a zip to catch.",
+	],
+	base: [
+		'Reading the Lifestream of your base experience…',
+		'Barret: "We pickin the planet-friendly base. Move!"',
+		'Materias calibrated. Base layer inbound.',
+	],
+	addon: [
+		'Equipping optional materia… one materia at a time.',
+		'Cloud: "Yeah… packing another mod."',
+		'Tifa: "Careful — stack them in the right order."',
+		'Cid: "Quit yappin and load the damn layer!"',
+		'Yuffie: "If it is shiny, I am applying it."',
+		'Red XIII: "Patience. Even a guardian waits on fetches."',
+		'Cait Sith: "Luck be with this download!"',
+		'Vincent: "…Hmph. Another patch in the coffin."',
+	],
+	apply: [
+		'Stringing the timeline together…',
+		'No one will bury this disc under broken layers!',
+		'Sephiroth: "You cannot stop… the merge." (we can)',
+	],
+	repair: [
+		'Fixing weak sectors — the planet thanks you.',
+		'Aerith: "See? Even discs need a little healing."',
+		'Rebuilding sector seals. Almost elegant.',
+	],
+	zip: [
+		'Big file ahead — like the Highwind, this takes a minute.',
+		'Compressing. Go touch grass in Sector 5… briefly.',
+		'Do not turn off the power — we are still materia-forging.',
+	],
+	done: [
+		'Mission complete. Take the zip instead of the cake.',
+		'Omnislash: delivered. Check your downloads.',
+		'The choice is yours… open the .cue and play.',
+	],
+};
+
+let banterTimer = null;
+
+function pickBanter(key) {
+	const lines = BUILD_BANTER[key] || BUILD_BANTER.start;
+	return lines[Math.floor(Math.random() * lines.length)];
+}
+
+function stopBuildBanter() {
+	if (banterTimer) {
+		clearInterval(banterTimer);
+		banterTimer = null;
+	}
+}
+
+function setBuildStatus(phaseKey, detail) {
+	stopBuildBanter();
+	statusEl.classList.remove('is-error');
+	statusEl.classList.add('is-building-status');
+	statusEl.replaceChildren();
+
+	const wrap = document.createElement('div');
+	wrap.className = 'build-status';
+
+	const spin = document.createElement('span');
+	spin.className = 'build-spinner';
+	spin.setAttribute('aria-hidden', 'true');
+
+	const textCol = document.createElement('div');
+	textCol.className = 'build-status-text';
+
+	const main = document.createElement('div');
+	main.className = 'build-status-main';
+	main.textContent = pickBanter(phaseKey);
+
+	const sub = document.createElement('div');
+	sub.className = 'build-status-sub';
+	sub.textContent = detail || 'Please wait — the builder is working.';
+
+	textCol.append(main, sub);
+	wrap.append(spin, textCol);
+	statusEl.append(wrap);
+
+	const pool = BUILD_BANTER[phaseKey] || BUILD_BANTER.start;
+	let idx = 0;
+	banterTimer = setInterval(() => {
+		idx = (idx + 1) % pool.length;
+		main.textContent = pool[idx];
+	}, 4500);
 }
 
 function downloadBlob(blob, filename) {
@@ -49,17 +194,36 @@ function downloadBlob(blob, filename) {
 	return url;
 }
 
-function showDownloadFallback(url, filename) {
+function showDownloadFallback(url, filename, doneLine) {
+	stopBuildBanter();
 	statusEl.replaceChildren();
 	statusEl.classList.remove('is-error');
-	statusEl.append('Done — ');
+	statusEl.classList.remove('is-building-status');
+	const wrap = document.createElement('div');
+	wrap.className = 'build-done';
+	if (doneLine) {
+		const t = document.createElement('div');
+		t.className = 'build-done-line';
+		t.textContent = doneLine;
+		wrap.append(t);
+	}
+	const row = document.createElement('div');
+	row.className = 'build-done-row';
+	row.append('Saved as ');
+	const code = document.createElement('code');
+	code.textContent = filename;
+	row.append(code);
+	row.append(' — ');
 	const link = document.createElement('a');
 	link.href = url;
 	link.download = filename;
-	link.textContent = `save ${filename}`;
-	statusEl.append(link);
-	statusEl.append(' if the download did not start.');
+	link.textContent = 'download again';
+	row.append(link);
+	row.append(' if needed. Full pack list is in APPLIED.txt.');
+	wrap.append(row);
+	statusEl.append(wrap);
 }
+
 
 function resolveUrl(baseUrl, maybeRelative) {
 	if (!maybeRelative) return null;
@@ -1136,7 +1300,7 @@ async function applySelection() {
 	building = true;
 	setUiBuilding(true);
 	updatePlan();
-	setStatus('Building…');
+	setBuildStatus('start', 'Preparing your one-disc destiny…');
 	await yieldToUi();
 
 	try {
@@ -1157,7 +1321,7 @@ async function applySelection() {
 		const layers = [];
 		const baseUrl = layerUrlFor(base, disc);
 		if (baseUrl) {
-			setStatus('Loading base layer…');
+			setBuildStatus('base', 'Fetching base experience…');
 			await yieldToUi();
 			layers.push(await loadLayerByUrl(baseUrl));
 		}
@@ -1166,29 +1330,25 @@ async function applySelection() {
 			if (!url) {
 				throw new Error(`${entry.name} has no layer for Disc ${disc}`);
 			}
-			setStatus(`Loading ${entry.name}…`);
+			setBuildStatus('addon', 'Fetching ' + freeAddonLabel(entry) + '…');
 			await yieldToUi();
 			layers.push(await loadLayerByUrl(url));
 		}
 
-		setStatus('Applying layers…');
+		setBuildStatus('apply', 'Merging everything onto your disc image…');
 		await yieldToUi();
 		const out = applyLayers(sourceBytes, layers);
 
-		setStatus('Repairing sector EDC/ECC…');
+		setBuildStatus('repair', 'Patching disc error codes so burns stay honest…');
 		await yieldToUi();
 		const edcStats = repairMode2EdcInImage(sourceBytes, out);
 		console.info('EDC repair', edcStats);
 
-		const stamp = [
-			`d${disc}`,
-			baseId === 'clean' ? 'clean' : baseId,
-			...addonEntries.map((a) => a.id),
-		].join('+');
-		const binName = `ff7-builder-${stamp || 'clean'}.bin`;
-		const cueName = binName.replace(/\.bin$/i, '.cue');
-		const zipName = binName.replace(/\.bin$/i, '.zip');
-		const appliedName = 'APPLIED.txt';
+		const { binName, cueName, zipName, appliedName } = buildOutputNames(
+			disc,
+			baseId,
+			addonEntries
+		);
 
 		const appliedText = buildAppliedReport({
 			disc,
@@ -1196,9 +1356,10 @@ async function applySelection() {
 			baseId,
 			addons: addonEntries,
 			edcFixed: edcStats.fixed,
+			outputZip: zipName,
 		});
 
-		setStatus('Zipping (large file — may take a minute)…');
+		setBuildStatus('zip', 'Packing .bin + .cue — large file, hang tight…');
 		await yieldToUi();
 		const zipBytes = zipStore([
 			{ name: binName, data: out },
@@ -1207,18 +1368,20 @@ async function applySelection() {
 		]);
 
 		const url = downloadBlob(new Blob([zipBytes], { type: 'application/zip' }), zipName);
-		showDownloadFallback(url, zipName);
+		showDownloadFallback(url, zipName, pickBanter('done'));
+
 	} catch (err) {
 		console.error(err);
 		setStatus(err.message || String(err), true);
 	} finally {
+		stopBuildBanter();
 		building = false;
 		setUiBuilding(false);
 		updatePlan();
 	}
 }
 
-function buildAppliedReport({ disc, base, baseId, addons, edcFixed }) {
+function buildAppliedReport({ disc, base, baseId, addons, edcFixed, outputZip }) {
 	const baseName =
 		!base || baseId === 'clean' || !layerUrlFor(base, disc)
 			? 'Unmodified (retail)'
@@ -1230,6 +1393,7 @@ function buildAppliedReport({ disc, base, baseId, addons, edcFixed }) {
 		'Disc: ' + disc,
 		'Base: ' + baseName,
 	];
+	if (outputZip) lines.push('Download: ' + outputZip);
 
 	const packs = addons.filter((a) => layerKind(a) === 'pack');
 	const mods = addons.filter((a) => layerKind(a) === 'mod');
