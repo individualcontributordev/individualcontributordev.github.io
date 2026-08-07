@@ -9,6 +9,7 @@ const packPresetListEl = null; // packs merged into mods (CSR+ all-or-none)
 const modPresetListEl = document.getElementById('mod-preset-list');
 const packListEl = null;
 const modListEl = document.getElementById('mod-list');
+const panelSourceEl = document.getElementById('panel-source');
 const panelBaseEl = document.getElementById('panel-base');
 const panelPacksEl = null;
 const panelModsEl = document.getElementById('panel-mods');
@@ -1001,7 +1002,7 @@ function renderAddons() {
 function setSectionLocked(panel, locked) {
 	if (!panel) return;
 	panel.classList.toggle('is-locked', locked);
-	for (const control of panel.querySelectorAll('select, input, button')) {
+	for (const control of panel.querySelectorAll('select, input, button, textarea')) {
 		if (locked) {
 			control.disabled = true;
 			continue;
@@ -1014,14 +1015,38 @@ function setSectionLocked(panel, locked) {
 		}
 		control.disabled = false;
 	}
+	// file input lives inside a label.file-btn; dim that while locked
+	for (const lab of panel.querySelectorAll('label.file-btn')) {
+		lab.classList.toggle('is-locked-control', locked);
+	}
+}
+
+/** Freeze base/mods/source while a zip is building so selections cannot change mid-run. */
+function setUiBuilding(isBuilding) {
+	document.body.classList.toggle('is-building', isBuilding);
+	// When building, lock everything interactive. When not, updatePlan restores
+	// normal lock rules (no disc yet vs ready).
+	if (isBuilding) {
+		setSectionLocked(panelSourceEl, true);
+		setSectionLocked(panelBaseEl, true);
+		setSectionLocked(panelModsEl, true);
+		setSectionLocked(panelBuildEl, true);
+	}
 }
 
 function updatePlan() {
 	if (!manifest) return;
 	const disc = selectedDisc();
-	setSectionLocked(panelBaseEl, !disc);
-	setSectionLocked(panelModsEl, !disc);
-	setSectionLocked(panelBuildEl, !disc);
+	if (building) {
+		setUiBuilding(true);
+	} else {
+		setSectionLocked(panelSourceEl, false);
+		setSectionLocked(panelBaseEl, !disc);
+		setSectionLocked(panelModsEl, !disc);
+		// Build panel stays interactive when a disc is loaded (button has own disabled).
+		setSectionLocked(panelBuildEl, !disc);
+		// Re-apply button disabled after unlocking the build panel.
+	}
 	const baseId = selectedBaseId();
 	const base = manifest.bases.find((b) => b.id === baseId);
 	const selected = effectiveAddonIds().map((id) => entryById(id)).filter(Boolean);
@@ -1109,6 +1134,7 @@ async function applySelection() {
 	}
 
 	building = true;
+	setUiBuilding(true);
 	updatePlan();
 	setStatus('Building…');
 	await yieldToUi();
@@ -1187,6 +1213,7 @@ async function applySelection() {
 		setStatus(err.message || String(err), true);
 	} finally {
 		building = false;
+		setUiBuilding(false);
 		updatePlan();
 	}
 }
