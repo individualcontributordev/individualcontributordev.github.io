@@ -486,3 +486,16 @@ input[type="file"] {
 	border-bottom-color: rgba(0, 200, 255, 0.5);
 }
 
+
+/* Whole-page freeze while zip/build is running */
+body.is-building {
+	cursor: progress;
+}
+body.is-building .panel.is-locked {
+	opacity: 0.5;
+}
+label.file-btn.is-locked-control {
+	opacity: 0.45;
+	pointer-events: none;
+	cursor: not-allowed;
+}
