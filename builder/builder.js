@@ -101,6 +101,14 @@ const BUILD_BANTER = {
 		'Shinra builds reactors. We build better discs.',
 		'Avalanche special: one clean burn, hold the platefall.',
 		'If this freezes, blame the Turks. Always the Turks.',
+		'Cloud: "…Fine. We build."',
+		'Barret: "Lock an\' load the compiler!"',
+		'A new journey begins from your downloads folder.',
+		'Mako humming. Buffers open. Let\'s go.',
+		'No phantom trains — only real progress.',
+		'If Sephiroth appears mid-build, close the tab. That\'s a you problem.',
+		'Jessie encrypted the payload with love and explosives.',
+		'Wedge is cheering. Quietly. With a sandwich.',
 	],
 	base: [
 		'Reading the Lifestream of your base experience…',
@@ -115,6 +123,14 @@ const BUILD_BANTER = {
 		'Sephiroth: "You chase fragments of identity. How… familiar."',
 		'Reeve would approve a stable baseline. Probably.',
 		'No demos. No sample discs. Only the real Mako.',
+		'Cloud: "Base first. Everything else after."',
+		'Barret: "Unmodified? CSR? Speak up!"',
+		'Tifa: "Whichever home you choose, we hold it steady."',
+		'Aerith: "Hi! Selling bases — I mean blessings."',
+		'The plate overhead is optional. The base is not.',
+		'Highwind crew reporting: base course locked.',
+		'CSR whispers strategies. Highwind cuts dialogue. Your call.',
+		'Lifestream checkout complete.',
 	],
 	addon: [
 		'Equipping optional materia… one orb at a time.',
@@ -149,6 +165,24 @@ const BUILD_BANTER = {
 		'The Gold Saucer tax is waived for open-source heroes.',
 		'Chocobo feet: stamp stamp stamp… fetch fetch fetch.',
 		'Mog would dance, but bandwidth.',
+		'Cloud: "Another one? …Sure."',
+		'Barret: "Stack it! For the little ones!"',
+		'Tifa: "Left hook of compatibility — check."',
+		'Aerith: "This pack smells like flowers. Or Mako. Close enough."',
+		'Cid: "If it breaks mid-air I\'m blamin\' you!"',
+		'Yuffie: "Materia multiplex! More more more!"',
+		'Nanaki: "I smell JSON on the wind."',
+		'Vincent: "Proceed."',
+		'Cait Sith: "Today\'s lucky color is cyan."',
+		'Sephiroth: "Collect your fragments."',
+		'Reno: "Yo. Try not to take all day."',
+		'Tseng: "Mission parameters: fetch and apply."',
+		'Don Corneo would demand a prettier spinner. Denied.',
+		'Dyne… would want this over with. Fair.',
+		'Bugenhagen: "Ho ho ho… packets."',
+		'Priscilla waves from under Junon. Keep fetching.',
+		'The Keystone is a download key now. Deal with it.',
+		'Huge materia energy — compressed into one addon id.',
 	],
 	apply: [
 		'Stringing the timeline together…',
@@ -169,6 +203,18 @@ const BUILD_BANTER = {
 		'No black materia required — only patience.',
 		'Jenova would contaminate the image. We refuse.',
 		'Weapon-class patch incoming. Brace.',
+		'Cloud: "I\'m merging what I am with what I choose."',
+		'Barret: "Weld those sectors like Midgar rails!"',
+		'Tifa: "Syncopation — now punch."',
+		'Aerith: "Knit the planet\'s socks. Digitally."',
+		'Cid: "Torque the timeline!"',
+		'Yuffie: "Combine jutsu: PATCH!"',
+		'Vincent: "No hesitation."',
+		'Every lost Sector 7 memory becomes a byte in place.',
+		'Meteor declines to comment on this merge.',
+		'The Temple of the Ancients had worse puzzles than this diff.',
+		'Black robes wander past, mumbling offsets.',
+		'Reunion can wait. Align the layers.',
 	],
 	repair: [
 		'Fixing weak sectors — the planet thanks you.',
@@ -185,6 +231,16 @@ const BUILD_BANTER = {
 		'Mode2 mended. Form1 forgiven. Move on.',
 		'No more weak spots for Weapons to exploit.',
 		'Sacred code: what is broken can be rewritten.',
+		'Cloud: "Hold still. Healing."',
+		'Barret: "I ain\'t leavin\' bad EDC on my watch!"',
+		'Tifa: "Cure. Cura. Curaga. Checksum."',
+		'Aerith: "Seal of the Ancients — applied to sector headers."',
+		'Cid: "Hammer down. Gently. On math."',
+		'Vincent: "Redeem the corrupt."',
+		'Yuffie: "I purify… for a fee. Today: free."',
+		'Nanaki: "The wounds close. Good."',
+		'No more cracked plates in the image.',
+		'If only hearts patched as cleanly as Form1.',
 	],
 	zip: [
 		'Big file ahead — like the Highwind, this takes a minute.',
@@ -204,6 +260,18 @@ const BUILD_BANTER = {
 		'Shinra would charge subscription fees. We charge seconds.',
 		'Your downloads folder is the new Sector 7 slums — crowded but home.',
 		'If the browser locks up, it\'s meditating in the Sleeping Forest.',
+		'Cloud: "Zipping. Don\'t rush me."',
+		'Barret: "Sit tight! This rocket needs fuel!"',
+		'Tifa: "Count your breaths. We pack for the road."',
+		'Aerith: "A picnic basket for a whole planet."',
+		'Cid: "Cargo strapped. No rattling!"',
+		'Yuffie: "Can I open it early? …No? Rude."',
+		'Vincent: "Silence. Compression."',
+		'Cait Sith: "My prediction: you will refresh your downloads."',
+		'Red XIII: "Stillness is also speed."',
+		'Like waiting on the Gold Saucer tram — but with a spinner.',
+		'The North Crater was colder. This is merely large.',
+		'Remember: the .cue is the PHS of the .bin.',
 	],
 	done: [
 		'Mission complete. Take the zip instead of the cake.',
@@ -225,14 +293,95 @@ const BUILD_BANTER = {
 		'No disc swap. No mercy. Press start.',
 		'APPLIED.txt is your PHS — check the party list inside.',
 		'Remember: keep .bin and .cue together. Like Avalanche.',
+		'Cloud: "We\'re done here."',
+		'Barret: "THAT\'S what I\'m talkin\' about!"',
+		'Tifa: "Nailed it. Go make a memory — on console or DuckStation."',
+		'Aerith: "Thank you for fighting… the progress bar."',
+		'Cid: "Touchdown! Now get off my runway."',
+		'Yuffie: "Victory spoils: one zip. Hand it over— after you copy it."',
+		'Vincent: "Farewell — until the next patch."',
+		'Nanaki: "Run free."',
+		'Cait Sith: "What a performance! Encore optional."',
+		'Sephiroth: "I will not be forgotten. Neither will APPLIED.txt."',
+		'Jessie: "Booyah! Told you the payload would fit!"',
+		'No plate drops. Only mic drops.',
+		'Go burn. Be kind to retail plastics.',
+		'May your frames stay full and your swaps stay zero.',
 	],
 };
 
 let banterTimer = null;
+/** @type {Record<string, string[]>} shuffled leftover lines per phase */
+const banterDecks = Object.create(null);
+/** Recent lines across the whole build so phases do not echo each other */
+const banterRecent = [];
+const BANTER_RECENT_MAX = 24;
+
+function randInt(n) {
+	if (n <= 0) return 0;
+	if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+		const buf = new Uint32Array(1);
+		crypto.getRandomValues(buf);
+		return buf[0] % n;
+	}
+	return Math.floor(Math.random() * n);
+}
+
+function shuffleInPlace(arr) {
+	for (let i = arr.length - 1; i > 0; i--) {
+		const j = randInt(i + 1);
+		const t = arr[i];
+		arr[i] = arr[j];
+		arr[j] = t;
+	}
+	return arr;
+}
+
+function refillDeck(key) {
+	const src = BUILD_BANTER[key] || BUILD_BANTER.start;
+	const deck = src.slice();
+	shuffleInPlace(deck);
+	banterDecks[key] = deck;
+	return deck;
+}
+
+function rememberBanter(line) {
+	banterRecent.push(line);
+	while (banterRecent.length > BANTER_RECENT_MAX) banterRecent.shift();
+}
 
 function pickBanter(key) {
-	const lines = BUILD_BANTER[key] || BUILD_BANTER.start;
-	return lines[Math.floor(Math.random() * lines.length)];
+	const pool = BUILD_BANTER[key] || BUILD_BANTER.start;
+	let deck = banterDecks[key];
+	if (!deck || deck.length === 0) deck = refillDeck(key);
+
+	// Prefer a line not shown recently (when the pool is large enough)
+	const recent = new Set(banterRecent);
+	let pickIdx = -1;
+	for (let attempt = 0; attempt < deck.length; attempt++) {
+		const idx = randInt(deck.length);
+		if (!recent.has(deck[idx])) {
+			pickIdx = idx;
+			break;
+		}
+	}
+	if (pickIdx < 0) {
+		// All remaining were recent — reshuffle full pool and take top
+		deck = refillDeck(key);
+		// try avoid last line only
+		const last = banterRecent[banterRecent.length - 1];
+		pickIdx = 0;
+		for (let i = 0; i < deck.length; i++) {
+			if (deck[i] !== last) {
+				pickIdx = i;
+				break;
+			}
+		}
+	}
+
+	const line = deck.splice(pickIdx, 1)[0];
+	rememberBanter(line);
+	return line;
 }
 
 function stopBuildBanter() {
@@ -240,6 +389,12 @@ function stopBuildBanter() {
 		clearInterval(banterTimer);
 		banterTimer = null;
 	}
+}
+
+function resetBanterSession() {
+	stopBuildBanter();
+	for (const k of Object.keys(banterDecks)) delete banterDecks[k];
+	banterRecent.length = 0;
 }
 
 function setBuildStatus(phaseKey, detail) {
@@ -270,12 +425,10 @@ function setBuildStatus(phaseKey, detail) {
 	wrap.append(spin, textCol);
 	statusEl.append(wrap);
 
-	const pool = BUILD_BANTER[phaseKey] || BUILD_BANTER.start;
-	let idx = 0;
+	// Keep drawing fresh random (no-repeat) lines while a long phase runs
 	banterTimer = setInterval(() => {
-		idx = (idx + 1) % pool.length;
-		main.textContent = pool[idx];
-	}, 4500);
+		main.textContent = pickBanter(phaseKey);
+	}, 3800);
 }
 
 function downloadBlob(blob, filename) {
@@ -1396,6 +1549,7 @@ async function applySelection() {
 	building = true;
 	setUiBuilding(true);
 	updatePlan();
+	resetBanterSession();
 	setBuildStatus('start', 'Preparing your one-disc destiny…');
 	await yieldToUi();
 
