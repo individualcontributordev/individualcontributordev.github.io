@@ -499,3 +499,80 @@ label.file-btn.is-locked-control {
 	pointer-events: none;
 	cursor: not-allowed;
 }
+
+/* Build progress — spinner + banter (theme-matched) */
+#status.is-building-status {
+	color: var(--ff7-text);
+}
+
+.build-status {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	margin-top: 4px;
+	padding: 10px 12px;
+	border: 2px solid var(--ff7-link);
+	border-radius: 8px;
+	background: rgba(0, 0, 40, 0.45);
+}
+
+.build-spinner {
+	flex: 0 0 auto;
+	width: 22px;
+	height: 22px;
+	margin-top: 2px;
+	border-radius: 50%;
+	border: 3px solid rgba(0, 230, 230, 0.25);
+	border-top-color: var(--ff7-link);
+	border-right-color: var(--ff7-link);
+	animation: ff7-spin 0.85s linear infinite;
+}
+
+@keyframes ff7-spin {
+	to { transform: rotate(360deg); }
+}
+
+.build-status-text {
+	min-width: 0;
+	flex: 1;
+}
+
+.build-status-main {
+	color: var(--ff7-link);
+	font-size: 0.85rem;
+	letter-spacing: 1.1px;
+	line-height: 1.45;
+}
+
+.build-status-sub {
+	margin-top: 4px;
+	color: #c8d0e0;
+	font-size: 0.75rem;
+	letter-spacing: 0.9px;
+	line-height: 1.4;
+	opacity: 0.9;
+}
+
+.build-done-line {
+	color: var(--ff7-link);
+	margin-bottom: 6px;
+	letter-spacing: 1px;
+	line-height: 1.45;
+}
+
+.build-done-row {
+	color: var(--ff7-text);
+	font-size: 0.8rem;
+	letter-spacing: 0.9px;
+	line-height: 1.45;
+}
+
+.build-done-row code {
+	font-family: "DogicaPixelRegular", monospace;
+	color: var(--ff7-link);
+	font-size: 0.78rem;
+}
+
+.build-done-row a {
+	color: var(--ff7-link);
+}
