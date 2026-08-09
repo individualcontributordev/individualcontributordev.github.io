@@ -485,6 +485,9 @@ input[type="file"] {
 	opacity: 1;
 	border-bottom-color: rgba(0, 200, 255, 0.5);
 }
+.builder-revision-miss {
+	opacity: 0.75;
+}
 
 
 /* Whole-page freeze while zip/build is running */
