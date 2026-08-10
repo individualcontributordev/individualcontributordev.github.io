@@ -638,7 +638,8 @@ function csrPlusBundleIdsForDisc(disc) {
 
 function isCsrPlusAllChecked() {
 	const el = document.getElementById('csr-plus-all');
-	return !!(el && el.checked && !el.disabled);
+	// Ignore disabled: build lock disables all controls but must not clear CSR+.
+	return !!(el && el.checked);
 }
 
 function wasCsrPlusAllSelected(prevSelected) {
@@ -1551,6 +1552,15 @@ async function applySelection() {
 		return;
 	}
 
+	// Snapshot stack before locking UI. Locking disables inputs; CSR+/selection
+	// must be read while controls still reflect the user's choices.
+	const baseId = selectedBaseId();
+	const base = manifest.bases.find((b) => b.id === baseId);
+	const addonIdSnapshot = effectiveAddonIds().slice();
+	const addonEntries = addonIdSnapshot
+		.map((id) => manifest.addons.find((a) => a.id === id))
+		.filter(Boolean);
+
 	building = true;
 	setUiBuilding(true);
 	updatePlan();
@@ -1559,11 +1569,6 @@ async function applySelection() {
 	await yieldToUi();
 
 	try {
-		const baseId = selectedBaseId();
-		const base = manifest.bases.find((b) => b.id === baseId);
-		const addonEntries = effectiveAddonIds()
-			.map((id) => manifest.addons.find((a) => a.id === id))
-			.filter(Boolean);
 
 		for (const entry of addonEntries) {
 			if (!addonCompatibleWithBase(entry, baseId)) {
