@@ -893,7 +893,7 @@ function renderPresets(kind, opts = {}) {
 	const noneOpt = document.createElement('option');
 	noneOpt.value = '';
 	noneOpt.textContent = 'None';
-	noneOpt.title = kind === 'pack' ? 'Pick scene trims manually below.' : 'Pick mods manually below.';
+	noneOpt.title = kind === 'pack' ? 'Choose trims yourself below.' : 'Choose mods yourself below.';
 	select.appendChild(noneOpt);
 	for (const preset of presets) {
 		const opt = document.createElement('option');
@@ -1040,32 +1040,30 @@ function withAddonVersion(label, addon) {
 }
 
 function exclusiveOptionLabel(addon) {
-	let core;
 	if (addon.optionLabel) {
-		core = String(addon.optionLabel);
-	} else {
-		const after = String(addon.name || '')
-			.split('—')
-			.slice(1)
-			.join('—')
-			.trim();
-		const cleaned = after
-			.replace(/\s*\(on [^)]+\)/gi, '')
-			.replace(/\s+v[\d.]+$/i, '')
-			.trim();
-		core = cleaned || addon.name;
+		return String(addon.optionLabel);
 	}
-	return withAddonVersion(core, addon);
+	const after = String(addon.name || '')
+		.split('—')
+		.slice(1)
+		.join('—')
+		.trim();
+	const cleaned = after
+		.replace(/\s*\(on [^)]+\)/gi, '')
+		.replace(/\s+v[\d.]+$/i, '')
+		.trim();
+	return cleaned || String(addon.name || addon.id || '');
 }
 
 function freeAddonLabel(addon) {
-	return withAddonVersion(addon.name || addon.id, addon);
+	// Player-facing: use name as shipped. Do not append version meta.
+	return String(addon.name || addon.id || '').trim();
 }
 
 function updateAddonGroupTooltip(select) {
 	if (!select) return;
 	if (!select.value) {
-		select.title = 'None — skip this group.';
+		select.title = 'Do not change this.';
 		return;
 	}
 	const addon = manifest?.addons.find((a) => a.id === select.value);
@@ -1098,7 +1096,7 @@ function renderAddonGroup(groupId, addons, prevSelected) {
 	const off = document.createElement('option');
 	off.value = '';
 	off.textContent = 'None';
-	off.title = 'Skip this group.';
+	off.title = 'Do not change this.';
 	select.appendChild(off);
 
 	const ids = new Set(baseCompatibleAddons.map((a) => a.id));
@@ -1140,8 +1138,8 @@ function renderFreeAddon(addon, prevSelected) {
 	if (!compatible) {
 		label.classList.add('is-disabled');
 	}
-	const tipParts = [addon.hint, addon.blurb].filter(Boolean);
-	label.title = tipParts.join(' — ') || '';
+	// Tooltip = what the mod does (blurb only). Avoid stacking hint+blurb meta.
+	label.title = addon.blurb || addon.hint || '';
 
 	const displayName = freeAddonLabel(addon);
 	// Escape is unnecessary for our catalog strings; keep simple like before.
@@ -1307,11 +1305,11 @@ function renderCsrPlusToggle(prevSelected) {
 	const hint = document.createElement('span');
 	hint.className = 'choice-hint';
 	if (!baseOk) {
-		hint.textContent = 'CSR base only — all scene trims or none.';
+		hint.textContent = 'Requires CSR. Turns every listed scene trim on for this disc.';
 	} else if (disc != null && !discIds.length) {
-		hint.textContent = 'No CSR+ trims for this disc.';
+		hint.textContent = 'No extra scene trims on this disc.';
 	} else {
-		hint.textContent = 'All scene trims for this disc (or none).';
+		hint.textContent = 'Every listed scene trim for this disc, or none.';
 	}
 	span.appendChild(hint);
 	label.appendChild(input);
