@@ -674,13 +674,20 @@ function autoIncludeMatches(addon, baseId, selectedIds) {
 	const need = rule.addonSelected;
 	if (need && !selectedIds.includes(need)) return false;
 	const prefix = rule.unlessAddonIdPrefix;
-	if (prefix && selectedIds.some((id) => String(id).startsWith(prefix))) return false;
+	if (prefix) {
+		// Any selected id with the prefix (CSR+ packs expanded from csr-plus-all).
+		if (selectedIds.some((id) => String(id).startsWith(prefix))) return false;
+		// CSR+ master toggle: suppress even if this disc has no pack layer in the list
+		// (e.g. single-disc manip-movies must not stack with CSR+).
+		if (prefix === 'csr-plus-scene-' && typeof isCsrPlusAllChecked === 'function' && isCsrPlusAllChecked()) {
+			return false;
+		}
+	}
 	const unlessIds = rule.unlessAddonIds;
 	if (Array.isArray(unlessIds) && unlessIds.some((id) => selectedIds.includes(id))) return false;
 	return true;
 }
 
-/** pack = CSR+ scene layers (CSR only). mod = gameplay layers (all bases). */
 function layerKind(entry) {
 	if (!entry) return 'mod';
 	const k = String(entry.kind || '').toLowerCase();
