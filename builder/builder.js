@@ -431,7 +431,37 @@ function setBuildStatus(phaseKey, detail) {
 	}, 3800);
 }
 
-function downloadBlob(blob, filename) {
+/**
+ * Save the built zip. Prefer showSaveFilePicker so we can await the write;
+ * otherwise trigger a blob download and hold the UI until the browser has
+ * accepted the hand-off (true disk completion is not observable for <a download>).
+ * @returns {Promise<{ url: string | null, method: 'file-picker' | 'blob' }>}
+ */
+async function saveZipDownload(blob, filename) {
+	if (typeof window.showSaveFilePicker === 'function') {
+		try {
+			const handle = await window.showSaveFilePicker({
+				suggestedName: filename,
+				types: [
+					{
+						description: 'ZIP archive',
+						accept: { 'application/zip': ['.zip'] },
+					},
+				],
+			});
+			const writable = await handle.createWritable();
+			await writable.write(blob);
+			await writable.close();
+			return { url: null, method: 'file-picker' };
+		} catch (err) {
+			// User cancelled the picker — do not fall back automatically.
+			if (err && (err.name === 'AbortError' || err.name === 'NotAllowedError')) {
+				throw err;
+			}
+			console.warn('showSaveFilePicker failed, using blob download', err);
+		}
+	}
+
 	const url = URL.createObjectURL(blob);
 	const a = document.createElement('a');
 	a.href = url;
@@ -439,11 +469,14 @@ function downloadBlob(blob, filename) {
 	document.body.appendChild(a);
 	a.click();
 	a.remove();
-	setTimeout(() => URL.revokeObjectURL(url), 60_000);
-	return url;
+	// Keep Build locked until the download agent has taken the blob.
+	// Revoke later so a "download again" link still works.
+	await new Promise((resolve) => setTimeout(resolve, 2000));
+	setTimeout(() => URL.revokeObjectURL(url), 10 * 60_000);
+	return { url, method: 'blob' };
 }
 
-function showDownloadFallback(url, filename, doneLine) {
+function showDownloadFallback(url, filename, doneLine, opts = {}) {
 	stopBuildBanter();
 	statusEl.replaceChildren();
 	statusEl.classList.remove('is-error');
@@ -451,24 +484,32 @@ function showDownloadFallback(url, filename, doneLine) {
 	const wrap = document.createElement('div');
 	wrap.className = 'build-done';
 	if (doneLine) {
-		const t = document.createElement('div');
-		t.className = 'build-done-line';
-		t.textContent = doneLine;
-		wrap.append(t);
+		const line = document.createElement('div');
+		line.className = 'build-done-line';
+		line.textContent = doneLine;
+		wrap.append(line);
 	}
 	const row = document.createElement('div');
 	row.className = 'build-done-row';
-	row.append('Saved as ');
-	const code = document.createElement('code');
-	code.textContent = filename;
-	row.append(code);
-	row.append(' — ');
-	const link = document.createElement('a');
-	link.href = url;
-	link.download = filename;
-	link.textContent = 'download again';
-	row.append(link);
-	row.append(' if needed. Full pack list is in APPLIED.txt.');
+	if (opts.method === 'file-picker' || !url) {
+		row.append('Saved as ');
+		const code = document.createElement('code');
+		code.textContent = filename;
+		row.append(code);
+		row.append('. Full pack list is in APPLIED.txt.');
+	} else {
+		row.append('Saved as ');
+		const code = document.createElement('code');
+		code.textContent = filename;
+		row.append(code);
+		row.append(' — ');
+		const link = document.createElement('a');
+		link.href = url;
+		link.download = filename;
+		link.textContent = 'download again';
+		row.append(link);
+		row.append(' if needed. Full pack list is in APPLIED.txt.');
+	}
 	wrap.append(row);
 	statusEl.append(wrap);
 }
@@ -1738,15 +1779,27 @@ async function applySelection() {
 
 		// Download starts immediately after zip — no event wait / loop.
 		// Refresh mid-build aborts the job; it does not queue a delayed download.
-		setBuildStatus('zip', 'Starting download…');
+		// Keep Build locked until the zip is actually saved (or hand-off finishes).
+		setBuildStatus('zip', 'Saving zip — keep this tab open…');
 		await yieldToUi();
-		const url = downloadBlob(new Blob([zipBytes], { type: 'application/zip' }), zipName);
-		showDownloadFallback(url, zipName, pickBanter('done'));
+		const zipBlob = new Blob([zipBytes], { type: 'application/zip' });
+		const saved = await saveZipDownload(zipBlob, zipName);
+		showDownloadFallback(saved.url, zipName, pickBanter('done'), {
+			method: saved.method,
+		});
 
 	} catch (err) {
 		console.error(err);
-		setStatus(err.message || String(err), true);
+		if (err && (err.name === 'AbortError' || err.name === 'NotAllowedError')) {
+			setStatus(
+				'Save cancelled — Build is ready; click Build zip again when you want the file.',
+				true,
+			);
+		} else {
+			setStatus(err.message || String(err), true);
+		}
 	} finally {
+		// Unlock only after save completes (or errors / cancel).
 		stopBuildBanter();
 		building = false;
 		setUiBuilding(false);
