@@ -1548,6 +1548,31 @@ async function onFileChosen(file) {
 }
 
 
+
+	/** Stable stack order for layer merge (not UI order). */
+	function addonApplyRank(entry) {
+		const id = String(entry && entry.id ? entry.id : '');
+		// 1) Single-disc core (grows D1 / merges multi-disc fields)
+		if (id.startsWith('single-disc-on-')) return 10;
+		// 2) Single-disc helpers that assume SD core (movies, endings)
+		if (id.includes('single-disc-csr-manip-movies')) return 20;
+		if (id.includes('single-disc-endings')) return 30;
+		// 3) Gameplay mods
+		if (id.includes('fanfare') || id.includes('encounter')) return 40;
+		// 4) CSR+ scene packs last (disc1 layers expect CSR+single-disc baseline)
+		if (id.startsWith('csr-plus-scene-') || id.startsWith('csr-plus-')) return 50;
+		return 45;
+	}
+
+	function sortAddonsForApply(entries) {
+		return entries.slice().sort((a, b) => {
+			const ra = addonApplyRank(a);
+			const rb = addonApplyRank(b);
+			if (ra !== rb) return ra - rb;
+			return String(a.id || '').localeCompare(String(b.id || ''));
+		});
+	}
+
 async function applySelection() {
 	if (building || !sourceBytes || !manifest) return;
 	const disc = selectedDisc();
@@ -1574,7 +1599,8 @@ async function applySelection() {
 
 	try {
 
-		for (const entry of addonEntries) {
+		const orderedAddons = sortAddonsForApply(addonEntries);
+		for (const entry of orderedAddons) {
 			if (!addonCompatibleWithBase(entry, baseId)) {
 				throw new Error(
 					`${entry.name} is not available for ${base?.name || baseId}.`
@@ -1589,7 +1615,7 @@ async function applySelection() {
 			await yieldToUi();
 			layers.push(await loadLayerByUrl(baseUrl));
 		}
-		for (const entry of addonEntries) {
+		for (const entry of orderedAddons) {
 			const url = layerUrlFor(entry, disc);
 			if (!url) {
 				throw new Error(`${entry.name} has no layer for Disc ${disc}`);
@@ -1611,14 +1637,14 @@ async function applySelection() {
 		const { binName, cueName, zipName, appliedName } = buildOutputNames(
 			disc,
 			baseId,
-			addonEntries
+			orderedAddons
 		);
 
 		const appliedText = buildAppliedReport({
 			disc,
 			base,
 			baseId,
-			addons: addonEntries,
+			addons: orderedAddons,
 			edcFixed: edcStats.fixed,
 			outputZip: zipName,
 		});
