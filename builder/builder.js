@@ -1808,10 +1808,9 @@ async function applySelection() {
 }
 
 function buildAppliedReport({ disc, base, baseId, addons, edcFixed, outputZip }) {
-	const baseName =
-		!base || baseId === 'clean' || !layerUrlFor(base, disc)
-			? 'Unmodified (retail)'
-			: base.name;
+	const baseName = !base || baseId === 'clean' || !layerUrlFor(base, disc)
+		? 'Unmodified (retail)'
+		: withAddonVersion(base.name || baseId, base);
 
 	// Only list what applies to this disc image.
 	const applied = (addons || []).filter((a) => addonHasLayerForDisc(a, disc));
@@ -1830,7 +1829,9 @@ function buildAppliedReport({ disc, base, baseId, addons, edcFixed, outputZip })
 		lines.push('CSR+ on this disc (' + packs.length + ' scene layer(s)):');
 		for (const addon of packs) {
 			const discs = addonDiscKeys(addon).join(',') || String(disc);
-			lines.push('  - ' + freeAddonLabel(addon) + ' [disc ' + discs + ']');
+			const label = withAddonVersion(freeAddonLabel(addon), addon);
+			const idNote = addon.id ? ' (' + addon.id + ')' : '';
+			lines.push('  - ' + label + idNote + ' [disc ' + discs + ']');
 		}
 	} else {
 		lines.push('CSR+: off (or no CSR+ layer for this disc)');
@@ -1841,7 +1842,9 @@ function buildAppliedReport({ disc, base, baseId, addons, edcFixed, outputZip })
 			const discs = addonDiscKeys(addon).join(',') || String(disc);
 			const discNote =
 				discs && discs !== String(disc) ? ' [discs ' + discs + ']' : '';
-			lines.push('  - ' + freeAddonLabel(addon) + discNote);
+			const label = withAddonVersion(freeAddonLabel(addon), addon);
+			const idNote = addon.id ? ' (' + addon.id + ')' : '';
+			lines.push('  - ' + label + idNote + discNote);
 		}
 	} else {
 		lines.push('Mods: none');
