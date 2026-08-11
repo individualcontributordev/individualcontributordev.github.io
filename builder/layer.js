@@ -30,21 +30,41 @@ export function validateLayer(layer) {
 	}
 }
 
+function yieldToUi() {
+	return new Promise((resolve) => setTimeout(resolve, 0));
+}
+
 /**
  * Apply one layer to a disc image. Returns a new Uint8Array (may grow).
+ * Yields periodically so the browser can paint on huge packs.
+ *
+ * opts.recordChunk — records between yields (default 4000)
+ * opts.onProgress — optional (done, total) callback
  */
-export function applyLayer(imageBytes, layer) {
+export async function applyLayer(imageBytes, layer, opts = {}) {
 	validateLayer(layer);
+	const recordChunk = opts.recordChunk ?? 4000;
+	const onProgress = opts.onProgress;
 	let size = imageBytes.length;
-	const parsed = layer.records.map((rec) => {
+	const records = layer.records;
+	const total = records.length;
+	const parsed = new Array(total);
+
+	for (let i = 0; i < total; i++) {
+		const rec = records[i];
 		const offset = Number(rec.offset);
 		if (!Number.isFinite(offset) || offset < 0) {
 			throw new Error(`bad offset: ${rec.offset}`);
 		}
 		const data = rec.hex != null ? parseHex(rec.hex) : new Uint8Array(rec.data || []);
 		size = Math.max(size, offset + data.length);
-		return { offset, data };
-	});
+		parsed[i] = { offset, data };
+		if ((i + 1) % recordChunk === 0) {
+			if (onProgress) onProgress(i + 1, total);
+			await yieldToUi();
+		}
+	}
+
 	// Grown images: trailing zeros may match shorter original pad and be omitted
 	// from records. Honor stats.modifiedBytes so size/alignment match the work bin.
 	const target = layer.stats && Number(layer.stats.modifiedBytes);
@@ -54,24 +74,38 @@ export function applyLayer(imageBytes, layer) {
 
 	const out = new Uint8Array(size);
 	out.set(imageBytes, 0);
-	for (const { offset, data } of parsed) {
+	for (let i = 0; i < parsed.length; i++) {
+		const { offset, data } = parsed[i];
 		out.set(data, offset);
+		if ((i + 1) % recordChunk === 0) {
+			if (onProgress) onProgress(i + 1, total);
+			await yieldToUi();
+		}
 	}
+	if (onProgress) onProgress(total, total);
 	return out;
 }
 
 /**
- * Apply layers in order.
+ * Apply layers in order (async; yields inside each layer).
+ * opts.onLayer — optional (index, total, layer) before each layer
  */
-export function applyLayers(imageBytes, layers) {
+export async function applyLayers(imageBytes, layers, opts = {}) {
 	let current = imageBytes;
-	for (const layer of layers) {
-		current = applyLayer(current, layer);
+	const total = layers.length;
+	for (let i = 0; i < total; i++) {
+		const layer = layers[i];
+		if (opts.onLayer) opts.onLayer(i, total, layer);
+		current = await applyLayer(current, layer);
 	}
 	return current;
 }
 
 export function buildCue(binFileName) {
 	const name = binFileName.replace(/"/g, '');
-	return `FILE "${name}" BINARY\n  TRACK 01 MODE2/2352\n    INDEX 01 00:00:00\n`;
+	return (
+		'FILE "' +
+		name +
+		'" BINARY\n  TRACK 01 MODE2/2352\n    INDEX 01 00:00:00\n'
+	);
 }

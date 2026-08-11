@@ -121,14 +121,20 @@ function sectorChanged(a, b, off) {
 	return false;
 }
 
+function yieldToUi() {
+	return new Promise((resolve) => setTimeout(resolve, 0));
+}
+
 /**
  * After ic-layer apply: regenerate Mode2 Form1 EDC/ECC for every sector that
  * differs from the source image. Leaves untouched sectors alone (some retail
  * Form1 sectors legitimately have unusual footers).
  *
- * @returns {{ fixed: number, sectors: number, changed: number }}
+ * Async: yields every sectorChunk LBAs so the UI can stay responsive on ~700MB bins.
+ *
+ * @returns {Promise<{ fixed: number, sectors: number, changed: number }>}
  */
-export function repairMode2EdcInImage(sourceBytes, patchedBytes) {
+export async function repairMode2EdcInImage(sourceBytes, patchedBytes, opts = {}) {
 	if (patchedBytes.length % SECTOR !== 0) {
 		throw new Error('image length ' + patchedBytes.length + ' is not a multiple of 2352');
 	}
@@ -146,6 +152,8 @@ export function repairMode2EdcInImage(sourceBytes, patchedBytes) {
 				')',
 		);
 	}
+	const sectorChunk = opts.sectorChunk ?? 2048; // ~4.6MB of 2352 sectors
+	const onProgress = opts.onProgress;
 	const sectors = patchedBytes.length / SECTOR;
 	const sourceSectors = sourceBytes.length / SECTOR;
 	let fixed = 0;
@@ -153,11 +161,20 @@ export function repairMode2EdcInImage(sourceBytes, patchedBytes) {
 	for (let lba = 0; lba < sectors; lba++) {
 		const off = lba * SECTOR;
 		const isNew = lba >= sourceSectors;
-		if (!isNew && !sectorChanged(sourceBytes, patchedBytes, off)) continue;
-		changed++;
-		if (!isMode2Form1(patchedBytes, off)) continue;
-		generateMode2Form1EdcEcc(patchedBytes, off);
-		fixed++;
+		if (!isNew && !sectorChanged(sourceBytes, patchedBytes, off)) {
+			// still yield on chunk boundaries while scanning
+		} else {
+			changed++;
+			if (isMode2Form1(patchedBytes, off)) {
+				generateMode2Form1EdcEcc(patchedBytes, off);
+				fixed++;
+			}
+		}
+		if ((lba + 1) % sectorChunk === 0) {
+			if (onProgress) onProgress(lba + 1, sectors);
+			await yieldToUi();
+		}
 	}
+	if (onProgress) onProgress(sectors, sectors);
 	return { fixed, changed, sectors };
 }

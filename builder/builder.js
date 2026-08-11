@@ -1627,11 +1627,32 @@ async function applySelection() {
 
 		setBuildStatus('apply', 'Merging everything onto your disc image…');
 		await yieldToUi();
-		const out = applyLayers(sourceBytes, layers);
+		// Chunked async apply — large single-disc/CSR+ layers can be 90k+ records.
+		// Yields inside applyLayers so the tab stays responsive (no end-event wait).
+		const out = await applyLayers(sourceBytes, layers, {
+			onLayer: (index, total) => {
+				setBuildStatus(
+					'apply',
+					'Merging layer ' + (index + 1) + ' of ' + total + '…',
+				);
+			},
+		});
+		await yieldToUi();
 
 		setBuildStatus('repair', 'Patching disc error codes so burns stay honest…');
 		await yieldToUi();
-		const edcStats = repairMode2EdcInImage(sourceBytes, out);
+		// Full-image EDC scan is the long pole (~300k sectors). Yields inside.
+		const edcStats = await repairMode2EdcInImage(sourceBytes, out, {
+			onProgress: (done, total) => {
+				if (done === total || done % 16384 === 0) {
+					const pct = total ? Math.floor((100 * done) / total) : 0;
+					setBuildStatus(
+						'repair',
+						'Patching disc error codes… ' + pct + '%',
+					);
+				}
+			},
+		});
 		console.info('EDC repair', edcStats);
 
 		const { binName, cueName, zipName, appliedName } = buildOutputNames(
@@ -1651,12 +1672,16 @@ async function applySelection() {
 
 		setBuildStatus('zip', 'Packing .bin + .cue — large file, hang tight…');
 		await yieldToUi();
-		const zipBytes = zipStore([
+		const zipBytes = await zipStore([
 			{ name: binName, data: out },
 			{ name: cueName, data: new TextEncoder().encode(buildCue(binName)) },
 			{ name: appliedName, data: new TextEncoder().encode(appliedText) },
 		]);
 
+		// Download starts immediately after zip — no event wait / loop.
+		// Refresh mid-build aborts the job; it does not queue a delayed download.
+		setBuildStatus('zip', 'Starting download…');
+		await yieldToUi();
 		const url = downloadBlob(new Blob([zipBytes], { type: 'application/zip' }), zipName);
 		showDownloadFallback(url, zipName, pickBanter('done'));
 
