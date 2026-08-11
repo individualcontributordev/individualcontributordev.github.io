@@ -511,7 +511,11 @@ function normalizeEntry(entry, manifestUrl) {
 function layerUrlFor(entry, disc) {
 	if (!entry) return null;
 	const key = String(disc);
-	if (entry.discs && entry.discs[key]) return entry.discs[key];
+	// Prefer per-disc map. Do not fall back to entry.url (often discs['1'])
+	// when the pack has no layer for this disc.
+	if (entry.discs && Object.keys(entry.discs).length) {
+		return entry.discs[key] || null;
+	}
 	return entry.url || null;
 }
 
@@ -1519,7 +1523,10 @@ function updatePlan() {
 	}
 	const baseId = selectedBaseId();
 	const base = manifest.bases.find((b) => b.id === baseId);
-	const selected = effectiveAddonIds().map((id) => entryById(id)).filter(Boolean);
+	const selected = effectiveAddonIds()
+		.map((id) => entryById(id))
+		.filter(Boolean)
+		.filter((a) => !disc || addonHasLayerForDisc(a, disc));
 	const packs = selected.filter((a) => layerKind(a) === 'pack');
 	const mods = selected.filter((a) => layerKind(a) === 'mod');
 	const steps = [];
@@ -1633,9 +1640,12 @@ async function applySelection() {
 	const baseId = selectedBaseId();
 	const base = manifest.bases.find((b) => b.id === baseId);
 	const addonIdSnapshot = effectiveAddonIds().slice();
+	// Only packs that have a layer for the loaded disc.
+	// CSR+ all-or-none = every scene that applies here, not every pack id.
 	const addonEntries = addonIdSnapshot
 		.map((id) => manifest.addons.find((a) => a.id === id))
-		.filter(Boolean);
+		.filter(Boolean)
+		.filter((a) => addonHasLayerForDisc(a, disc));
 
 	building = true;
 	setUiBuilding(true);
@@ -1665,7 +1675,8 @@ async function applySelection() {
 		for (const entry of orderedAddons) {
 			const url = layerUrlFor(entry, disc);
 			if (!url) {
-				throw new Error(`${entry.name} has no layer for Disc ${disc}`);
+				console.warn('skip (no Disc ' + disc + ' layer):', entry.id);
+				continue;
 			}
 			setBuildStatus('addon', 'Fetching ' + freeAddonLabel(entry) + '…');
 			await yieldToUi();
@@ -1749,31 +1760,42 @@ function buildAppliedReport({ disc, base, baseId, addons, edcFixed, outputZip })
 			? 'Unmodified (retail)'
 			: base.name;
 
+	// Only list what applies to this disc image.
+	const applied = (addons || []).filter((a) => addonHasLayerForDisc(a, disc));
+
 	const lines = [
 		'Final Fantasy VII — IndividualContributor',
 		'',
-		'Disc: ' + disc,
+		'Disc: ' + disc + ' (layers for this disc only)',
 		'Base: ' + baseName,
 	];
 	if (outputZip) lines.push('Download: ' + outputZip);
 
-	const packs = addons.filter((a) => layerKind(a) === 'pack');
-	const mods = addons.filter((a) => layerKind(a) === 'mod');
+	const packs = applied.filter((a) => layerKind(a) === 'pack');
+	const mods = applied.filter((a) => layerKind(a) === 'mod');
 	if (packs.length) {
-		lines.push('CSR+ (all-or-none scene trims on CSR):');
-		for (const addon of packs) lines.push('  - ' + freeAddonLabel(addon));
+		lines.push('CSR+ on this disc (' + packs.length + ' scene layer(s)):');
+		for (const addon of packs) {
+			const discs = addonDiscKeys(addon).join(',') || String(disc);
+			lines.push('  - ' + freeAddonLabel(addon) + ' [disc ' + discs + ']');
+		}
 	} else {
-		lines.push('CSR+: off');
+		lines.push('CSR+: off (or no CSR+ layer for this disc)');
 	}
 	if (mods.length) {
-		lines.push('Mods:');
-		for (const addon of mods) lines.push('  - ' + freeAddonLabel(addon));
+		lines.push('Mods on this disc:');
+		for (const addon of mods) {
+			const discs = addonDiscKeys(addon).join(',') || String(disc);
+			const discNote =
+				discs && discs !== String(disc) ? ' [discs ' + discs + ']' : '';
+			lines.push('  - ' + freeAddonLabel(addon) + discNote);
+		}
 	} else {
 		lines.push('Mods: none');
 	}
 
-if (edcFixed != null) {
-		lines.push(`EDC/ECC sectors repaired: ${edcFixed}`);
+	if (edcFixed != null) {
+		lines.push('EDC/ECC sectors repaired: ' + edcFixed);
 	}
 
 
