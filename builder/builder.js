@@ -1186,10 +1186,10 @@ function renderFreeAddon(addon, prevSelected) {
 	const betaBadge = isBetaAddon(addon)
 		? '<span class="addon-beta-badge" title="Unfinished or known issues">BETA</span>'
 		: '';
-	// Escape is unnecessary for our catalog strings; keep simple like before.
+	// Title + BETA in a flex row: spaced, not nested/clipped inside strong.
 	label.innerHTML = `
 		<input type="checkbox" name="addon" value="${addon.id}" ${checked} ${disabled} />
-		<span><strong>${displayName}${betaBadge}</strong>${addon.hint ? `<span class="choice-hint">${addon.hint}</span>` : ''}</span>
+		<span><span class="choice-title"><span class="choice-title-text">${displayName}</span>${betaBadge}</span>${addon.hint ? `<span class="choice-hint">${addon.hint}</span>` : ''}</span>
 	`;
 	return label;
 }
@@ -1343,9 +1343,12 @@ function renderCsrPlusToggle(prevSelected) {
 	input.checked = checked;
 	input.disabled = !compatible;
 	const span = document.createElement('span');
-	const strong = document.createElement('strong');
-	strong.textContent = 'CSR+';
-	span.appendChild(strong);
+	const titleRow = document.createElement('span');
+	titleRow.className = 'choice-title';
+	const titleText = document.createElement('span');
+	titleText.className = 'choice-title-text';
+	titleText.textContent = 'CSR+';
+	titleRow.appendChild(titleText);
 	const csrPlusBeta = bundle
 		.map((id) => entryById(id))
 		.filter(Boolean)
@@ -1355,8 +1358,9 @@ function renderCsrPlusToggle(prevSelected) {
 		badge.className = 'addon-beta-badge';
 		badge.title = 'Unfinished or known issues';
 		badge.textContent = 'BETA';
-		strong.appendChild(badge);
+		titleRow.appendChild(badge);
 	}
+	span.appendChild(titleRow);
 	const hint = document.createElement('span');
 	hint.className = 'choice-hint';
 	if (!baseOk) {
