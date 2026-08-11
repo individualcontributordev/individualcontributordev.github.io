@@ -674,6 +674,10 @@ function autoIncludeMatches(addon, baseId, selectedIds) {
 	if (Array.isArray(bases) && bases.length && !bases.includes(baseId)) return false;
 	const need = rule.addonSelected;
 	if (need && !selectedIds.includes(need)) return false;
+	const needAny = rule.addonSelectedAny;
+	if (Array.isArray(needAny) && needAny.length && !needAny.some((id) => selectedIds.includes(id))) {
+		return false;
+	}
 	const prefix = rule.unlessAddonIdPrefix;
 	if (prefix) {
 		// Any selected id with the prefix (CSR+ packs expanded from csr-plus-all).
