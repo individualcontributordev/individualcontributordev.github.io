@@ -66,9 +66,18 @@ export async function applyLayer(imageBytes, layer, opts = {}) {
 	}
 
 	// Grown images: trailing zeros may match shorter original pad and be omitted
-	// from records. Honor stats.modifiedBytes so size/alignment match the work bin.
+	// from records. Honor stats.modifiedBytes ONLY when this layer was built
+	// against an image the same size as the one we are patching.
+	// Cross-baseline packs (e.g. CSR+ disc1 stamped from a Single-disc-sized
+	// work bin) must not inflate plain CSR/pristine with empty trailing pad.
+	const original = layer.stats && Number(layer.stats.originalBytes);
 	const target = layer.stats && Number(layer.stats.modifiedBytes);
-	if (Number.isFinite(target) && target > size) {
+	if (
+		Number.isFinite(target) &&
+		target > size &&
+		Number.isFinite(original) &&
+		original === imageBytes.length
+	) {
 		size = target;
 	}
 
