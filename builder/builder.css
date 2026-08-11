@@ -340,6 +340,30 @@ select[name="addon-group"] {
 	background: rgba(0, 0, 0, 0.25);
 }
 
+/* BETA label for unfinished / known-buggy packs */
+.addon-beta-badge {
+	display: inline-block;
+	margin-left: 0.45em;
+	vertical-align: 0.1em;
+	font-family: "DogicaPixelRegular", Arial, sans-serif;
+	font-size: 0.55rem;
+	letter-spacing: 0.9px;
+	text-transform: uppercase;
+	padding: 2px 6px;
+	border-radius: 4px;
+	border: 1px solid rgba(255, 180, 60, 0.75);
+	color: #ffd48a;
+	background: rgba(80, 40, 0, 0.55);
+	font-weight: normal;
+}
+
+.choice strong .addon-beta-badge {
+	/* keep on same visual line as title */
+	position: relative;
+	top: -1px;
+}
+
+
 .addon-disc-col-body {
 	display: flex;
 	flex-direction: column;

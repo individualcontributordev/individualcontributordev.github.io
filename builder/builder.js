@@ -1072,6 +1072,30 @@ function freeAddonLabel(addon) {
 	return String(addon.name || addon.id || '').trim();
 }
 
+/** True when pack is beta / buggy / lightly tested (manifest.beta or status). */
+function isBetaAddon(addon) {
+	if (!addon) return false;
+	if (addon.beta === true) return true;
+	const status = String(addon.status || '').toLowerCase();
+	return status === 'beta' || status === 'experimental' || status === 'wip';
+}
+
+function betaTitleSuffix(addon) {
+	if (!isBetaAddon(addon)) return '';
+	const note = String(addon.betaNote || addon.blurb || '').trim();
+	return note
+		? 'BETA — unfinished or known issues. ' + note
+		: 'BETA — unfinished or known issues; playtest at your own risk.';
+}
+
+/** Plain-text BETA marker for <option> / aria (no HTML in selects). */
+function withBetaText(label, addon) {
+	const base = String(label || '').trim();
+	if (!isBetaAddon(addon)) return base;
+	if (/\bBETA\b/i.test(base)) return base;
+	return base ? base + ' · BETA' : 'BETA';
+}
+
 function updateAddonGroupTooltip(select) {
 	if (!select) return;
 	if (!select.value) {
@@ -1079,7 +1103,9 @@ function updateAddonGroupTooltip(select) {
 		return;
 	}
 	const addon = manifest?.addons.find((a) => a.id === select.value);
-	select.title = addon?.blurb || '';
+	const beta = betaTitleSuffix(addon);
+	const blurb = addon?.blurb || '';
+	select.title = [beta, blurb].filter(Boolean).join('\n') || '';
 }
 
 function renderAddonGroup(groupId, addons, prevSelected) {
@@ -1092,12 +1118,13 @@ function renderAddonGroup(groupId, addons, prevSelected) {
 	const baseCompatibleAddons = addons.filter(a => addonCompatibleWithBase(a, baseId));
 
 	const title = exclusiveGroupTitle(addons);
+	const groupBeta = baseCompatibleAddons.some(isBetaAddon) || addons.some(isBetaAddon);
 	const selectId = `addon-group-${groupId}`;
 
 	const label = document.createElement('label');
 	label.className = 'addon-group-label';
 	label.htmlFor = selectId;
-	label.textContent = title;
+	label.textContent = groupBeta ? withBetaText(title, { beta: true }) : title;
 
 	const select = document.createElement('select');
 	select.id = selectId;
@@ -1115,8 +1142,9 @@ function renderAddonGroup(groupId, addons, prevSelected) {
 	for (const addon of baseCompatibleAddons) {
 		const opt = document.createElement('option');
 		opt.value = addon.id;
-		opt.textContent = exclusiveOptionLabel(addon);
-		opt.title = addon.blurb || '';
+		opt.textContent = withBetaText(exclusiveOptionLabel(addon), addon);
+		const beta = betaTitleSuffix(addon);
+		opt.title = [beta, addon.blurb || ''].filter(Boolean).join('\n') || '';
 		opt.disabled = !addonHasLayerForDisc(addon, disc);
 		select.appendChild(opt);
 	}
@@ -1150,14 +1178,18 @@ function renderFreeAddon(addon, prevSelected) {
 	if (!compatible) {
 		label.classList.add('is-disabled');
 	}
-	// Tooltip = what the mod does (blurb only). Avoid stacking hint+blurb meta.
-	label.title = addon.blurb || addon.hint || '';
+	// Tooltip = what the mod does (blurb) + BETA note when flagged.
+	const betaTip = betaTitleSuffix(addon);
+	label.title = [betaTip, addon.blurb || addon.hint || ''].filter(Boolean).join('\n') || '';
 
 	const displayName = freeAddonLabel(addon);
+	const betaBadge = isBetaAddon(addon)
+		? '<span class="addon-beta-badge" title="Unfinished or known issues">BETA</span>'
+		: '';
 	// Escape is unnecessary for our catalog strings; keep simple like before.
 	label.innerHTML = `
 		<input type="checkbox" name="addon" value="${addon.id}" ${checked} ${disabled} />
-		<span><strong>${displayName}</strong>${addon.hint ? `<span class="choice-hint">${addon.hint}</span>` : ''}</span>
+		<span><strong>${displayName}${betaBadge}</strong>${addon.hint ? `<span class="choice-hint">${addon.hint}</span>` : ''}</span>
 	`;
 	return label;
 }
@@ -1314,6 +1346,17 @@ function renderCsrPlusToggle(prevSelected) {
 	const strong = document.createElement('strong');
 	strong.textContent = 'CSR+';
 	span.appendChild(strong);
+	const csrPlusBeta = bundle
+		.map((id) => entryById(id))
+		.filter(Boolean)
+		.some(isBetaAddon);
+	if (csrPlusBeta) {
+		const badge = document.createElement('span');
+		badge.className = 'addon-beta-badge';
+		badge.title = 'Unfinished or known issues';
+		badge.textContent = 'BETA';
+		strong.appendChild(badge);
+	}
 	const hint = document.createElement('span');
 	hint.className = 'choice-hint';
 	if (!baseOk) {
