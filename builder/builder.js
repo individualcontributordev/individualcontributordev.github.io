@@ -1482,10 +1482,31 @@ function renderCsrPlusToggle(prevSelected) {
 	titleText.className = 'choice-title-text';
 	titleText.textContent = 'CSR+';
 	titleRow.appendChild(titleText);
-	const csrPlusBeta = bundle
-		.map((id) => entryById(id))
-		.filter(Boolean)
-		.some(isBetaAddon);
+	// CSR+ is a synthetic all-or-none toggle (not a pack id). Show scene-pack
+	// versions so the UI matches other mods.
+	const bundleEntries = bundle.map((id) => entryById(id)).filter(Boolean);
+	const vers = [
+		...new Set(bundleEntries.map((a) => addonVersion(a)).filter(Boolean)),
+	].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+	if (vers.length === 1) {
+		const badge = document.createElement('span');
+		badge.className = 'addon-version-badge';
+		badge.title = 'Scene pack version (all CSR+ trims)';
+		badge.textContent = 'v' + vers[0];
+		titleRow.appendChild(badge);
+	} else if (vers.length > 1) {
+		const badge = document.createElement('span');
+		badge.className = 'addon-version-badge';
+		badge.title =
+			'CSR+ bundles several scene packs:\n' +
+			bundleEntries
+				.map((a) => freeAddonLabel(a))
+				.filter(Boolean)
+				.join('\n');
+		badge.textContent = 'v' + vers[0] + '–' + vers[vers.length - 1];
+		titleRow.appendChild(badge);
+	}
+	const csrPlusBeta = bundleEntries.some(isBetaAddon);
 	if (csrPlusBeta) {
 		const badge = document.createElement('span');
 		badge.className = 'addon-beta-badge';
