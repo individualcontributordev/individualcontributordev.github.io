@@ -7,6 +7,7 @@ import {
 	putCachedLayer,
 	clearLayerCache,
 	layerCacheStats,
+	pruneLayerCache,
 } from './layer-cache.js';
 
 const statusEl = document.getElementById('status');
@@ -527,8 +528,10 @@ function resolveUrl(baseUrl, maybeRelative) {
 }
 
 async function fetchJson(url) {
-	const res = await fetch(url);
-	if (!res.ok) throw new Error(`Failed to load ${url} (${res.status})`);
+	// Always revalidate catalogs/layers over the network (when not served from IDB).
+	// Pack version bumps must not stick in the browser HTTP cache.
+	const res = await fetch(url, { cache: 'no-store' });
+	if (!res.ok) throw new Error('Failed to load ' + url + ' (' + res.status + ')');
 	return res.json();
 }
 
@@ -645,41 +648,59 @@ function validateLayerPayload(layer, url) {
  */
 async function loadLayerByUrl(url, opts = {}) {
 	if (!url) return null;
-	const contentKey = opts.contentKey || '';
-	const memKey = contentKey ? contentKey + '\n' + url : url;
+	const contentKey = String(opts.contentKey || '').trim();
+	// IDB only when contentKey is set (pack id@version). Version bumps = new key.
+	// Never cache by URL alone — avoids sticky stale layers if a path is reused.
+	const memKey = contentKey ? contentKey + '\n' + url : 'net:' + url;
 
 	if (layerCache.has(memKey)) return layerCache.get(memKey);
-	if (!contentKey && layerCache.has(url)) return layerCache.get(url);
 
-	const cached = await getCachedLayer(url, contentKey);
-	if (cached && cached.layer) {
-		try {
-			const layer = validateLayerPayload(cached.layer, url);
-			layerCache.set(memKey, layer);
-			if (opts.onStatus) opts.onStatus('cache');
-			return layer;
-		} catch {
-			// corrupt entry — fall through to network
+	if (contentKey) {
+		const cached = await getCachedLayer(url, contentKey);
+		if (cached && cached.layer) {
+			try {
+				const layer = validateLayerPayload(cached.layer, url);
+				layerCache.set(memKey, layer);
+				if (opts.onStatus) opts.onStatus('cache');
+				return layer;
+			} catch {
+				// corrupt — refetch
+			}
 		}
 	}
 
 	if (opts.onStatus) opts.onStatus('fetch');
 	const layer = validateLayerPayload(await fetchJson(url), url);
 	layerCache.set(memKey, layer);
-	void putCachedLayer(url, contentKey, layer);
+	if (contentKey) {
+		void putCachedLayer(url, contentKey, layer);
+	}
 	return layer;
 }
 
 async function onClearLayerCache() {
 	layerCache.clear();
 	await clearLayerCache();
-	const st = await layerCacheStats();
-	setStatus(
-		'Layer cache cleared (' +
-			st.entries +
-			' left). Next build will re-download packs from the CDN.',
-		false
-	);
+	setStatus('Dev: pack layer cache cleared.', false);
+}
+
+/** After manifests load: drop IDB rows for pack versions no longer listed. */
+async function pruneStaleLayerCacheFromManifest(man) {
+	if (!man) return;
+	const keys = [];
+	for (const b of man.bases || []) {
+		const k = layerContentKey(b);
+		if (k) keys.push(k);
+	}
+	for (const a of man.addons || []) {
+		const k = layerContentKey(a);
+		if (k) keys.push(k);
+	}
+	try {
+		await pruneLayerCache(keys);
+	} catch {
+		// ignore
+	}
 }
 
 function selectedBaseId() {
@@ -1952,6 +1973,8 @@ function buildAppliedReport({ disc, base, baseId, addons, edcFixed, outputZip })
 async function init() {
 	try {
 		manifest = await loadMergedManifest('./manifest.json');
+		// Drop cached layers for removed/old pack versions (manifest always fresh).
+		void pruneStaleLayerCacheFromManifest(manifest);
 		document.getElementById('page-title').textContent = manifest.title || 'PSX Disc Builder';
 		renderManifest();
 

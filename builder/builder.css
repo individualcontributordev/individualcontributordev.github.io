@@ -625,3 +625,32 @@ label.file-btn.is-locked-control {
 .build-done-row a {
 	color: var(--ff7-link);
 }
+
+/* Dev-only: pack layer cache wipe — quiet footer control */
+.footer-dev-tools {
+	opacity: 0.35;
+	font-size: 0.7em;
+}
+.footer-dev-tools:hover {
+	opacity: 0.85;
+}
+button.footer-cache-clear {
+	appearance: none;
+	font: inherit;
+	font-size: inherit;
+	letter-spacing: inherit;
+	color: inherit;
+	background: none;
+	border: none;
+	padding: 0;
+	margin: 0;
+	cursor: pointer;
+	text-decoration: underline;
+	text-underline-offset: 2px;
+	border-radius: 0;
+}
+button.footer-cache-clear:hover {
+	color: var(--ff7-link);
+	background: none;
+	border: none;
+}
