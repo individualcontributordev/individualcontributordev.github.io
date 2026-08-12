@@ -465,7 +465,7 @@ async function saveZipDownload(blob, filename) {
 			if (err && (err.name === 'AbortError' || err.name === 'NotAllowedError')) {
 				throw err;
 			}
-			console.warn('showSaveFilePicker failed, using blob download', err);
+			console.info('showSaveFilePicker unavailable, using blob download');
 		}
 	}
 
@@ -951,16 +951,9 @@ function addonHasLayerForDisc(addon, disc) {
 	if (!addon) return false;
 	// No disc detected yet — nothing is compatible until a file is loaded
 	if (!disc) return false;
-	// Check the discs map directly rather than via layerUrlFor(): that function
-	// falls back to entry.url for callers building the actual apply plan, and
-	// normalizeEntry sets entry.url = discs['1'] for legacy single-url addons —
-	// which would make a disc-1-only addon look valid for every other disc too.
-	if (addon.discs && Object.keys(addon.discs).length) {
-		return Boolean(addon.discs[String(disc)]);
-	}
-	// No per-disc map at all (legacy flat-url addon) — can't tell which disc it's
-	// scoped to, so don't filter it out.
-	return Boolean(addon.url);
+	// Same rule as apply: layerUrlFor does not fall back to discs['1'] when a
+	// per-disc map exists, so disc-1-only packs stay false on disc 2/3.
+	return Boolean(layerUrlFor(addon, disc));
 }
 
 function addonsForBase(baseId, kind = null) {
@@ -1804,7 +1797,6 @@ async function applySelection() {
 		for (const entry of orderedAddons) {
 			const url = layerUrlFor(entry, disc);
 			if (!url) {
-				console.warn('skip (no Disc ' + disc + ' layer):', entry.id);
 				continue;
 			}
 			const label = freeAddonLabel(entry);
