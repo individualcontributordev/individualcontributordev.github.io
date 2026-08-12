@@ -1156,9 +1156,10 @@ function addonVersion(addon) {
 	const explicit = addon.version != null && String(addon.version).trim();
 	if (explicit) return String(explicit).replace(/^v/i, '');
 	const name = String(addon.name || '');
-	const fromName = name.match(/\bv(\d+\.\d+\.\d+)\s*$/i);
+	const fromName = name.match(/\bv(\d+(?:\.\d+){1,3})\b/i);
 	if (fromName) return fromName[1];
-	const fromId = String(addon.id || '').match(/-v(\d+\.\d+\.\d+)$/i);
+	// id shapes: pack-v0.1.21, pack-v0.1.0-part1
+	const fromId = String(addon.id || '').match(/-v(\d+(?:\.\d+){1,3})(?:$|[^0-9])/i);
 	if (fromId) return fromId[1];
 	return '';
 }
@@ -1196,8 +1197,8 @@ function exclusiveOptionLabel(addon) {
 }
 
 function freeAddonLabel(addon) {
-	// Player-facing: use name as shipped. Do not append version meta.
-	return String(addon.name || addon.id || '').trim();
+	// Player-facing name + version so users can confirm which pack they selected.
+	return withAddonVersion(String(addon.name || addon.id || '').trim(), addon);
 }
 
 /** True when pack is beta / buggy / lightly tested (manifest.beta or status). */
@@ -1310,14 +1311,18 @@ function renderFreeAddon(addon, prevSelected) {
 	const betaTip = betaTitleSuffix(addon);
 	label.title = [betaTip, addon.blurb || addon.hint || ''].filter(Boolean).join('\n') || '';
 
-	const displayName = freeAddonLabel(addon);
+	const plainName = String(addon.name || addon.id || '').trim();
+	const ver = addonVersion(addon);
+	const verBadge = ver
+		? '<span class="addon-version-badge" title="Pack version">v' + ver + '</span>'
+		: '';
 	const betaBadge = isBetaAddon(addon)
 		? '<span class="addon-beta-badge" title="Unfinished or known issues">BETA</span>'
 		: '';
-	// Title + BETA in a flex row: spaced, not nested/clipped inside strong.
+	// Title + version badge + BETA in a flex row.
 	label.innerHTML = `
 		<input type="checkbox" name="addon" value="${addon.id}" ${checked} ${disabled} />
-		<span><span class="choice-title"><span class="choice-title-text">${displayName}</span>${betaBadge}</span>${addon.hint ? `<span class="choice-hint">${addon.hint}</span>` : ''}</span>
+		<span><span class="choice-title"><span class="choice-title-text">${plainName}</span>${verBadge}${betaBadge}</span>${addon.hint ? `<span class="choice-hint">${addon.hint}</span>` : ''}</span>
 	`;
 	return label;
 }
