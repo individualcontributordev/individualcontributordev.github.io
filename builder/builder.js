@@ -932,7 +932,7 @@ function renderBases() {
 		for (const base of bases) {
 			const opt = document.createElement('option');
 			opt.value = base.id;
-			opt.textContent = base.name;
+			opt.textContent = withAddonVersion(base.name, base);
 			group.appendChild(opt);
 		}
 		select.appendChild(group);
@@ -1177,19 +1177,22 @@ function withAddonVersion(label, addon) {
 }
 
 function exclusiveOptionLabel(addon) {
+	let core = '';
 	if (addon.optionLabel) {
-		return String(addon.optionLabel);
+		core = String(addon.optionLabel);
+	} else {
+		const after = String(addon.name || '')
+			.split('—')
+			.slice(1)
+			.join('—')
+			.trim();
+		const cleaned = after
+			.replace(/\s*\(on [^)]+\)/gi, '')
+			.replace(/\s+v[\d.]+$/i, '')
+			.trim();
+		core = cleaned || String(addon.name || addon.id || '');
 	}
-	const after = String(addon.name || '')
-		.split('—')
-		.slice(1)
-		.join('—')
-		.trim();
-	const cleaned = after
-		.replace(/\s*\(on [^)]+\)/gi, '')
-		.replace(/\s+v[\d.]+$/i, '')
-		.trim();
-	return cleaned || String(addon.name || addon.id || '');
+	return withAddonVersion(core, addon);
 }
 
 function freeAddonLabel(addon) {
@@ -1933,7 +1936,7 @@ function buildAppliedReport({ disc, base, baseId, addons, edcFixed, outputZip })
 		lines.push('CSR+ on this disc (' + packs.length + ' scene layer(s)):');
 		for (const addon of packs) {
 			const discs = addonDiscKeys(addon).join(',') || String(disc);
-			const label = withAddonVersion(freeAddonLabel(addon), addon);
+			const label = freeAddonLabel(addon);
 			const idNote = addon.id ? ' (' + addon.id + ')' : '';
 			lines.push('  - ' + label + idNote + ' [disc ' + discs + ']');
 		}
@@ -1946,7 +1949,7 @@ function buildAppliedReport({ disc, base, baseId, addons, edcFixed, outputZip })
 			const discs = addonDiscKeys(addon).join(',') || String(disc);
 			const discNote =
 				discs && discs !== String(disc) ? ' [discs ' + discs + ']' : '';
-			const label = withAddonVersion(freeAddonLabel(addon), addon);
+			const label = freeAddonLabel(addon);
 			const idNote = addon.id ? ' (' + addon.id + ')' : '';
 			lines.push('  - ' + label + idNote + discNote);
 		}
