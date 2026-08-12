@@ -138,3 +138,42 @@ export async function layerCacheStats() {
 		return { entries: 0, bytesEstimate: 0 };
 	}
 }
+
+/**
+ * Drop cached rows whose contentKey is not in the allowed set.
+ * Pass every current pack id@version from the freshly loaded manifest.
+ * Entries without contentKey (legacy) are always dropped.
+ * @param {Iterable<string>} allowedContentKeys
+ * @returns {Promise<{ kept: number, removed: number }>}
+ */
+export async function pruneLayerCache(allowedContentKeys) {
+	const allow = new Set(
+		[...allowedContentKeys].map((k) => String(k || '').trim()).filter(Boolean)
+	);
+	let kept = 0;
+	let removed = 0;
+	try {
+		const db = await openDb();
+		const tx = db.transaction(STORE, 'readwrite');
+		const store = tx.objectStore(STORE);
+		const rows = await idbReq(store.getAll());
+		const list = Array.isArray(rows) ? rows : [];
+		for (const row of list) {
+			const ck = String(row.contentKey || '').trim();
+			if (ck && allow.has(ck)) {
+				kept += 1;
+				continue;
+			}
+			await idbReq(store.delete(row.key));
+			removed += 1;
+		}
+		await new Promise((resolve, reject) => {
+			tx.oncomplete = () => resolve();
+			tx.onerror = () => reject(tx.error);
+		});
+		db.close();
+	} catch {
+		// ignore
+	}
+	return { kept, removed };
+}

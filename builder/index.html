@@ -80,18 +80,17 @@
 			<section class="panel" id="panel-build">
 				<h2>4. Build</h2>
 				<pre class="plan" id="plan"></pre>
-				<div class="row" style="margin-top:16px;margin-bottom:0;flex-wrap:wrap;gap:10px;align-items:center;">
+				<div class="row" style="margin-top:16px;margin-bottom:0;">
 					<button type="button" id="apply" disabled>Build zip</button>
-					<button type="button" id="clear-layer-cache" class="btn-secondary" title="Clears cached pack layers from this browser. Manifests always reload. Use if a pack update looks stuck.">
-						Clear pack cache
-					</button>
 				</div>
 				<p id="status" aria-live="polite"></p>
 			</section>
 		</main>
 
 			<footer>
-				<p>IndividualContributor · <a href="/builder/">Builder</a> · <a href="/history/">History</a></p>
+				<p>IndividualContributor · <a href="/builder/">Builder</a> · <a href="/history/">History</a>
+					<span class="footer-dev-tools" title="Developer only"> · <button type="button" id="clear-layer-cache" class="footer-cache-clear">clear pack cache</button></span>
+				</p>
 			</footer>
 	</div>
 
