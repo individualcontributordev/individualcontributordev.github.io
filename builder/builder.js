@@ -890,9 +890,9 @@ function addonHasLayerForDisc(addon, disc) {
 function addonsForBase(baseId, kind = null) {
 	if (!manifest) return [];
 	// Only layers compatible with the selected base (hide the rest).
-	// uiHidden packs stay out of the checklist (still may auto-apply under the hood).
+	// uiHidden/hidden packs stay out of the checklist (still may auto-apply).
 	return (manifest.addons || []).filter((a) => {
-		if (a.uiHidden) return false;
+		if (a.uiHidden || a.hidden) return false;
 		if (kind && layerKind(a) !== kind) return false;
 		return addonCompatibleWithBase(a, baseId);
 	});
