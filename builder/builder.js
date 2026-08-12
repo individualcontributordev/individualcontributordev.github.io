@@ -1763,10 +1763,12 @@ async function onFileChosen(file) {
 	/** Stable stack order for layer merge (not UI order). */
 	function addonApplyRank(entry) {
 		const id = String(entry && entry.id ? entry.id : '');
-		// 1) Single-disc core (grows D1 / merges multi-disc fields)
-		if (id.startsWith('single-disc-on-')) return 10;
-		// 2) Single-disc helpers that assume SD core (movies, endings)
-		if (id.includes('single-disc-csr-manip-movies')) return 20;
+		// 1) CSR manip-movies first (JAIROFAL/CANONON LBA aliases).
+		// 2) Single-disc core AFTER movies so path FMV injects (PARASHOT,
+		//    NRCRL, NRCRLB, etc.) are not clobbered by the movies pack.
+		if (id.includes('single-disc-csr-manip-movies')) return 10;
+		if (id.startsWith('single-disc-on-')) return 20;
+		// 3) Ending credits after SD core
 		if (id.includes('single-disc-endings')) return 30;
 		// 3) Gameplay mods
 		if (id.includes('fanfare') || id.includes('encounter')) return 40;
