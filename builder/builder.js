@@ -1319,10 +1319,14 @@ function renderFreeAddon(addon, prevSelected) {
 	const betaBadge = isBetaAddon(addon)
 		? '<span class="addon-beta-badge" title="Unfinished or known issues">BETA</span>'
 		: '';
-	// Title + version badge + BETA in a flex row.
+	const metaRow =
+		verBadge || betaBadge
+			? '<span class="choice-meta">' + verBadge + betaBadge + '</span>'
+			: '';
+	// Title on its own line; version + BETA on the line below.
 	label.innerHTML = `
 		<input type="checkbox" name="addon" value="${addon.id}" ${checked} ${disabled} />
-		<span><span class="choice-title"><span class="choice-title-text">${plainName}</span>${verBadge}${betaBadge}</span>${addon.hint ? `<span class="choice-hint">${addon.hint}</span>` : ''}</span>
+		<span class="choice-body"><span class="choice-title"><span class="choice-title-text">${plainName}</span></span>${metaRow}${addon.hint ? `<span class="choice-hint">${addon.hint}</span>` : ''}</span>
 	`;
 	return label;
 }
@@ -1476,24 +1480,27 @@ function renderCsrPlusToggle(prevSelected) {
 	input.checked = checked;
 	input.disabled = !compatible;
 	const span = document.createElement('span');
+	span.className = 'choice-body';
 	const titleRow = document.createElement('span');
 	titleRow.className = 'choice-title';
 	const titleText = document.createElement('span');
 	titleText.className = 'choice-title-text';
 	titleText.textContent = 'CSR+';
 	titleRow.appendChild(titleText);
-	// CSR+ is a synthetic all-or-none toggle (not a pack id). Show scene-pack
-	// versions so the UI matches other mods.
+	span.appendChild(titleRow);
+	// CSR+ is a synthetic all-or-none toggle. Badges on their own line under the title.
 	const bundleEntries = bundle.map((id) => entryById(id)).filter(Boolean);
 	const vers = [
 		...new Set(bundleEntries.map((a) => addonVersion(a)).filter(Boolean)),
 	].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+	const metaRow = document.createElement('span');
+	metaRow.className = 'choice-meta';
 	if (vers.length === 1) {
 		const badge = document.createElement('span');
 		badge.className = 'addon-version-badge';
 		badge.title = 'Scene pack version (all CSR+ trims)';
 		badge.textContent = 'v' + vers[0];
-		titleRow.appendChild(badge);
+		metaRow.appendChild(badge);
 	} else if (vers.length > 1) {
 		const badge = document.createElement('span');
 		badge.className = 'addon-version-badge';
@@ -1503,8 +1510,8 @@ function renderCsrPlusToggle(prevSelected) {
 				.map((a) => freeAddonLabel(a))
 				.filter(Boolean)
 				.join('\n');
-		badge.textContent = 'v' + vers[0] + '–' + vers[vers.length - 1];
-		titleRow.appendChild(badge);
+		badge.textContent = 'v' + vers[0] + '\u2013' + vers[vers.length - 1];
+		metaRow.appendChild(badge);
 	}
 	const csrPlusBeta = bundleEntries.some(isBetaAddon);
 	if (csrPlusBeta) {
@@ -1512,9 +1519,9 @@ function renderCsrPlusToggle(prevSelected) {
 		badge.className = 'addon-beta-badge';
 		badge.title = 'Unfinished or known issues';
 		badge.textContent = 'BETA';
-		titleRow.appendChild(badge);
+		metaRow.appendChild(badge);
 	}
-	span.appendChild(titleRow);
+	if (metaRow.childNodes.length) span.appendChild(metaRow);
 	const hint = document.createElement('span');
 	hint.className = 'choice-hint';
 	if (!baseOk) {

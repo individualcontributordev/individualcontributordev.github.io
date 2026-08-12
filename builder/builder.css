@@ -348,12 +348,17 @@ select[name="addon-group"] {
 	background: rgba(0, 0, 0, 0.25);
 }
 
-/* BETA label for unfinished / known-buggy packs */
-.choice-title {
+/* Title on first line; version + BETA on the line below */
+.choice-body {
 	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	gap: 0.45em 0.55em;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 0.28em;
+	min-width: 0;
+}
+
+.choice-title {
+	display: block;
 	overflow: visible;
 }
 
@@ -362,6 +367,13 @@ select[name="addon-group"] {
 	letter-spacing: 0.3px;
 	font-weight: bold;
 	min-width: 0;
+}
+
+.choice-meta {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.4em 0.5em;
 }
 
 .addon-version-badge {
