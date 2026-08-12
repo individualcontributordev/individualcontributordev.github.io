@@ -1,7 +1,8 @@
 /**
  * MODE2/2352 Form 1 EDC + ECC (Neill Corlett / ECM public-domain algorithm).
- * Regenerates sector footers after ic-layer apply so burns verify and hardware
- * sees valid checksums even when layers were built from zeroed-footer images.
+ * Regenerates Form1 sector footers after ic-layer apply so burns verify and
+ * hardware sees valid checksums even when layers were built from zeroed footers.
+ * Skips Mode2 Form2 (FMV/XA) — Form1 repair would clobber the 2324-byte payload.
  */
 
 const SECTOR = 2352;
@@ -72,7 +73,17 @@ function isMode2Form1(sector, off) {
 	for (let i = 1; i <= 10; i++) {
 		if (sector[off + i] !== 0xff) return false;
 	}
-	return sector[off + 15] === 0x02;
+	if (sector[off + 15] !== 0x02) return false;
+	// Submode (byte 18). FF7 FMV/STR is Mode2 with a 2324-byte payload even when
+	// the Form2 bit is clear: video sectors are often 0x42 (real-time|video),
+	// audio 0x64 (real-time|form2|audio). Form1 EDC/ECC at 2072..2351 overwrites
+	// that payload tail → dual/flicker FMV audio. Only repair plain Form1 *data*.
+	const submode = sector[off + 18];
+	if (submode & 0x20) return false; // Form 2
+	if (submode & 0x04) return false; // XA audio
+	if (submode & 0x02) return false; // video / STR
+	if (!(submode & 0x08)) return false; // require Data bit (ISO file sectors)
+	return true;
 }
 
 /**
