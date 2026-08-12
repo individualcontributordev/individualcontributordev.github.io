@@ -161,6 +161,13 @@ button#apply {
 	padding: 10px 22px;
 }
 
+button.btn-secondary {
+	font-size: 0.75rem;
+	padding: 8px 12px;
+	opacity: 0.9;
+	border-width: 2px;
+}
+
 button#apply.is-busy,
 button#apply.is-busy:disabled {
 	opacity: 1;
