@@ -72,13 +72,20 @@ export async function applyLayer(imageBytes, layer, opts = {}) {
 	// work bin) must not inflate plain CSR/pristine with empty trailing pad.
 	const original = layer.stats && Number(layer.stats.originalBytes);
 	const target = layer.stats && Number(layer.stats.modifiedBytes);
+	const baselineLen = imageBytes.length;
 	if (
 		Number.isFinite(target) &&
 		target > size &&
 		Number.isFinite(original) &&
-		original === imageBytes.length
+		original === baselineLen
 	) {
 		size = target;
+	}
+	// Mode2/2352: grown images must end on a sector boundary or later
+	// layers (endings) and ISO reads break / dual-audio appears.
+	const SECTOR = 2352;
+	if (size > baselineLen && size % SECTOR !== 0) {
+		size += SECTOR - (size % SECTOR);
 	}
 
 	const out = new Uint8Array(size);
