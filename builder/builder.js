@@ -795,9 +795,20 @@ function autoIncludeMatches(addon, baseId, selectedIds) {
 	if (Array.isArray(bases) && bases.length && !bases.includes(baseId)) return false;
 	const need = rule.addonSelected;
 	if (need && !selectedIds.includes(need)) return false;
+	const needPrefix = rule.addonSelectedPrefix;
+	if (needPrefix && !selectedIds.some((id) => String(id).startsWith(String(needPrefix)))) {
+		return false;
+	}
 	const needAny = rule.addonSelectedAny;
 	if (Array.isArray(needAny) && needAny.length && !needAny.some((id) => selectedIds.includes(id))) {
 		return false;
+	}
+	const needAnyPrefix = rule.addonSelectedAnyPrefix;
+	if (Array.isArray(needAnyPrefix) && needAnyPrefix.length) {
+		const ok = selectedIds.some((id) =>
+			needAnyPrefix.some((p) => String(id).startsWith(String(p)))
+		);
+		if (!ok) return false;
 	}
 	const prefix = rule.unlessAddonIdPrefix;
 	if (prefix) {
