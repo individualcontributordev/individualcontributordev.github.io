@@ -1767,7 +1767,9 @@ async function onFileChosen(file) {
 		// 2) Single-disc core AFTER movies so path FMV injects (PARASHOT,
 		//    NRCRL, NRCRLB, etc.) are not clobbered by the movies pack.
 		if (id.includes('single-disc-csr-manip-movies')) return 10;
-		if (id.startsWith('single-disc-on-')) return 20;
+		// later single-disc-on cores (path-engine deltas) after base single-disc-on
+	if (id.includes('single-disc-on-csr-v0.1.25') || id.includes('path-engine')) return 21;
+	if (id.startsWith('single-disc-on-')) return 20;
 		// 3) Ending credits after SD core
 		if (id.includes('single-disc-endings')) return 30;
 		// 3) Gameplay mods
