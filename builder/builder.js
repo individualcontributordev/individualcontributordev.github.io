@@ -1762,29 +1762,27 @@ async function onFileChosen(file) {
 
 	/** Stable stack order for layer merge (not UI order). */
 	function addonApplyRank(entry) {
-		const id = String(entry && entry.id ? entry.id : '');
-		// 1) CSR manip-movies first (JAIROFAL/CANONON LBA aliases).
-		// 2) Single-disc core AFTER movies so path FMV injects (PARASHOT,
-		//    NRCRL, NRCRLB, etc.) are not clobbered by the movies pack.
-		if (id.includes('single-disc-csr-manip-movies')) return 10;
-		// later single-disc-on cores (path-engine deltas) after base single-disc-on
-	if (id.includes('single-disc-on-csr-v0.1.28') || id.includes('single-disc-on-csr-v0.1.27') || id.includes('single-disc-on-csr-v0.1.26') || id.includes('single-disc-on-csr-v0.1.25') || id.includes('path-engine')) return 21;
-	if (id.startsWith('single-disc-on-')) return 20;
-		// 3) Ending credits after SD core
-		if (id.includes('single-disc-endings')) return 30;
-		// 3) Gameplay mods
-		if (id.includes('fanfare') || id.includes('encounter')) return 40;
-		// 4) CSR+ scene packs last (disc1 layers expect CSR+single-disc baseline)
-		if (id.startsWith('csr-plus-scene-') || id.startsWith('csr-plus-')) return 50;
-		return 45;
-	}
-
-	function sortAddonsForApply(entries) {
-		return entries.slice().sort((a, b) => {
-			const ra = addonApplyRank(a);
-			const rb = addonApplyRank(b);
-			if (ra !== rb) return ra - rb;
-			return String(a.id || '').localeCompare(String(b.id || ''));
+			const id = String(entry && entry.id ? entry.id : '');
+			// 1) CSR manip-movies first (JAIROFAL/CANONON LBA aliases).
+			// 2) Single-disc core AFTER movies so path FMV injects are not clobbered.
+			if (id.includes('single-disc-csr-manip-movies')) return 10;
+			// Hidden path/break deltas after the player-facing single-disc core.
+			if (
+				id.includes('single-disc-on-csr-delta-') ||
+				id.includes('single-disc-on-csr-v0.1.26') ||
+				id.includes('single-disc-on-csr-v0.1.31') ||
+				id.includes('path-engine')
+			) {
+				return 21;
+			}
+			if (id.startsWith('single-disc-on-')) return 20;
+			// 3) Ending credits after SD core
+			if (id.includes('single-disc-endings')) return 30;
+			// 4) Gameplay mods
+			if (id.includes('fanfare') || id.includes('encounter')) return 40;
+			// 5) CSR+ scene packs last
+			if (id.startsWith('csr-plus-scene-') || id.startsWith('csr-plus-')) return 50;
+			return 45;
 		});
 	}
 
