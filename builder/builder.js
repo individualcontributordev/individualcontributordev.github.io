@@ -1770,6 +1770,7 @@ async function onFileChosen(file) {
 		if (
 			id.includes('single-disc-on-csr-ref-') ||
 			id.includes('single-disc-on-csr-v0.1.26') ||
+			id.includes('single-disc-on-csr-v0.1.34') ||
 			id.includes('path-engine')
 		) {
 			return 21;
