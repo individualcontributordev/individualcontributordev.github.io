@@ -1762,26 +1762,34 @@ async function onFileChosen(file) {
 
 	/** Stable stack order for layer merge (not UI order). */
 	function addonApplyRank(entry) {
-			const id = String(entry && entry.id ? entry.id : '');
-			// 1) CSR manip-movies first (JAIROFAL/CANONON LBA aliases).
-			// 2) Single-disc core AFTER movies so path FMV injects are not clobbered.
-			if (id.includes('single-disc-csr-manip-movies')) return 10;
-			// Hidden path + CSR D2 field-ref autos after the player-facing core.
-			if (
-				id.includes('single-disc-on-csr-ref-') ||
-				id.includes('single-disc-on-csr-v0.1.26') ||
-				id.includes('path-engine')
-			) {
-				return 21;
-			}
-			if (id.startsWith('single-disc-on-')) return 20;
-			// 3) Ending credits after SD core
-			if (id.includes('single-disc-endings')) return 30;
-			// 4) Gameplay mods
-			if (id.includes('fanfare') || id.includes('encounter')) return 40;
-			// 5) CSR+ scene packs last
-			if (id.startsWith('csr-plus-scene-') || id.startsWith('csr-plus-')) return 50;
-			return 45;
+		const id = String(entry && entry.id ? entry.id : '');
+		// 1) CSR manip-movies first (JAIROFAL/CANONON LBA aliases).
+		// 2) Single-disc core AFTER movies so path FMV injects are not clobbered.
+		if (id.includes('single-disc-csr-manip-movies')) return 10;
+		// Hidden path + CSR D2 field-ref autos after the player-facing core.
+		if (
+			id.includes('single-disc-on-csr-ref-') ||
+			id.includes('single-disc-on-csr-v0.1.26') ||
+			id.includes('path-engine')
+		) {
+			return 21;
+		}
+		if (id.startsWith('single-disc-on-')) return 20;
+		// 3) Ending credits after SD core
+		if (id.includes('single-disc-endings')) return 30;
+		// 4) Gameplay mods
+		if (id.includes('fanfare') || id.includes('encounter')) return 40;
+		// 5) CSR+ scene packs last
+		if (id.startsWith('csr-plus-scene-') || id.startsWith('csr-plus-')) return 50;
+		return 45;
+	}
+
+	function sortAddonsForApply(entries) {
+		return entries.slice().sort((a, b) => {
+			const ra = addonApplyRank(a);
+			const rb = addonApplyRank(b);
+			if (ra !== rb) return ra - rb;
+			return String(a.id || '').localeCompare(String(b.id || ''));
 		});
 	}
 
