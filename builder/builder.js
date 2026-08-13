@@ -1768,7 +1768,7 @@ async function onFileChosen(file) {
 		//    NRCRL, NRCRLB, etc.) are not clobbered by the movies pack.
 		if (id.includes('single-disc-csr-manip-movies')) return 10;
 		// later single-disc-on cores (path-engine deltas) after base single-disc-on
-	if (id.includes('single-disc-on-csr-v0.1.27') || id.includes('single-disc-on-csr-v0.1.26') || id.includes('single-disc-on-csr-v0.1.25') || id.includes('path-engine')) return 21;
+	if (id.includes('single-disc-on-csr-v0.1.28') || id.includes('single-disc-on-csr-v0.1.27') || id.includes('single-disc-on-csr-v0.1.26') || id.includes('single-disc-on-csr-v0.1.25') || id.includes('path-engine')) return 21;
 	if (id.startsWith('single-disc-on-')) return 20;
 		// 3) Ending credits after SD core
 		if (id.includes('single-disc-endings')) return 30;
