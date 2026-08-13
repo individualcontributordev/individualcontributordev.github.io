@@ -1766,11 +1766,10 @@ async function onFileChosen(file) {
 			// 1) CSR manip-movies first (JAIROFAL/CANONON LBA aliases).
 			// 2) Single-disc core AFTER movies so path FMV injects are not clobbered.
 			if (id.includes('single-disc-csr-manip-movies')) return 10;
-			// Hidden path/break deltas after the player-facing single-disc core.
+			// Hidden path + CSR D2 field-ref autos after the player-facing core.
 			if (
-				id.includes('single-disc-on-csr-delta-') ||
+				id.includes('single-disc-on-csr-ref-') ||
 				id.includes('single-disc-on-csr-v0.1.26') ||
-				id.includes('single-disc-on-csr-v0.1.31') ||
 				id.includes('path-engine')
 			) {
 				return 21;
