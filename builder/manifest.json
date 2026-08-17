@@ -18,7 +18,7 @@
   ],
   "addons": [],
   "remoteSources": [
-    "https://individualcontributor.dev/Final-Fantasy-7-CSR/builder/manifest.json",
-    "https://individualcontributor.dev/Final-Fantasy-7-Modding/builder/manifest.json"
+    "https://individualcontributordev.github.io/Final-Fantasy-7-CSR/builder/manifest.json",
+    "https://individualcontributordev.github.io/Final-Fantasy-7-Modding/builder/manifest.json"
   ]
 }
