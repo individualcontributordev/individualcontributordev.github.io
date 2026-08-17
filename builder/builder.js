@@ -2079,24 +2079,34 @@ async function fetchLatestCommit(repo, path) {
 		'/commits?path=' +
 		encodeURIComponent(path) +
 		'&per_page=1';
-	const res = await fetch(api, {
-		headers: { Accept: 'application/vnd.github+json' },
-	});
-	if (!res.ok) throw new Error(repo + ' HTTP ' + res.status);
-	const rows = await res.json();
-	const commit = rows && rows[0];
-	if (!commit || !commit.sha) throw new Error(repo + ' empty');
-	const sha = String(commit.sha).slice(0, 7);
-	const when =
-		commit.commit && commit.commit.committer && commit.commit.committer.date
-			? String(commit.commit.committer.date).slice(0, 10)
-			: '';
-	const msgRaw =
-		commit.commit && commit.commit.message ? String(commit.commit.message) : '';
-	const msg = msgRaw.split('\n')[0].slice(0, 80);
-	const url =
-		commit.html_url || 'https://github.com/' + repo + '/commit/' + commit.sha;
-	return { sha, when, msg, url };
+	try {
+		const res = await fetch(api, {
+			headers: { Accept: 'application/vnd.github+json' },
+		});
+		if (!res.ok) {
+			// Rate limit (403) or other HTTP error
+			const text = await res.text().catch(() => '');
+			throw new Error(repo + ' HTTP ' + res.status + (text.includes('rate limit') ? ' (rate limit)' : ''));
+		}
+		const rows = await res.json();
+		const commit = rows && rows[0];
+		if (!commit || !commit.sha) throw new Error(repo + ' empty');
+		const sha = String(commit.sha).slice(0, 7);
+		const when =
+			commit.commit && commit.commit.committer && commit.commit.committer.date
+				? String(commit.commit.committer.date).slice(0, 10)
+				: '';
+		const msgRaw =
+			commit.commit && commit.commit.message ? String(commit.commit.message) : '';
+		const msg = msgRaw.split('\n')[0].slice(0, 80);
+		const url =
+			commit.html_url || 'https://github.com/' + repo + '/commit/' + commit.sha;
+		return { sha, when, msg, url };
+	} catch (err) {
+		// Network error, CORS, or API failure - rethrow with context
+		if (err.message && err.message.includes('HTTP')) throw err;
+		throw new Error(repo + ' fetch failed: ' + (err.message || 'network error'));
+	}
 }
 
 function appendRevisionLink(el, label, info) {
@@ -2140,6 +2150,8 @@ async function loadBuilderRevision() {
 
 	el.textContent = '';
 	let any = false;
+	let rateLimitHit = false;
+
 	for (let i = 0; i < sources.length; i++) {
 		const src = sources[i];
 		if (i > 0) {
@@ -2150,12 +2162,22 @@ async function loadBuilderRevision() {
 			appendRevisionLink(el, src.label, info);
 			any = true;
 		} catch (err) {
-			console.warn('revision', src.label, err);
+			// Only log non-rate-limit errors to console
+			if (err.message && err.message.includes('rate limit')) {
+				rateLimitHit = true;
+			} else {
+				console.warn('revision', src.label, err);
+			}
 			appendRevisionUnavailable(el, src.label);
 		}
 	}
+
 	if (!any) {
-		el.textContent = 'revisions unavailable';
+		if (rateLimitHit) {
+			el.textContent = 'revisions unavailable (GitHub API rate limit — refresh in a few minutes)';
+		} else {
+			el.textContent = 'revisions unavailable';
+		}
 		el.removeAttribute('title');
 	}
 }
