@@ -8,10 +8,14 @@ Public site for the IndividualContributor FF7 PS1 stack.
 | `/builder/` | PSX Disc Builder — apply base + packs + mods in-browser |
 | `/history/` | CSR / Highwind / mods history + sanitized chat archives |
 
-Remote pack sources (Pages CDN):
+## Remote pack sources (Pages CDN)
 
-- `https://individualcontributordev.github.io/Final-Fantasy-7-CSR/builder/manifest.json`
-- `https://individualcontributordev.github.io/Final-Fantasy-7-Modding/builder/manifest.json`
+**CRITICAL:** Must use custom domain URLs to avoid CORS errors (see `.agents/rules/github-pages-cors.mdc`)
+
+- `https://individualcontributor.dev/Final-Fantasy-7-Modding/builder/manifest.json`
+- `https://individualcontributor.dev/Final-Fantasy-7-CSR/builder/manifest.json`
+
+**Never use `.github.io` URLs** — causes cross-origin CORS errors when builder is at custom domain.
 
 ## How we work
 
