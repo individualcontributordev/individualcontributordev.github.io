@@ -2092,7 +2092,7 @@ async function init() {
 init();
 
 /**
- * Latest git commits for builder UI + pack manifests (GitHub API).
+ * Latest git commits touching each repo's builder/ folder (GitHub API).
  * Same idea as the old builder/ line — one line per remote source.
  */
 async function fetchLatestCommit(repo, path) {
@@ -2162,12 +2162,12 @@ async function loadBuilderRevision() {
 		{
 			label: 'csr',
 			repo: 'individualcontributordev/Final-Fantasy-7-CSR',
-			path: 'builder/manifest.json',
+			path: 'builder',
 		},
 		{
 			label: 'mods',
 			repo: 'individualcontributordev/Final-Fantasy-7-Modding',
-			path: 'builder/manifest.json',
+			path: 'builder',
 		},
 	];
 
