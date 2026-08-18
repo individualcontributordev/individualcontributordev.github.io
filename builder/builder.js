@@ -1776,6 +1776,11 @@ async function onFileChosen(file) {
 			return 21;
 		}
 		if (id.startsWith('single-disc-on-')) return 20;
+		// Single-disc core parts 2-10 (single-disc-v0.1.2-partN) must land with
+		// part 1 (single-disc-on-csr), BEFORE endings — these carry the actual
+		// CSR field/story changes and were previously falling through to the
+		// default rank (45), landing after endings/fanfare and corrupting fields.
+		if (/^single-disc-v[\d.]+-part\d+$/.test(id)) return 20;
 		// 3) Ending credits after SD core
 		if (id.includes('single-disc-endings')) return 30;
 		// 4) Gameplay mods
