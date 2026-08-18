@@ -1790,7 +1790,19 @@ async function onFileChosen(file) {
 			const ra = addonApplyRank(a);
 			const rb = addonApplyRank(b);
 			if (ra !== rb) return ra - rb;
-			return String(a.id || '').localeCompare(String(b.id || ''));
+
+			// Numeric sort for single-disc parts (part2, part3, ..., part10)
+			const idA = String(a.id || '');
+			const idB = String(b.id || '');
+			const partMatchA = idA.match(/single-disc-v[\d.]+-(part\d+)$/);
+			const partMatchB = idB.match(/single-disc-v[\d.]+-(part\d+)$/);
+			if (partMatchA && partMatchB) {
+				const numA = parseInt(partMatchA[1].replace('part', ''), 10);
+				const numB = parseInt(partMatchB[1].replace('part', ''), 10);
+				return numA - numB;
+			}
+
+			return idA.localeCompare(idB);
 		});
 	}
 
