@@ -1760,34 +1760,52 @@ async function onFileChosen(file) {
 
 
 
+	/**
+	 * Explicit, hand-curated apply order. Read top-to-bottom: earlier entries
+	 * are applied first. This is the single source of truth for layer stack
+	 * order — no regex, no rank numbers, no guessing where a new ID lands.
+	 *
+	 * Update this list directly when the single-disc version changes (e.g.
+	 * bumping v0.1.2 -> v0.1.3) or when a new addon family needs ordering.
+	 * Anything not listed falls through to the "everything else" bucket at
+	 * the bottom (gameplay mods etc. that have no ordering dependency).
+	 */
+	const APPLY_ORDER = [
+		// 1) CSR manip-movies first (JAIROFAL/CANONON LBA aliases).
+		'single-disc-csr-manip-movies',
+		// 2) Hidden path + CSR D2 field-ref autos, before the player-facing core.
+		'single-disc-on-csr-ref-',
+		'single-disc-on-csr-v0.1.26',
+		'single-disc-on-csr-v0.1.35',
+		'path-engine',
+		// 3) Single-disc core, part 1 then parts 2-10 in exact numeric order.
+		//    These carry the actual CSR field/story changes and MUST apply
+		//    before endings/fanfare/encounters or fields get corrupted.
+		'single-disc-on-csr',
+		'single-disc-v0.1.2-part2',
+		'single-disc-v0.1.2-part3',
+		'single-disc-v0.1.2-part4',
+		'single-disc-v0.1.2-part5',
+		'single-disc-v0.1.2-part6',
+		'single-disc-v0.1.2-part7',
+		'single-disc-v0.1.2-part8',
+		'single-disc-v0.1.2-part9',
+		'single-disc-v0.1.2-part10',
+		// 4) Ending credits after SD core.
+		'single-disc-endings',
+		// 5) CSR+ scene packs last.
+		'csr-plus-scene-',
+		'csr-plus-',
+	];
+
 	/** Stable stack order for layer merge (not UI order). */
 	function addonApplyRank(entry) {
 		const id = String(entry && entry.id ? entry.id : '');
-		// 1) CSR manip-movies first (JAIROFAL/CANONON LBA aliases).
-		// 2) Single-disc core AFTER movies so path FMV injects are not clobbered.
-		if (id.includes('single-disc-csr-manip-movies')) return 10;
-		// Hidden path + CSR D2 field-ref autos after the player-facing core.
-		if (
-			id.includes('single-disc-on-csr-ref-') ||
-			id.includes('single-disc-on-csr-v0.1.26') ||
-			id.includes('single-disc-on-csr-v0.1.35') ||
-			id.includes('path-engine')
-		) {
-			return 21;
-		}
-		if (id.startsWith('single-disc-on-')) return 20;
-		// Single-disc core parts 2-10 (single-disc-v0.1.2-partN) must land with
-		// part 1 (single-disc-on-csr), BEFORE endings — these carry the actual
-		// CSR field/story changes and were previously falling through to the
-		// default rank (45), landing after endings/fanfare and corrupting fields.
-		if (/^single-disc-v[\d.]+-part\d+$/.test(id)) return 20;
-		// 3) Ending credits after SD core
-		if (id.includes('single-disc-endings')) return 30;
-		// 4) Gameplay mods
-		if (id.includes('fanfare') || id.includes('encounter')) return 40;
-		// 5) CSR+ scene packs last
-		if (id.startsWith('csr-plus-scene-') || id.startsWith('csr-plus-')) return 50;
-		return 45;
+		const idx = APPLY_ORDER.findIndex((prefix) => id.startsWith(prefix));
+		if (idx !== -1) return idx;
+		// Everything else (fanfare, encounters, unlisted mods) applies last,
+		// in a stable order relative to each other via localeCompare below.
+		return APPLY_ORDER.length;
 	}
 
 	function sortAddonsForApply(entries) {
@@ -1795,19 +1813,7 @@ async function onFileChosen(file) {
 			const ra = addonApplyRank(a);
 			const rb = addonApplyRank(b);
 			if (ra !== rb) return ra - rb;
-
-			// Numeric sort for single-disc parts (part2, part3, ..., part10)
-			const idA = String(a.id || '');
-			const idB = String(b.id || '');
-			const partMatchA = idA.match(/single-disc-v[\d.]+-(part\d+)$/);
-			const partMatchB = idB.match(/single-disc-v[\d.]+-(part\d+)$/);
-			if (partMatchA && partMatchB) {
-				const numA = parseInt(partMatchA[1].replace('part', ''), 10);
-				const numB = parseInt(partMatchB[1].replace('part', ''), 10);
-				return numA - numB;
-			}
-
-			return idA.localeCompare(idB);
+			return String(a.id || '').localeCompare(String(b.id || ''));
 		});
 	}
 
