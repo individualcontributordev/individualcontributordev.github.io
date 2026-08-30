@@ -1424,7 +1424,8 @@ function updateSectionExplainers(baseId) {
 			manifest.explainer?.base ||
 			'Base experience — only one applies (Unmodified, CSR, Highwind, …).';
 	}
-	const isCsr = String(baseId || '').startsWith('csr-') || baseId === 'csr';
+	const idStr = String(baseId || '');
+	const isCsr = (idStr.startsWith('csr-') || idStr === 'csr') && !idStr.startsWith('csr-plus');
 	if (modsEl) {
 		if (isCsr) {
 			modsEl.textContent =
@@ -1449,6 +1450,10 @@ function renderCsrPlusToggle(prevSelected) {
 		const a = entryById(id);
 		return a && addonCompatibleWithBase(a, baseId);
 	});
+	// Base doesn't support CSR+ scene trims at all (e.g. CSR+ single-disc,
+	// Highwind, Unmodified) — don't show a disabled/confusing checkbox.
+	if (!baseOk) return null;
+
 	const discIds = csrPlusBundleIdsForDisc(disc);
 	const discOk = disc == null || discIds.length > 0;
 	const compatible = baseOk && discOk;
