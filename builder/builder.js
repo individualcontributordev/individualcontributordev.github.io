@@ -887,19 +887,6 @@ function rememberImage(bytes, label) {
 	setDiscInfo(`Detected NTSC-U Disc ${hit.disc} (${hit.marker})`);
 }
 
-function baseFamily(base) {
-	const id = String(base?.id || '');
-	if (id === 'clean' || /unmodified/i.test(base?.name || '')) return 'Unmodified';
-	// Highwind is its own separate mod, not a bigger CSR+ — don't group it under
-	// a "CSR" family label.
-	if (id.startsWith('highwind') || /^highwind/i.test(id)) return 'Highwind';
-	if (id.startsWith('csr-plus') || /^csrplus/i.test(id)) return 'CSR+';
-	if (id.startsWith('csr-') || id === 'csr' || /^csr-v/i.test(id)) return 'CSR';
-	return 'Other';
-}
-
-const BASE_FAMILY_ORDER = ['Unmodified', 'CSR', 'CSR+', 'Highwind', 'Other'];
-
 /**
  * CSR+ and Highwind are single-disc-only experiences (built from a Disc 1
  * image only). They cannot be applied to a loaded Disc 2 or Disc 3 image.
@@ -909,9 +896,10 @@ function isSingleDiscOnlyBase(baseId) {
 	return id.startsWith('csr-plus') || id.startsWith('highwind');
 }
 
+/** Reason the currently selected base can't be built with the loaded disc (not an option-disable reason). */
 function baseDisabledReason(base, disc) {
 	if (isSingleDiscOnlyBase(base?.id) && (disc === 2 || disc === 3)) {
-		return `${base.name} is single-disc only — load a Disc 1 image to use it.`;
+		return `${base.name} requires Disc 1 only — load a Disc 1 image to build it.`;
 	}
 	return null;
 }
@@ -926,13 +914,6 @@ function updateBaseBlurb() {
 function renderBases() {
 	if (!manifest || !baseListEl) return;
 	const prev = selectedBaseId();
-	const disc = selectedDisc();
-	const byFamily = new Map();
-	for (const base of manifest.bases) {
-		const family = baseFamily(base);
-		if (!byFamily.has(family)) byFamily.set(family, []);
-		byFamily.get(family).push(base);
-	}
 
 	baseListEl.innerHTML = '';
 
@@ -941,39 +922,21 @@ function renderBases() {
 	select.name = 'base';
 	select.setAttribute('aria-label', 'Base Experience');
 
-	for (const family of BASE_FAMILY_ORDER) {
-		const bases = byFamily.get(family);
-		if (!bases?.length) continue;
-		const group = document.createElement('optgroup');
-		group.label = family;
-		for (const base of bases) {
-			const opt = document.createElement('option');
-			opt.value = base.id;
-			opt.textContent = withAddonVersion(base.name, base);
-			const reason = baseDisabledReason(base, disc);
-			if (reason) {
-				opt.disabled = true;
-				opt.title = reason;
-			}
-			group.appendChild(opt);
-		}
-		select.appendChild(group);
+	// Flat list, in manifest order — every base stays selectable regardless of
+	// which disc is loaded. Disc 1-only bases (CSR+/Highwind) are gated at
+	// build time instead (see updatePlan/baseDisabledReason).
+	for (const base of manifest.bases) {
+		const opt = document.createElement('option');
+		opt.value = base.id;
+		opt.textContent = withAddonVersion(base.name, base);
+		select.appendChild(opt);
 	}
 
 	const ids = manifest.bases.map((b) => b.id);
-	const prevBase = manifest.bases.find((b) => b.id === prev);
-	const prevValid = ids.includes(prev) && !baseDisabledReason(prevBase, disc);
-	if (prevValid) {
+	if (ids.includes(prev)) {
 		select.value = prev;
 	} else {
-		const fallback = manifest.bases.find((b) => !baseDisabledReason(b, disc));
-		select.value = fallback?.id || ids[0] || 'clean';
-		if (!prevValid && prev && fallback) {
-			setStatus(
-				`${prevBase?.name || prev} can't be used with a Disc ${disc} image — switched to ${fallback.name}.`,
-				true
-			);
-		}
+		select.value = ids[0] || 'clean';
 	}
 
 	const blurb = document.createElement('p');
@@ -1708,18 +1671,20 @@ function setUiBuilding(isBuilding) {
 function updatePlan() {
 	if (!manifest) return;
 	const disc = selectedDisc();
+	const baseId = selectedBaseId();
+	const base = manifest.bases.find((b) => b.id === baseId);
+	const discReason = base ? baseDisabledReason(base, disc) : null;
+
 	if (building) {
 		setUiBuilding(true);
 	} else {
 		setSectionLocked(panelSourceEl, false);
 		setSectionLocked(panelBaseEl, !disc);
 		setSectionLocked(panelModsEl, !disc);
-		// Build panel stays interactive when a disc is loaded (button has own disabled).
-		setSectionLocked(panelBuildEl, !disc);
-		// Re-apply button disabled after unlocking the build panel.
+		// Build panel stays interactive when a disc is loaded and the selected
+		// base supports it (button has own disabled + discReason locks it too).
+		setSectionLocked(panelBuildEl, !disc || !!discReason);
 	}
-	const baseId = selectedBaseId();
-	const base = manifest.bases.find((b) => b.id === baseId);
 	const selected = effectiveAddonIds()
 		.map((id) => entryById(id))
 		.filter(Boolean)
@@ -1736,10 +1701,15 @@ function updatePlan() {
 	} else {
 		steps.push('Mods: (none)');
 	}
-	steps.push('Output: .zip (.bin + .cue + APPLIED.txt)');
+	if (discReason) {
+		steps.push('');
+		steps.push('⚠ ' + discReason);
+	} else {
+		steps.push('Output: .zip (.bin + .cue + APPLIED.txt)');
+	}
 	planEl.textContent = steps.join('\n');
 
-	applyBtn.disabled = building || !(sourceBytes && disc);
+	applyBtn.disabled = building || !(sourceBytes && disc) || !!discReason;
 	applyBtn.classList.toggle('is-busy', building);
 }
 
@@ -1870,6 +1840,11 @@ async function applySelection() {
 	// must be read while controls still reflect the user's choices.
 	const baseId = selectedBaseId();
 	const base = manifest.bases.find((b) => b.id === baseId);
+	const discReason = baseDisabledReason(base, disc);
+	if (discReason) {
+		setStatus(discReason, true);
+		return;
+	}
 	const addonIdSnapshot = effectiveAddonIds().slice();
 	// Only packs that have a layer for the loaded disc.
 	// CSR+ all-or-none = every scene that applies here, not every pack id.
