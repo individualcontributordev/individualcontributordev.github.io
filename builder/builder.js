@@ -900,6 +900,22 @@ function baseFamily(base) {
 
 const BASE_FAMILY_ORDER = ['Unmodified', 'CSR', 'CSR+', 'Highwind', 'Other'];
 
+/**
+ * CSR+ and Highwind are single-disc-only experiences (built from a Disc 1
+ * image only). They cannot be applied to a loaded Disc 2 or Disc 3 image.
+ */
+function isSingleDiscOnlyBase(baseId) {
+	const id = String(baseId || '');
+	return id.startsWith('csr-plus') || id.startsWith('highwind');
+}
+
+function baseDisabledReason(base, disc) {
+	if (isSingleDiscOnlyBase(base?.id) && (disc === 2 || disc === 3)) {
+		return `${base.name} is single-disc only — load a Disc 1 image to use it.`;
+	}
+	return null;
+}
+
 function updateBaseBlurb() {
 	const blurbEl = document.getElementById('base-blurb');
 	if (!blurbEl || !manifest) return;
@@ -910,6 +926,7 @@ function updateBaseBlurb() {
 function renderBases() {
 	if (!manifest || !baseListEl) return;
 	const prev = selectedBaseId();
+	const disc = selectedDisc();
 	const byFamily = new Map();
 	for (const base of manifest.bases) {
 		const family = baseFamily(base);
@@ -933,13 +950,31 @@ function renderBases() {
 			const opt = document.createElement('option');
 			opt.value = base.id;
 			opt.textContent = withAddonVersion(base.name, base);
+			const reason = baseDisabledReason(base, disc);
+			if (reason) {
+				opt.disabled = true;
+				opt.title = reason;
+			}
 			group.appendChild(opt);
 		}
 		select.appendChild(group);
 	}
 
 	const ids = manifest.bases.map((b) => b.id);
-	select.value = ids.includes(prev) ? prev : ids[0] || 'clean';
+	const prevBase = manifest.bases.find((b) => b.id === prev);
+	const prevValid = ids.includes(prev) && !baseDisabledReason(prevBase, disc);
+	if (prevValid) {
+		select.value = prev;
+	} else {
+		const fallback = manifest.bases.find((b) => !baseDisabledReason(b, disc));
+		select.value = fallback?.id || ids[0] || 'clean';
+		if (!prevValid && prev && fallback) {
+			setStatus(
+				`${prevBase?.name || prev} can't be used with a Disc ${disc} image — switched to ${fallback.name}.`,
+				true
+			);
+		}
+	}
 
 	const blurb = document.createElement('p');
 	blurb.id = 'base-blurb';
@@ -1755,6 +1790,7 @@ async function onFileChosen(file) {
 	const buf = await file.arrayBuffer();
 	const bytes = new Uint8Array(buf);
 	rememberImage(bytes, `${file.name} (${bytes.length} bytes)`);
+	renderBases();
 	renderAllPresets();
 	renderAddons();
 	applyAllPresets();
