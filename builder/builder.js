@@ -35,6 +35,24 @@ let detectedDisc = null;
 let building = false;
 const layerCache = new Map();
 
+/**
+ * User's actual mod/preset choices, kept independent of per-disc/base
+ * compatibility. Switching discs (or bases) can make a pick temporarily
+ * unavailable (e.g. an encounter-rate mod that only ships a Disc 1 layer),
+ * but the user's choice should survive so it re-applies automatically when
+ * they load a compatible disc again — no re-picking presets every time.
+ * Synced from the DOM only on genuine user interaction (see onLayerChange /
+ * applyActivePresetToAddons), never wiped by a render pass.
+ */
+const stickyAddonIds = new Set();
+
+/** Re-sync stickyAddonIds from current DOM state. Call after real user input. */
+function syncStickyAddonIds() {
+	stickyAddonIds.clear();
+	for (const id of selectedAddonIds()) stickyAddonIds.add(id);
+	if (isCsrPlusAllChecked()) stickyAddonIds.add('csr-plus-all');
+}
+
 function setStatus(msg, isError) {
 	stopBuildBanter();
 	statusEl.replaceChildren();
@@ -928,7 +946,11 @@ function renderBases() {
 	for (const base of manifest.bases) {
 		const opt = document.createElement('option');
 		opt.value = base.id;
-		opt.textContent = withAddonVersion(base.name, base);
+		let label = withAddonVersion(base.name, base);
+		if (isSingleDiscOnlyBase(base.id) && !/single-disc/i.test(label)) {
+			label += ' (single-disc)';
+		}
+		opt.textContent = label;
 		select.appendChild(opt);
 	}
 
@@ -1276,12 +1298,12 @@ function renderAddonGroup(groupId, addons, prevSelected) {
 		select.appendChild(opt);
 	}
 
+	// Keep the user's pick selected (even if the option is disabled for this
+	// disc) so it survives disc switches instead of resetting to None.
 	const prevInGroup = [...prevSelected].find((id) => ids.has(id));
 	const prevAddon = baseCompatibleAddons.find(a => a.id === prevInGroup);
-	const prevStillValid = prevInGroup &&
-		addonCompatibleWithBase(prevAddon, baseId) &&
-		addonHasLayerForDisc(prevAddon, disc);
-	select.value = prevStillValid ? prevInGroup : '';
+	const prevStillInBase = prevInGroup && addonCompatibleWithBase(prevAddon, baseId);
+	select.value = prevStillInBase ? prevInGroup : '';
 
 	wrap.appendChild(label);
 	wrap.appendChild(select);
@@ -1296,8 +1318,10 @@ function renderFreeAddon(addon, prevSelected) {
 	const discCompatible = addonHasLayerForDisc(addon, disc);
 	const compatible = baseCompatible && discCompatible;
 
+	// Keep the user's pick checked even when temporarily incompatible with the
+	// loaded disc, so it survives disc switches instead of resetting to off.
 	const wasChecked = prevSelected.has(addon.id);
-	const checked = wasChecked && compatible ? 'checked' : '';
+	const checked = wasChecked ? 'checked' : '';
 	const disabled = !compatible ? 'disabled' : '';
 
 	const label = document.createElement('label');
@@ -1456,7 +1480,9 @@ function renderCsrPlusToggle(prevSelected) {
 	const discOk = disc == null || discIds.length > 0;
 	const compatible = baseOk && discOk;
 
-	const checked = wasCsrPlusAllSelected(prevSelected) && compatible;
+	// Keep checked even when the disc has no extra scene trims, so it
+	// survives disc switches instead of resetting off.
+	const checked = wasCsrPlusAllSelected(prevSelected);
 	const label = document.createElement('label');
 	label.className = 'choice';
 	if (!compatible) label.classList.add('is-disabled');
@@ -1546,8 +1572,10 @@ function renderLayerList(kind) {
 	const listEl = modListEl;
 	if (!manifest || !listEl) return;
 	const baseId = selectedBaseId();
-	const prevSelected = new Set(selectedAddonIds());
-	if (isCsrPlusAllChecked()) prevSelected.add('csr-plus-all');
+	// Seed from sticky state (user's real picks), not a live DOM scan — a
+	// prior render may have force-disabled/unchecked incompatible controls,
+	// and we don't want that to erase the user's intent permanently.
+	const prevSelected = new Set(stickyAddonIds);
 
 	const visible = addonsForBase(baseId, 'mod');
 	const { allDisc, byDisc } = partitionAddonsByDisc(visible);
@@ -1680,9 +1708,9 @@ function updatePlan() {
 	} else {
 		setSectionLocked(panelSourceEl, false);
 		setSectionLocked(panelBaseEl, !disc);
-		setSectionLocked(panelModsEl, !disc);
-		// Build panel stays interactive when a disc is loaded and the selected
-		// base supports it (button has own disabled + discReason locks it too).
+		// Mods section (and Build) lock together when the selected base can't
+		// be applied to the loaded disc (CSR+/Highwind require Disc 1).
+		setSectionLocked(panelModsEl, !disc || !!discReason);
 		setSectionLocked(panelBuildEl, !disc || !!discReason);
 	}
 	const selected = effectiveAddonIds()
@@ -1732,6 +1760,7 @@ function renderManifest() {
 		if (!t || !t.id) return;
 		if (t.id === 'mod-preset-select') {
 			applyActivePresetToAddons('mod', { clearManagedIfNone: true });
+			syncStickyAddonIds();
 			updatePlan();
 		}
 	};
@@ -1743,6 +1772,7 @@ function renderManifest() {
 			kind === 'pack' ? 'pack-preset-select' : 'mod-preset-select'
 		);
 		if (presetEl && presetEl.value) presetEl.value = '';
+		syncStickyAddonIds();
 		updatePlan();
 	};
 	if (modListEl) modListEl.addEventListener('change', onLayerChange('mod'));
