@@ -110,5 +110,5 @@ curl -I https://individualcontributor.dev/Final-Fantasy-7-Modding/builder/manife
 ## See Also
 
 - `.agents/rules/github-pages-cors.mdc` — Full CORS documentation and troubleshooting
-- `AGENTS.md` — Agent guidelines including remote sources
+- `AGENTS.md` — Operating rules including remote sources
 - CSR and Modding `.agents/rules/github-pages-redirect.mdc` — Project site redirect docs
