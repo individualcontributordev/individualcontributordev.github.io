@@ -201,8 +201,6 @@ button#apply.is-busy:disabled {
 }
 
 select#base-select,
-select#pack-preset-select,
-select#mod-preset-select,
 select[name="addon-group"] {
 	display: block;
 	width: 100%;
@@ -220,10 +218,6 @@ select[name="addon-group"] {
 	/* Hover/focus only when enabled — disabled selects match .choice.is-disabled (no glow). */
 	select#base-select:hover:not(:disabled),
 	select#base-select:focus:not(:disabled),
-	select#pack-preset-select:hover:not(:disabled),
-	select#pack-preset-select:focus:not(:disabled),
-	select#mod-preset-select:hover:not(:disabled),
-	select#mod-preset-select:focus:not(:disabled),
 	select[name="addon-group"]:hover:not(:disabled),
 	select[name="addon-group"]:focus:not(:disabled) {
 		outline: none;
@@ -231,16 +225,12 @@ select[name="addon-group"] {
 
 	select#base-select option,
 	select#base-select optgroup,
-	select#pack-preset-select option,
-	select#mod-preset-select option,
 	select[name="addon-group"] option {
 		background: #000051;
 		color: var(--ff7-text);
 	}
 
-	select[name="addon-group"] option:disabled,
-	select#pack-preset-select option:disabled,
-	select#mod-preset-select option:disabled {
+	select[name="addon-group"] option:disabled {
 		opacity: 0.5;
 	}
 
@@ -388,32 +378,13 @@ select[name="addon-group"] {
 	overflow: visible;
 }
 
-.preset-dropdown-wrap {
-	margin-bottom: 24px;
-	padding-bottom: 24px;
-	border-bottom: 1px solid var(--ff7-border);
-}
-
-.preset-label {
-	display: block;
-	margin: 0 0 8px;
-	font-family: "DogicaPixelBold", Arial, sans-serif;
-	font-size: 0.9rem;
-	line-height: 1.3;
-	letter-spacing: 1px;
-	text-transform: uppercase;
-}
-
 /* Match .choice.is-disabled: dim + not-allowed + no hover/click (opacity on wrap only). */
-select#pack-preset-select:disabled,
-select#mod-preset-select:disabled,
 select[name="addon-group"]:disabled,
 select#base-select:disabled {
 	cursor: not-allowed;
 	pointer-events: none;
 }
 
-.preset-dropdown-wrap.is-disabled,
 .addon-group.is-disabled {
 	opacity: 0.5;
 	cursor: not-allowed;
