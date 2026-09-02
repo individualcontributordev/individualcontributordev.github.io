@@ -1385,8 +1385,12 @@ function addonSoleDisc(addon) {
  * Layout buckets:
  *  - allDisc: exclusive groups + free checkboxes that apply to all discs
  *  - byDisc[1|2|3]: single-disc packs only
+ *
+ * On a single-disc base (CSR+/Highwind) there is only ever Disc 1, so a
+ * mod shipping just a disc1 layer covers the whole base. Collapsing keeps
+ * those bases out of the Disc 1/2/3 column layout.
  */
-function partitionAddonsByDisc(visible) {
+function partitionAddonsByDisc(visible, collapseToAllDisc = false) {
 	const { groups, groupOrder, free } = partitionAddons(visible);
 	const allDisc = { groupIds: [], groups: new Map(), free: [] };
 	const byDisc = {
@@ -1399,7 +1403,9 @@ function partitionAddonsByDisc(visible) {
 		const members = groups.get(groupId) || [];
 		if (!members.length) continue;
 		// Group stays together: all-disc if any member is multi/all, else sole disc of first.
-		const all = members.some((a) => addonIsAllDiscs(a) || addonSoleDisc(a) == null);
+		const all =
+			collapseToAllDisc ||
+			members.some((a) => addonIsAllDiscs(a) || addonSoleDisc(a) == null);
 		if (all) {
 			allDisc.groupIds.push(groupId);
 			allDisc.groups.set(groupId, members);
@@ -1411,7 +1417,7 @@ function partitionAddonsByDisc(visible) {
 	}
 
 	for (const addon of free) {
-		if (addonIsAllDiscs(addon)) {
+		if (collapseToAllDisc || addonIsAllDiscs(addon)) {
 			allDisc.free.push(addon);
 			continue;
 		}
@@ -1578,7 +1584,10 @@ function renderLayerList(kind) {
 	const prevSelected = new Set(stickyAddonIds);
 
 	const visible = addonsForBase(baseId, 'mod');
-	const { allDisc, byDisc } = partitionAddonsByDisc(visible);
+	const { allDisc, byDisc } = partitionAddonsByDisc(
+		visible,
+		isSingleDiscOnlyBase(baseId)
+	);
 	listEl.innerHTML = '';
 
 	const csrToggle = renderCsrPlusToggle(prevSelected);
