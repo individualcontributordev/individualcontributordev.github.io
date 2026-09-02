@@ -22,6 +22,8 @@
   --ff7-muted: #aaa;
   --ff7-panel: linear-gradient(160deg, #003a90 35%, #000051);
   --ff7-border: rgba(255, 255, 255, 0.2);
+  --ff7-window-border: url("/ff7-window-border.png");
+  --ff7-window-slice: 5;
 }
 
 * { box-sizing: border-box; }
@@ -151,8 +153,15 @@ p {
 .panel {
   background-color: var(--ff7-blue);
   background-image: var(--ff7-panel);
-  border: 3px solid var(--ff7-text);
-  border-radius: 10px;
+  background-clip: padding-box;
+  border: 5px solid transparent;
+  border-radius: 0;
+  border-image-source: var(--ff7-window-border);
+  border-image-slice: var(--ff7-window-slice);
+  border-image-width: 5px;
+  border-image-repeat: stretch;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
   padding: 20px;
   margin-bottom: 8px;
 }
