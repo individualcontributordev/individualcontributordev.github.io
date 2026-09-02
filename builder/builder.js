@@ -637,8 +637,26 @@ async function loadMergedManifest(localPath) {
 }
 
 /** Stable cache key piece: pack id@version (version bumps invalidate). */
-function layerContentKey(entry) {
+/** Published sha256 of one disc's layer file, or '' when the pack predates them. */
+function layerDigestFor(entry, disc) {
+	const map = entry && entry.discDigests;
+	if (!map || typeof map !== 'object') return '';
+	return String(map[String(disc)] || '').trim().toLowerCase();
+}
+
+/**
+ * Cache key for a layer body.
+ *
+ * A digest changes whenever the layer bytes change, so republishing under an
+ * unchanged version can no longer resolve to a stale cached body. id@version
+ * remains the fallback for packs published before digests, and carries that
+ * hazard: fanfare-skip-on-csr-plus once shipped three different bodies as
+ * 0.1.6, one of which corrupted BATTLE.X.
+ */
+function layerContentKey(entry, disc) {
 	if (!entry) return '';
+	const digest = layerDigestFor(entry, disc);
+	if (digest) return 'sha256:' + digest;
 	const id = String(entry.id || '').trim();
 	const ver = String(entry.version || '').trim();
 	if (id && ver) return id + '@' + ver;
@@ -664,6 +682,33 @@ function validateLayerPayload(layer, url) {
  * Load ic-layer-v1 JSON. Memory cache then IndexedDB then network.
  * Manifests stay uncached (always fetch). Hard reload keeps IDB hits.
  */
+async function sha256Hex(bytes) {
+	const hash = await crypto.subtle.digest('SHA-256', bytes);
+	return [...new Uint8Array(hash)]
+		.map((b) => b.toString(16).padStart(2, '0'))
+		.join('');
+}
+
+/**
+ * Fetch a layer and, when the manifest published a digest, refuse a body that
+ * does not match it. A stale CDN copy then fails loudly instead of patching
+ * offsets that have moved and producing a quietly broken image.
+ */
+async function fetchLayerJson(url, digest) {
+	if (!digest) return fetchJson(url);
+	const res = await fetch(url, { cache: 'no-store' });
+	if (!res.ok) throw new Error('Failed to load ' + url + ' (' + res.status + ')');
+	const raw = await res.arrayBuffer();
+	const got = await sha256Hex(raw);
+	if (got !== digest) {
+		throw new Error(
+			'Layer at ' + url + ' does not match its published checksum. ' +
+				'This is usually a stale cached copy — retry in a minute.'
+		);
+	}
+	return JSON.parse(new TextDecoder().decode(raw));
+}
+
 async function loadLayerByUrl(url, opts = {}) {
 	if (!url) return null;
 	const contentKey = String(opts.contentKey || '').trim();
@@ -688,7 +733,7 @@ async function loadLayerByUrl(url, opts = {}) {
 	}
 
 	if (opts.onStatus) opts.onStatus('fetch');
-	const layer = validateLayerPayload(await fetchJson(url), url);
+	const layer = validateLayerPayload(await fetchLayerJson(url, opts.digest), url);
 	layerCache.set(memKey, layer);
 	if (contentKey) {
 		void putCachedLayer(url, contentKey, layer);
@@ -702,17 +747,15 @@ async function onClearLayerCache() {
 	setStatus('Dev: pack layer cache cleared.', false);
 }
 
-/** After manifests load: drop IDB rows for pack versions no longer listed. */
+/** After manifests load: drop IDB rows for layer bodies no longer listed. */
 async function pruneStaleLayerCacheFromManifest(man) {
 	if (!man) return;
 	const keys = [];
-	for (const b of man.bases || []) {
-		const k = layerContentKey(b);
-		if (k) keys.push(k);
-	}
-	for (const a of man.addons || []) {
-		const k = layerContentKey(a);
-		if (k) keys.push(k);
+	for (const entry of [...(man.bases || []), ...(man.addons || [])]) {
+		for (const disc of Object.keys(entry.discs || { 1: null })) {
+			const k = layerContentKey(entry, disc);
+			if (k) keys.push(k);
+		}
 	}
 	try {
 		await pruneLayerCache(keys);
@@ -1815,7 +1858,8 @@ async function applySelection() {
 			await yieldToUi();
 			layers.push(
 				await loadLayerByUrl(baseUrl, {
-					contentKey: layerContentKey(base),
+					contentKey: layerContentKey(base, disc),
+					digest: layerDigestFor(base, disc),
 					onStatus: (s) => {
 						from = s;
 					},
@@ -1837,7 +1881,8 @@ async function applySelection() {
 			await yieldToUi();
 			layers.push(
 				await loadLayerByUrl(url, {
-					contentKey: layerContentKey(entry),
+					contentKey: layerContentKey(entry, disc),
+					digest: layerDigestFor(entry, disc),
 					onStatus: (s) => {
 						from = s;
 					},
