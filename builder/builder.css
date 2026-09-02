@@ -147,6 +147,7 @@ button, .file-btn {
 button:hover:not(:disabled), .file-btn:hover {
 	color: #000;
 	background: var(--ff7-link);
+	border-radius: 10px;
 }
 
 button:disabled {
