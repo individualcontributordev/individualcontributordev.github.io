@@ -150,9 +150,14 @@ p {
   letter-spacing: 0.6px;
 }
 
-.panel {
-  background-color: var(--ff7-blue);
-  background-image: var(--ff7-panel);
+/* Pixel window chrome (9-slice). background-clip keeps gradient out of corner cuts. */
+.panel,
+.ff7-window,
+button:not(.footer-cache-clear),
+.file-btn,
+select,
+.cta,
+.music-btn {
   background-clip: padding-box;
   border: 5px solid transparent;
   border-radius: 0;
@@ -162,6 +167,11 @@ p {
   border-image-repeat: stretch;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
+}
+
+.panel {
+  background-color: var(--ff7-blue);
+  background-image: var(--ff7-panel);
   padding: 20px;
   margin-bottom: 8px;
 }

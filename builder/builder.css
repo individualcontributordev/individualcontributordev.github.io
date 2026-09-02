@@ -140,8 +140,6 @@ button, .file-btn {
 	letter-spacing: 1.3px;
 	color: var(--ff7-text);
 	background: rgba(0, 0, 40, 0.65);
-	border: 3px solid var(--ff7-text);
-	border-radius: 10px;
 	padding: 9px 14px;
 	cursor: pointer;
 }
@@ -149,7 +147,6 @@ button, .file-btn {
 button:hover:not(:disabled), .file-btn:hover {
 	color: #000;
 	background: var(--ff7-link);
-	border-color: var(--ff7-link);
 }
 
 button:disabled {
@@ -165,7 +162,6 @@ button.btn-secondary {
 	font-size: 0.75rem;
 	padding: 8px 12px;
 	opacity: 0.9;
-	border-width: 2px;
 }
 
 button#apply.is-busy,
@@ -188,8 +184,6 @@ select[name="addon-group"] {
 	letter-spacing: 0.8px;
 	color: var(--ff7-text);
 	background: rgba(0, 0, 40, 0.65);
-	border: 3px solid var(--ff7-text);
-	border-radius: 10px;
 	padding: 8px 12px;
 	cursor: pointer;
 }
@@ -203,7 +197,6 @@ select[name="addon-group"] {
 	select#mod-preset-select:focus:not(:disabled),
 	select[name="addon-group"]:hover:not(:disabled),
 	select[name="addon-group"]:focus:not(:disabled) {
-		border-color: var(--ff7-link);
 		outline: none;
 	}
 
