@@ -1363,78 +1363,8 @@ function addonDiscKeys(addon) {
 		.sort();
 }
 
-/** True when the pack covers every disc (or has no discs map). */
-function addonIsAllDiscs(addon) {
-	// Whole-game mods (e.g. Single-disc) show in the global list, not a disc column.
-	if (addon && (addon.layout === 'global' || addon.uiScope === 'global')) return true;
-	const id = String(addon && addon.id ? addon.id : '');
-	if (id.startsWith('single-disc-on-') || id === 'single-disc') return true;
-	const keys = addonDiscKeys(addon);
-	if (!keys.length) return true;
-	return keys.length >= 3 && keys[0] === '1' && keys[1] === '2' && keys[2] === '3';
-}
-
-/** Single-disc column 1|2|3, or null if multi/all. */
-function addonSoleDisc(addon) {
-	const keys = addonDiscKeys(addon);
-	if (keys.length === 1) return Number(keys[0]);
-	return null;
-}
-
-/**
- * Layout buckets:
- *  - allDisc: exclusive groups + free checkboxes that apply to all discs
- *  - byDisc[1|2|3]: single-disc packs only
- *
- * On a single-disc base (CSR+/Highwind) there is only ever Disc 1, so a
- * mod shipping just a disc1 layer covers the whole base. Collapsing keeps
- * those bases out of the Disc 1/2/3 column layout.
- */
-function partitionAddonsByDisc(visible, collapseToAllDisc = false) {
-	const { groups, groupOrder, free } = partitionAddons(visible);
-	const allDisc = { groupIds: [], groups: new Map(), free: [] };
-	const byDisc = {
-		1: { groupIds: [], groups: new Map(), free: [] },
-		2: { groupIds: [], groups: new Map(), free: [] },
-		3: { groupIds: [], groups: new Map(), free: [] },
-	};
-
-	for (const groupId of groupOrder) {
-		const members = groups.get(groupId) || [];
-		if (!members.length) continue;
-		// Group stays together: all-disc if any member is multi/all, else sole disc of first.
-		const all =
-			collapseToAllDisc ||
-			members.some((a) => addonIsAllDiscs(a) || addonSoleDisc(a) == null);
-		if (all) {
-			allDisc.groupIds.push(groupId);
-			allDisc.groups.set(groupId, members);
-			continue;
-		}
-		const disc = addonSoleDisc(members[0]) || 1;
-		byDisc[disc].groupIds.push(groupId);
-		byDisc[disc].groups.set(groupId, members);
-	}
-
-	for (const addon of free) {
-		if (collapseToAllDisc || addonIsAllDiscs(addon)) {
-			allDisc.free.push(addon);
-			continue;
-		}
-		const sole = addonSoleDisc(addon);
-		if (sole) {
-			byDisc[sole].free.push(addon);
-		} else {
-			// Multi-disc but not all three — treat as all-disc row.
-			allDisc.free.push(addon);
-		}
-	}
-
-	return { allDisc, byDisc };
-}
-
 function appendAddonBucket(container, bucket, prevSelected) {
-	for (const groupId of bucket.groupIds) {
+	for (const groupId of bucket.groupOrder) {
 		container.appendChild(
 			renderAddonGroup(groupId, bucket.groups.get(groupId), prevSelected)
 		);
@@ -1583,18 +1513,11 @@ function renderLayerList(kind) {
 	// and we don't want that to erase the user's intent permanently.
 	const prevSelected = new Set(stickyAddonIds);
 
-	const visible = addonsForBase(baseId, 'mod');
-	const { allDisc, byDisc } = partitionAddonsByDisc(
-		visible,
-		isSingleDiscOnlyBase(baseId)
-	);
+	const mods = partitionAddons(addonsForBase(baseId, 'mod'));
 	listEl.innerHTML = '';
 
 	const csrToggle = renderCsrPlusToggle(prevSelected);
-	const hasMods =
-		allDisc.groupIds.length > 0 ||
-		allDisc.free.length > 0 ||
-		[1, 2, 3].some((d) => byDisc[d].groupIds.length > 0 || byDisc[d].free.length > 0);
+	const hasMods = mods.groupOrder.length > 0 || mods.free.length > 0;
 
 	if (!csrToggle && !hasMods) {
 		const empty = document.createElement('p');
@@ -1610,58 +1533,10 @@ function renderLayerList(kind) {
 	const allBody = document.createElement('div');
 	allBody.className = 'addon-all-grid';
 	if (csrToggle) allBody.appendChild(csrToggle);
-	appendAddonBucket(allBody, allDisc, prevSelected);
+	appendAddonBucket(allBody, mods, prevSelected);
 	if (allBody.childNodes.length) {
 		allSection.appendChild(allBody);
 		listEl.appendChild(allSection);
-	}
-
-	const hasDiscCols = [1, 2, 3].some(
-		(d) => byDisc[d].groupIds.length > 0 || byDisc[d].free.length > 0
-	);
-	if (hasDiscCols) {
-		const loadedDisc = selectedDisc();
-		const cols = document.createElement('div');
-		cols.className = 'addon-disc-columns';
-		if (loadedDisc) cols.dataset.loadedDisc = String(loadedDisc);
-		for (const disc of [1, 2, 3]) {
-			const bucket = byDisc[disc];
-			const col = document.createElement('div');
-			col.className = 'addon-disc-col';
-			col.dataset.disc = String(disc);
-			if (loadedDisc) {
-				if (disc === loadedDisc) col.classList.add('is-active');
-				else col.classList.add('is-inactive');
-			}
-			const head = document.createElement('h3');
-			head.className = 'addon-section-title';
-			if (loadedDisc && disc === loadedDisc) {
-				head.innerHTML =
-					'Disc ' + disc + ' <span class="addon-disc-badge">loaded</span>';
-			} else if (loadedDisc) {
-				head.innerHTML =
-					'Disc ' +
-					disc +
-					' <span class="addon-disc-badge is-muted">not loaded</span>';
-			} else {
-				head.textContent = 'Disc ' + disc;
-			}
-			col.appendChild(head);
-			const body = document.createElement('div');
-			body.className = 'addon-disc-col-body';
-			if (bucket.groupIds.length || bucket.free.length) {
-				appendAddonBucket(body, bucket, prevSelected);
-			} else {
-				const empty = document.createElement('p');
-				empty.className = 'addon-col-empty';
-				empty.textContent =
-					loadedDisc && disc !== loadedDisc ? 'Load this disc to use' : 'None yet';
-				body.appendChild(empty);
-			}
-			col.appendChild(body);
-			cols.appendChild(col);
-		}
-		listEl.appendChild(cols);
 	}
 }
 
