@@ -157,7 +157,8 @@ button:not(.footer-cache-clear),
 .file-btn,
 select,
 .cta,
-.music-btn {
+.music-btn,
+.choice {
   background-clip: padding-box;
   border: 5px solid transparent;
   border-radius: 0;
