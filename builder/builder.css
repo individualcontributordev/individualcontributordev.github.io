@@ -90,11 +90,11 @@ main {
 	flex: 0 0 auto;
 	align-self: flex-start;
 	width: 22px;
-	height: 24px;
+	height: 22px;
 	margin: 2px 0 0;
 	padding: 0;
 	border: none;
-	background: url("./materia-off.png") no-repeat center / 22px 24px;
+	background: url("./materia-off.png") no-repeat center / 22px 22px;
 	cursor: inherit;
 	image-rendering: pixelated;
 	image-rendering: crisp-edges;
