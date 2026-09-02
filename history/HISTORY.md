@@ -196,9 +196,11 @@ casual “CSR / CSR+ / CSR++” names:
 | Product | Role |
 |---------|------|
 | **CSR** (base) | Field trims with skill-check scenes kept |
-| **CSR+ scene trims** | Optional extra trims **on CSR only** (checkboxes / all-scenes preset) |
+| **CSR+ scene trims** | Optional extra trims **on CSR only** (then: checkboxes / an all-scenes bundle) |
 | **Highwind** (base) | Separate aggressive short playthrough; **not** stacked with CSR+ scene trims |
 | **Mods** | Cross-base gameplay layers (field and world encounter density, and more later) |
+
+That split later settled as four exclusive bases (Unmodified / CSR / CSR+ / Highwind). CSR+ shipped as its own Disc 1 image. The builder Preset dropdown is gone; encounter density is two dropdowns (field and world).
 
 Early CSR+ ships as a bulk idea (Aerith house and Hojo FD scenes cut on top of
 CSR v0.14). Within days the plan narrows: **CSR+ is not a second full base**.

@@ -2,9 +2,8 @@
   "version": 1,
   "title": "PSX Disc Builder",
   "explainer": {
-    "base": "Base experience \u2014 only one applies (Unmodified, CSR, Highwind, \u2026).",
-    "packs": "Optional CSR+ scene packs on CSR. Stack any combination. Organized by disc.",
-    "mods": "Optional mods. Compatible with Unmodified, CSR, and Highwind. Conflicting choices share a dropdown (None = skip)."
+    "base": "Base experience \u2014 only one applies (Unmodified, CSR, CSR+, Highwind).",
+    "mods": "Optional mods. Conflicting choices share a dropdown (None = skip). Some mods are pinned to one base version."
   },
   "bases": [
     {

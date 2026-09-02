@@ -1,3 +1,19 @@
+/**
+ * PSX Disc Builder — apply exclusive bases and stackable add-ons onto a local
+ * NTSC-U .bin, then zip .bin + .cue + APPLIED.txt. Nothing is uploaded.
+ *
+ * Catalog: this page's builder/manifest.json lists remoteSources (CSR bases,
+ * Modding add-ons). URLs must be individualcontributor.dev (see CONFIGURATION.md).
+ *
+ * Player picks one base (exclusiveGroup "cutscenes"). Add-ons are checkboxes,
+ * or one dropdown per exclusiveGroup (None = skip). Add-ons with kind "pack"
+ * (CSR+ scene trims, if any are published) collapse into one all-or-none
+ * checkbox. A mod whose baseVersion is not the selected base's version is hidden.
+ *
+ * Apply order is APPLY_ORDER below (prefix match, first hit wins). Unlisted
+ * mods apply last. Push main on CSR/Modding to publish layers; this UI fetches
+ * them by URL and caches on discDigest.
+ */
 import { applyLayers, buildCue } from './layer.js';
 import { zipStore } from './zip-store.js';
 import { detectFf7Disc } from './disc-id.js';
@@ -12,11 +28,9 @@ import {
 
 const statusEl = document.getElementById('status');
 const baseListEl = document.getElementById('base-list');
-const packListEl = null;
 const modListEl = document.getElementById('mod-list');
 const panelSourceEl = document.getElementById('panel-source');
 const panelBaseEl = document.getElementById('panel-base');
-const panelPacksEl = null;
 const panelModsEl = document.getElementById('panel-mods');
 const panelBuildEl = document.getElementById('panel-build');
 const discInfoEl = document.getElementById('disc-info');
@@ -39,7 +53,7 @@ const layerCache = new Map();
  * encounter-rate mod that only ships a Disc 1 layer), but the user's choice
  * should survive so it re-applies automatically when they load a compatible
  * disc again. Synced from the DOM only on genuine user interaction
- * (see onLayerChange), never wiped by a render pass.
+ * (mods-list change handler), never wiped by a render pass.
  */
 const stickyAddonIds = new Set();
 
@@ -585,6 +599,8 @@ function layerUrlFor(entry, disc) {
 }
 
 async function loadMergedManifest(localPath) {
+	// Local JSON is the Unmodified base + remoteSources. Remotes contribute
+	// bases and addons; their URLs are resolved relative to each remote file.
 	const localUrl = new URL(localPath, window.location.href).href;
 	const local = await fetchJson(localUrl);
 	const bases = [];
@@ -779,7 +795,7 @@ function selectedAddonIds() {
 	return ids;
 }
 
-/** CSR+ pack addon ids (all-or-none bundle of scene trims). */
+/** CSR+ scene-trim addon ids (kind=pack). Empty while none are published. */
 function csrPlusBundleIds() {
 	if (!manifest) return [];
 	const baseId = selectedBaseId();
@@ -862,7 +878,7 @@ function autoIncludeMatches(addon, baseId, selectedIds) {
 		if (selectedIds.some((id) => String(id).startsWith(prefix))) return false;
 		// CSR+ master toggle: suppress even if this disc has no pack layer in the list
 		// (e.g. single-disc manip-movies must not stack with CSR+).
-		if (prefix === 'csr-plus-scene-' && typeof isCsrPlusAllChecked === 'function' && isCsrPlusAllChecked()) {
+		if (prefix === 'csr-plus-scene-' && isCsrPlusAllChecked()) {
 			return false;
 		}
 	}
@@ -872,21 +888,15 @@ function autoIncludeMatches(addon, baseId, selectedIds) {
 }
 
 function layerKind(entry) {
+	// "pack" = CSR+ scene-trim add-on (all-or-none checkbox). Everything else is a
+	// stackable mod. kind wins; the id prefixes catch older unpublished packs.
 	if (!entry) return 'mod';
 	const k = String(entry.kind || '').toLowerCase();
 	if (k === 'pack' || k === 'scene' || k === 'csr-plus-scene') return 'pack';
 	if (k === 'mod') return 'mod';
 	const id = String(entry.id || '');
 	if (id.startsWith('csr-plus-scene-') || id.startsWith('csr-plus-')) return 'pack';
-	const eg = String(entry.exclusiveGroup || '');
-	const gl = String(entry.groupLabel || '');
-	const name = String(entry.name || '');
-	if (/encounter/i.test(eg) || /encounter/i.test(gl) || /encounter/i.test(name)) return 'mod';
 	return 'mod';
-}
-
-function layersOfKind(kind) {
-	return (manifest?.addons || []).filter((a) => layerKind(a) === kind);
 }
 
 function entryById(id) {
@@ -1276,19 +1286,12 @@ function updateSectionExplainers(baseId) {
 	if (baseEl) {
 		baseEl.textContent =
 			manifest.explainer?.base ||
-			'Base experience — only one applies (Unmodified, CSR, Highwind, …).';
+			'Base experience — only one applies (Unmodified, CSR, CSR+, Highwind).';
 	}
-	const idStr = String(baseId || '');
-	const isCsr = (idStr.startsWith('csr-') || idStr === 'csr') && !idStr.startsWith('csr-plus');
 	if (modsEl) {
-		if (isCsr) {
-			modsEl.textContent =
-				'Optional mods on this base. CSR+ is all-or-none (every scene trim for the disc, or none).';
-		} else {
-			modsEl.textContent =
-				manifest.explainer?.mods ||
-				'Optional mods. Some are base-specific; CSR+ requires the CSR base.';
-		}
+		modsEl.textContent =
+			manifest.explainer?.mods ||
+			'Optional mods. Conflicting choices share a dropdown (None = skip).';
 	}
 }
 
@@ -1503,7 +1506,9 @@ function updatePlan() {
 	steps.push(sourceBytes ? 'Input: ' + sourceBytes.length + ' bytes' : 'Input: (none yet)');
 	steps.push(disc ? 'Disc: ' + disc + ' (auto)' : 'Disc: (not detected)');
 	steps.push('Base Experience: ' + (base ? base.name : baseId));
-	steps.push(packs.length ? 'CSR+: on' : 'CSR+: off');
+	if (csrPlusBundleIds().length) {
+		steps.push(packs.length ? 'CSR+ scene trims: on' : 'CSR+ scene trims: off');
+	}
 	if (mods.length) {
 		mods.forEach((a, i) => steps.push('Mod ' + (i + 1) + ': ' + freeAddonLabel(a)));
 	} else {
@@ -1559,64 +1564,59 @@ async function onFileChosen(file) {
 	updatePlan();
 }
 
+/**
+ * Hand-curated stack order — id prefixes, first match wins, earlier applies
+ * first. Layers overwrite each other at raw byte offsets, so this order is
+ * correctness, not cosmetics. Add a prefix when a new family needs to land at a
+ * specific point; unlisted mods apply last, sorted by id.
+ *
+ * Several ids below are not currently published. They stay listed so a
+ * republish slots back into the right place instead of falling to the end.
+ */
+const APPLY_ORDER = [
+	// CSR manip-movies first: they alias movie LBAs (JAIROFAL/CANONON) that
+	// later single-disc layers then reference.
+	'single-disc-csr-manip-movies',
+	// Hidden path + CSR Disc 2 field-ref autos, before the player-facing core.
+	'single-disc-on-csr-ref-',
+	'single-disc-on-csr-v0.1.26',
+	'single-disc-on-csr-v0.1.35',
+	'path-engine',
+	// Single-disc core, part 1 then parts 2-10 in exact numeric order. These
+	// carry the actual field/story changes and must precede everything below,
+	// or the later layers patch fields that have since moved.
+	'single-disc-on-csr',
+	'single-disc-v0.1.2-part2',
+	'single-disc-v0.1.2-part3',
+	'single-disc-v0.1.2-part4',
+	'single-disc-v0.1.2-part5',
+	'single-disc-v0.1.2-part6',
+	'single-disc-v0.1.2-part7',
+	'single-disc-v0.1.2-part8',
+	'single-disc-v0.1.2-part9',
+	'single-disc-v0.1.2-part10',
+	// Ending credits after the single-disc core.
+	'single-disc-endings',
+	// CSR+ scene trims last.
+	'csr-plus-scene-',
+	'csr-plus-',
+];
 
+function addonApplyRank(entry) {
+	const id = String(entry && entry.id ? entry.id : '');
+	const idx = APPLY_ORDER.findIndex((prefix) => id.startsWith(prefix));
+	if (idx !== -1) return idx;
+	return APPLY_ORDER.length;
+}
 
-	/**
-	 * Explicit, hand-curated apply order. Read top-to-bottom: earlier entries
-	 * are applied first. This is the single source of truth for layer stack
-	 * order — no regex, no rank numbers, no guessing where a new ID lands.
-	 *
-	 * Update this list directly when the single-disc version changes (e.g.
-	 * bumping v0.1.2 -> v0.1.3) or when a new addon family needs ordering.
-	 * Anything not listed falls through to the "everything else" bucket at
-	 * the bottom (gameplay mods etc. that have no ordering dependency).
-	 */
-	const APPLY_ORDER = [
-		// 1) CSR manip-movies first (JAIROFAL/CANONON LBA aliases).
-		'single-disc-csr-manip-movies',
-		// 2) Hidden path + CSR D2 field-ref autos, before the player-facing core.
-		'single-disc-on-csr-ref-',
-		'single-disc-on-csr-v0.1.26',
-		'single-disc-on-csr-v0.1.35',
-		'path-engine',
-		// 3) Single-disc core, part 1 then parts 2-10 in exact numeric order.
-		//    These carry the actual CSR field/story changes and MUST apply
-		//    before endings/fanfare/encounters or fields get corrupted.
-		'single-disc-on-csr',
-		'single-disc-v0.1.2-part2',
-		'single-disc-v0.1.2-part3',
-		'single-disc-v0.1.2-part4',
-		'single-disc-v0.1.2-part5',
-		'single-disc-v0.1.2-part6',
-		'single-disc-v0.1.2-part7',
-		'single-disc-v0.1.2-part8',
-		'single-disc-v0.1.2-part9',
-		'single-disc-v0.1.2-part10',
-		// 4) Ending credits after SD core.
-		'single-disc-endings',
-		// 5) CSR+ scene packs last.
-		'csr-plus-scene-',
-		'csr-plus-',
-	];
-
-	/** Stable stack order for layer merge (not UI order). */
-	function addonApplyRank(entry) {
-		const id = String(entry && entry.id ? entry.id : '');
-		const idx = APPLY_ORDER.findIndex((prefix) => id.startsWith(prefix));
-		if (idx !== -1) return idx;
-		// Everything else (fanfare, encounters, unlisted mods) applies last,
-		// in a stable order relative to each other via localeCompare below.
-		return APPLY_ORDER.length;
-	}
-
-	function sortAddonsForApply(entries) {
-		return entries.slice().sort((a, b) => {
-			const ra = addonApplyRank(a);
-			const rb = addonApplyRank(b);
-			if (ra !== rb) return ra - rb;
-			return String(a.id || '').localeCompare(String(b.id || ''));
-		});
-	}
+function sortAddonsForApply(entries) {
+	return entries.slice().sort((a, b) => {
+		const ra = addonApplyRank(a);
+		const rb = addonApplyRank(b);
+		if (ra !== rb) return ra - rb;
+		return String(a.id || '').localeCompare(String(b.id || ''));
+	});
+}
 
 async function applySelection() {
 	if (building || !sourceBytes || !manifest) return;

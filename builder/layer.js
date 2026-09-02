@@ -1,6 +1,8 @@
 /**
  * ic-layer-v1 — stackable disc-image byte patches.
- * Each record: { offset: number, hex: string } (hex = even-length hex string)
+ * Each record is { offset, hex }. There is no expected-before field: applying
+ * a layer over the wrong parent silently corrupts the image. The builder hides
+ * add-ons whose baseVersion does not match the selected base.
  */
 
 export function parseHex(hex) {

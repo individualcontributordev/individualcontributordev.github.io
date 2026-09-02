@@ -9,8 +9,8 @@ Public URL: https://individualcontributor.dev/history/
 | archive/ | Sanitized HAR.gz backups |
 | chats/ | Markdown + JSON chat extracts |
 
-Add a capture from the site repo root with scripts/sanitize_discord_har.py,
-then rebuild index via scratch/build_history_site.py (or copy pattern).
+Add a capture from the site repo root with `scripts/sanitize_discord_har.py`.
+Keep `HISTORY.md` and `history/index.html` in sync by hand.
 
 Never commit raw unsanitized HARs.
 
