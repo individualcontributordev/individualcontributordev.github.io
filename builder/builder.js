@@ -761,7 +761,7 @@ function csrPlusBundleIds() {
 	}
 	return ids.filter((id) => {
 		const a = entryById(id);
-		return a && addonCompatibleWithBase(a, baseId);
+		return a && addonCompatibleWithBase(a, baseId) && addonMatchesBaseVersion(a, baseId);
 	});
 }
 
@@ -798,6 +798,7 @@ function effectiveAddonIds() {
 		if (!addon.autoIncludeWhen) continue;
 		if (idSet.has(addon.id)) continue;
 		if (!addonCompatibleWithBase(addon, baseId)) continue;
+		if (!addonMatchesBaseVersion(addon, baseId)) continue;
 		if (autoIncludeMatches(addon, baseId, ids)) {
 			ids.push(addon.id);
 			idSet.add(addon.id);
@@ -978,6 +979,22 @@ function addonCompatibleWithBase(addon, baseId) {
 	return allowed.includes(baseId);
 }
 
+/**
+ * A mod layer is a byte diff against one specific base build. Applying it over
+ * a different build writes at offsets that have since moved, and nothing
+ * downstream catches it — layer records carry no expected bytes — so the user
+ * gets a silently corrupt image. A mod therefore has to name the base build it
+ * was cut from, and is hidden until it is rebuilt for the current one.
+ *
+ * The pristine `clean` base declares no version because it never changes.
+ */
+function addonMatchesBaseVersion(addon, baseId) {
+	const base = (manifest?.bases || []).find((b) => b.id === baseId);
+	const baseVersion = base?.version;
+	if (!baseVersion) return true;
+	return String(addon?.baseVersion || '') === String(baseVersion);
+}
+
 function addonHasLayerForDisc(addon, disc) {
 	if (!addon) return false;
 	// No disc detected yet — nothing is compatible until a file is loaded
@@ -994,7 +1011,8 @@ function addonsForBase(baseId, kind = null) {
 	return (manifest.addons || []).filter((a) => {
 		if (a.uiHidden || a.hidden) return false;
 		if (kind && layerKind(a) !== kind) return false;
-		return addonCompatibleWithBase(a, baseId);
+		if (!addonCompatibleWithBase(a, baseId)) return false;
+		return addonMatchesBaseVersion(a, baseId);
 	});
 }
 
@@ -1004,9 +1022,13 @@ function addonsForBase(baseId, kind = null) {
 
 function presetsForBase(baseId, kind = null) {
 	if (!manifest) return [];
+	// A preset lists one mod per base, so it is only offered while at least one
+	// of those mods is still current for the selected base.
+	const available = new Set(addonsForBase(baseId).map((a) => a.id));
 	return (manifest.presets || []).filter((p) => {
 		if (kind && presetKind(p) !== kind) return false;
-		return addonCompatibleWithBase(p, baseId);
+		if (!addonCompatibleWithBase(p, baseId)) return false;
+		return (p.addons || []).some((id) => available.has(id));
 	});
 }
 
