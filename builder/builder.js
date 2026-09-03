@@ -87,9 +87,7 @@ function shortBaseToken(baseId) {
 
 function shortAddonToken(addon) {
 	const id = String(addon?.id || '');
-	if (id.includes('single-disc-endings')) return 'end';
 	if (id.includes('manip-movies') || id.includes('csr-movies')) return 'mov';
-	if (id.includes('single-disc')) return 'sd';
 	if (id.includes('field-encounter')) {
 		const m = id.match(/-(\d+)-v/);
 		return 'f' + (m ? m[1] : 'enc');
@@ -832,7 +830,7 @@ function wasCsrPlusAllSelected(prevSelected) {
 	return bundle.some((id) => prevSelected.has(id));
 }
 
-/** UI selection plus hidden packs matched by autoIncludeWhen (e.g. single-disc movies on CSR). */
+/** UI selection plus hidden packs matched by autoIncludeWhen. */
 function effectiveAddonIds() {
 	const ids = selectedAddonIds();
 	const baseId = selectedBaseId();
@@ -876,8 +874,6 @@ function autoIncludeMatches(addon, baseId, selectedIds) {
 	if (prefix) {
 		// Any selected id with the prefix (CSR+ packs expanded from csr-plus-all).
 		if (selectedIds.some((id) => String(id).startsWith(prefix))) return false;
-		// CSR+ master toggle: suppress even if this disc has no pack layer in the list
-		// (e.g. single-disc manip-movies must not stack with CSR+).
 		if (prefix === 'csr-plus-scene-' && isCsrPlusAllChecked()) {
 			return false;
 		}
@@ -1307,8 +1303,8 @@ function renderCsrPlusToggle(prevSelected) {
 		const a = entryById(id);
 		return a && addonCompatibleWithBase(a, baseId);
 	});
-	// Base doesn't support CSR+ scene trims at all (e.g. CSR+ single-disc,
-	// Highwind, Unmodified) — don't show a disabled/confusing checkbox.
+	// Scene trims are cut against CSR, so no other base can take them.
+	// Hide the toggle rather than show a permanently disabled checkbox.
 	if (!baseOk) return null;
 
 	const discIds = csrPlusBundleIdsForDisc(disc);
@@ -1567,37 +1563,13 @@ async function onFileChosen(file) {
 /**
  * Hand-curated stack order — id prefixes, first match wins, earlier applies
  * first. Layers overwrite each other at raw byte offsets, so this order is
- * correctness, not cosmetics. Add a prefix when a new family needs to land at a
- * specific point; unlisted mods apply last, sorted by id.
+ * correctness, not cosmetics.
  *
- * Several ids below are not currently published. They stay listed so a
- * republish slots back into the right place instead of falling to the end.
+ * CSR+ scene trims must land before the stackable mods that sit on top of
+ * them. Everything unlisted (encounters, fanfare) applies afterwards, sorted
+ * by id. Add a prefix here only when a new family needs a fixed position.
  */
 const APPLY_ORDER = [
-	// CSR manip-movies first: they alias movie LBAs (JAIROFAL/CANONON) that
-	// later single-disc layers then reference.
-	'single-disc-csr-manip-movies',
-	// Hidden path + CSR Disc 2 field-ref autos, before the player-facing core.
-	'single-disc-on-csr-ref-',
-	'single-disc-on-csr-v0.1.26',
-	'single-disc-on-csr-v0.1.35',
-	'path-engine',
-	// Single-disc core, part 1 then parts 2-10 in exact numeric order. These
-	// carry the actual field/story changes and must precede everything below,
-	// or the later layers patch fields that have since moved.
-	'single-disc-on-csr',
-	'single-disc-v0.1.2-part2',
-	'single-disc-v0.1.2-part3',
-	'single-disc-v0.1.2-part4',
-	'single-disc-v0.1.2-part5',
-	'single-disc-v0.1.2-part6',
-	'single-disc-v0.1.2-part7',
-	'single-disc-v0.1.2-part8',
-	'single-disc-v0.1.2-part9',
-	'single-disc-v0.1.2-part10',
-	// Ending credits after the single-disc core.
-	'single-disc-endings',
-	// CSR+ scene trims last.
 	'csr-plus-scene-',
 	'csr-plus-',
 ];
@@ -1707,7 +1679,7 @@ async function applySelection() {
 
 		setBuildStatus('apply', 'Merging everything onto your disc image…');
 		await yieldToUi();
-		// Chunked async apply — large single-disc/CSR+ layers can be 90k+ records.
+		// Chunked async apply — large CSR+ layers can be 90k+ records.
 		// Yields inside applyLayers so the tab stays responsive (no end-event wait).
 		const out = await applyLayers(sourceBytes, layers, {
 			onLayer: (index, total) => {

@@ -70,8 +70,8 @@ export async function applyLayer(imageBytes, layer, opts = {}) {
 	// Grown images: trailing zeros may match shorter original pad and be omitted
 	// from records. Honor stats.modifiedBytes ONLY when this layer was built
 	// against an image the same size as the one we are patching.
-	// Cross-baseline packs (e.g. CSR+ disc1 stamped from a Single-disc-sized
-	// work bin) must not inflate plain CSR/pristine with empty trailing pad.
+	// Cross-baseline packs (e.g. a CSR+ disc 1 layer stamped from an oversized
+	// whole-game work bin) must not inflate plain CSR/pristine with empty pad.
 	const original = layer.stats && Number(layer.stats.originalBytes);
 	const target = layer.stats && Number(layer.stats.modifiedBytes);
 	const baselineLen = imageBytes.length;

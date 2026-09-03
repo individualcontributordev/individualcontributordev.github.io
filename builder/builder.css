@@ -433,7 +433,7 @@ input[type="file"] {
 	opacity: 0.85;
 }
 
-/* Secondary line under free checkboxes (e.g. Single-disc whole-game hint) */
+/* Secondary line under a checkbox: manifest `hint`, or why the CSR+ toggle is off */
 .choice-hint {
 	display: block;
 	margin-top: 0.2rem;
