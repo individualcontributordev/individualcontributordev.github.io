@@ -39,6 +39,10 @@ main {
 }
 
 /* Builder panels slightly tighter than site default */
+#panel-base {
+    min-height: 270px;
+}
+
 .panel {
 	padding: 14px 16px;
 	margin-bottom: 10px;
