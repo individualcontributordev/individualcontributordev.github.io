@@ -1072,6 +1072,10 @@ function exclusiveGroupTitle(addons) {
 	return addons[0]?.exclusiveGroup || 'Option';
 }
 
+function isEncounterRateGroup(groupId) {
+	return groupId === 'field-encounter-rate' || groupId === 'world-encounter-rate';
+}
+
 /** Semver from pack.version, trailing " vX.Y.Z" in name, or id suffix -vX.Y.Z. */
 function addonVersion(addon) {
 	if (!addon) return '';
@@ -1150,7 +1154,9 @@ function withBetaText(label, addon) {
 function updateAddonGroupTooltip(select) {
 	if (!select) return;
 	if (!select.value) {
-		select.title = 'Do not change this.';
+		select.title = isEncounterRateGroup(select.dataset.group)
+			? 'Original game encounter rate; no encounter mod is applied.'
+			: 'Do not change this.';
 		return;
 	}
 	const addon = manifest?.addons.find((a) => a.id === select.value);
@@ -1185,8 +1191,11 @@ function renderAddonGroup(groupId, addons, prevSelected) {
 
 	const off = document.createElement('option');
 	off.value = '';
-	off.textContent = 'None';
-	off.title = 'Do not change this.';
+	const encounterRates = isEncounterRateGroup(groupId);
+	off.textContent = encounterRates ? 'Vanilla' : 'None';
+	off.title = encounterRates
+		? 'Original game encounter rate; no encounter mod is applied.'
+		: 'Do not change this.';
 	select.appendChild(off);
 
 	const ids = new Set(baseCompatibleAddons.map((a) => a.id));
@@ -1209,6 +1218,13 @@ function renderAddonGroup(groupId, addons, prevSelected) {
 
 	wrap.appendChild(label);
 	wrap.appendChild(select);
+	if (encounterRates) {
+		const note = document.createElement('p');
+		note.className = 'addon-group-note';
+		note.textContent =
+			'Vanilla uses the original game. Half and Double scale each area’s normal encounter threshold.';
+		wrap.appendChild(note);
+	}
 	updateAddonGroupTooltip(select);
 	return wrap;
 }

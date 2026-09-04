@@ -260,6 +260,14 @@ select[name="addon-group"] {
 	white-space: nowrap;
 }
 
+.addon-group-note {
+	max-width: 28rem;
+	margin: 5px 0 0;
+	color: var(--ff7-muted);
+	font-size: 0.7rem;
+	line-height: 1.45;
+}
+
 /* Single line for labels since we prevent wrapping */
 .layer-list .addon-group-label {
 	min-height: 1.3em;
