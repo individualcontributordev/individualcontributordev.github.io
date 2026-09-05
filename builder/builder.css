@@ -161,6 +161,18 @@ main {
 	letter-spacing: 1px;
 }
 
+/* One line under the base dropdown, hidden when a base carries no blurb. */
+.base-tagline {
+	margin: 8px 0 0;
+	color: var(--ff7-muted);
+	font-size: 0.7rem;
+	line-height: 1.45;
+}
+
+.base-tagline:empty {
+	display: none;
+}
+
 button, .file-btn {
 	appearance: none;
 	font-family: "DogicaPixelBold", Arial, sans-serif;

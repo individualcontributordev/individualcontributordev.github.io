@@ -946,6 +946,23 @@ function baseDisabledReason(base, disc) {
 	return null;
 }
 
+/**
+ * First sentence of a base's blurb. The dropdown wants one line, and manifest
+ * blurbs run to several sentences of caveats about movies and disc layout.
+ */
+function baseTagline(base) {
+	const blurb = String(base?.blurb || '').trim();
+	if (!blurb) return '';
+	const firstSentence = blurb.match(/^[^.!?]+[.!?]/);
+	return (firstSentence ? firstSentence[0] : blurb).trim();
+}
+
+function updateBaseTagline() {
+	const el = document.getElementById('base-tagline');
+	if (!el || !manifest) return;
+	el.textContent = baseTagline(manifest.bases.find((b) => b.id === selectedBaseId()));
+}
+
 function renderBases() {
 	if (!manifest || !baseListEl) return;
 	const prev = selectedBaseId();
@@ -978,7 +995,13 @@ function renderBases() {
 		select.value = ids[0] || 'clean';
 	}
 
+	const tagline = document.createElement('p');
+	tagline.id = 'base-tagline';
+	tagline.className = 'base-tagline';
+
 	baseListEl.appendChild(select);
+	baseListEl.appendChild(tagline);
+	updateBaseTagline();
 }
 
 function addonCompatibleWithBase(addon, baseId) {
@@ -1463,7 +1486,6 @@ function updatePlan() {
 	const packs = selected.filter((a) => layerKind(a) === 'pack');
 	const mods = selected.filter((a) => layerKind(a) === 'mod');
 	const steps = [];
-	steps.push(sourceBytes ? 'Input: ' + sourceBytes.length + ' bytes' : 'Input: (none yet)');
 	steps.push(disc ? 'Disc: ' + disc + ' (auto)' : 'Disc: (not detected)');
 	steps.push('Base Experience: ' + (base ? base.name : baseId));
 	if (csrPlusBundleIds().length) {
@@ -1492,6 +1514,7 @@ function renderManifest() {
 	if (modListEl) modListEl.innerHTML = '';
 	baseListEl.addEventListener('change', (ev) => {
 		if (ev.target && ev.target.id === 'base-select') {
+			updateBaseTagline();
 			renderAddons();
 			updatePlan();
 		}
