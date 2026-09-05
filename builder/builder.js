@@ -946,13 +946,6 @@ function baseDisabledReason(base, disc) {
 	return null;
 }
 
-function updateBaseBlurb() {
-	const blurbEl = document.getElementById('base-blurb');
-	if (!blurbEl || !manifest) return;
-	const base = manifest.bases.find((b) => b.id === selectedBaseId());
-	blurbEl.textContent = base?.blurb || '';
-}
-
 function renderBases() {
 	if (!manifest || !baseListEl) return;
 	const prev = selectedBaseId();
@@ -985,15 +978,7 @@ function renderBases() {
 		select.value = ids[0] || 'clean';
 	}
 
-	const blurb = document.createElement('p');
-	blurb.id = 'base-blurb';
-	blurb.className = 'explainer';
-	blurb.style.marginTop = '10px';
-	blurb.style.marginBottom = '0';
-
 	baseListEl.appendChild(select);
-	baseListEl.appendChild(blurb);
-	updateBaseBlurb();
 }
 
 function addonCompatibleWithBase(addon, baseId) {
@@ -1082,12 +1067,6 @@ function isEncounterRateGroup(groupId) {
 // Shared so the option and its tooltip cannot drift apart. "Unmodified" rather
 // than "Vanilla" because a Vanilla Enc Rate pack ships in the same dropdown.
 const NO_ENCOUNTER_MOD_LABEL = 'Unmodified';
-const NO_ENCOUNTER_MOD_TITLE =
-	'The game’s own encounter rate; no encounter mod is applied.';
-const ENCOUNTER_GROUP_NOTE =
-	'Rates compare with Unmodified, whose own rate builds up between fights and ' +
-	'can be routed. Every mod here rolls fresh on each check instead, so none of ' +
-	'them can be.';
 
 /** Semver from pack.version, trailing " vX.Y.Z" in name, or id suffix -vX.Y.Z. */
 function addonVersion(addon) {
@@ -1167,15 +1146,11 @@ function withBetaText(label, addon) {
 function updateAddonGroupTooltip(select) {
 	if (!select) return;
 	if (!select.value) {
-		select.title = isEncounterRateGroup(select.dataset.group)
-			? NO_ENCOUNTER_MOD_TITLE
-			: 'Do not change this.';
+		select.title = '';
 		return;
 	}
 	const addon = manifest?.addons.find((a) => a.id === select.value);
-	const beta = betaTitleSuffix(addon);
-	const blurb = addon?.blurb || '';
-	select.title = [beta, blurb].filter(Boolean).join('\n') || '';
+	select.title = betaTitleSuffix(addon);
 }
 
 function renderAddonGroup(groupId, addons, prevSelected) {
@@ -1206,7 +1181,6 @@ function renderAddonGroup(groupId, addons, prevSelected) {
 	off.value = '';
 	const encounterRates = isEncounterRateGroup(groupId);
 	off.textContent = encounterRates ? NO_ENCOUNTER_MOD_LABEL : 'None';
-	off.title = encounterRates ? NO_ENCOUNTER_MOD_TITLE : 'Do not change this.';
 	select.appendChild(off);
 
 	const ids = new Set(baseCompatibleAddons.map((a) => a.id));
@@ -1214,8 +1188,7 @@ function renderAddonGroup(groupId, addons, prevSelected) {
 		const opt = document.createElement('option');
 		opt.value = addon.id;
 		opt.textContent = withBetaText(exclusiveOptionLabel(addon), addon);
-		const beta = betaTitleSuffix(addon);
-		opt.title = [beta, addon.blurb || ''].filter(Boolean).join('\n') || '';
+		opt.title = betaTitleSuffix(addon);
 		opt.disabled = !addonHasLayerForDisc(addon, disc);
 		select.appendChild(opt);
 	}
@@ -1229,12 +1202,6 @@ function renderAddonGroup(groupId, addons, prevSelected) {
 
 	wrap.appendChild(label);
 	wrap.appendChild(select);
-	if (encounterRates) {
-		const note = document.createElement('p');
-		note.className = 'addon-group-note';
-		note.textContent = ENCOUNTER_GROUP_NOTE;
-		wrap.appendChild(note);
-	}
 	updateAddonGroupTooltip(select);
 	return wrap;
 }
@@ -1257,9 +1224,7 @@ function renderFreeAddon(addon, prevSelected) {
 	if (!compatible) {
 		label.classList.add('is-disabled');
 	}
-	// Tooltip = what the mod does (blurb) + BETA note when flagged.
-	const betaTip = betaTitleSuffix(addon);
-	label.title = [betaTip, addon.blurb || addon.hint || ''].filter(Boolean).join('\n') || '';
+	label.title = betaTitleSuffix(addon);
 
 	const plainName = String(addon.name || addon.id || '').trim();
 	const ver = addonVersion(addon);
@@ -1276,7 +1241,7 @@ function renderFreeAddon(addon, prevSelected) {
 	// Title on its own line; version + BETA on the line below.
 	label.innerHTML = `
 		<input type="checkbox" name="addon" value="${addon.id}" ${checked} ${disabled} />
-		<span class="choice-body"><span class="choice-title"><span class="choice-title-text">${plainName}</span></span>${metaRow}${addon.hint ? `<span class="choice-hint">${addon.hint}</span>` : ''}</span>
+		<span class="choice-body"><span class="choice-title"><span class="choice-title-text">${plainName}</span></span>${metaRow}</span>
 	`;
 	return label;
 }
@@ -1301,22 +1266,6 @@ function appendAddonBucket(container, bucket, prevSelected) {
 		container.appendChild(renderFreeAddon(addon, prevSelected));
 	}
 }
-
-function updateSectionExplainers(baseId) {
-	const modsEl = document.getElementById('explainer-mods');
-	const baseEl = document.getElementById('explainer-base');
-	if (baseEl) {
-		baseEl.textContent =
-			manifest.explainer?.base ||
-			'Base experience — only one applies (Unmodified, CSR, CSR+, Highwind).';
-	}
-	if (modsEl) {
-		modsEl.textContent =
-			manifest.explainer?.mods ||
-			'Optional mods. Conflicting choices share a dropdown (None = skip).';
-	}
-}
-
 
 /** One CSR+ checkbox: all scene trims for the loaded disc, or none. */
 function renderCsrPlusToggle(prevSelected) {
@@ -1408,16 +1357,6 @@ function renderCsrPlusToggle(prevSelected) {
 		metaRow.appendChild(badge);
 	}
 	if (metaRow.childNodes.length) span.appendChild(metaRow);
-	const hint = document.createElement('span');
-	hint.className = 'choice-hint';
-	if (!baseOk) {
-		hint.textContent = 'Requires CSR. Turns every listed scene trim on for this disc.';
-	} else if (disc != null && !discIds.length) {
-		hint.textContent = 'No extra scene trims on this disc.';
-	} else {
-		hint.textContent = 'Every listed scene trim for this disc, or none.';
-	}
-	span.appendChild(hint);
 	label.appendChild(input);
 	label.appendChild(span);
 	return label;
@@ -1462,7 +1401,6 @@ function renderLayerList(kind) {
 }
 
 function renderAddons() {
-	updateSectionExplainers(selectedBaseId());
 	renderLayerList('mod');
 }
 
@@ -1554,7 +1492,6 @@ function renderManifest() {
 	if (modListEl) modListEl.innerHTML = '';
 	baseListEl.addEventListener('change', (ev) => {
 		if (ev.target && ev.target.id === 'base-select') {
-			updateBaseBlurb();
 			renderAddons();
 			updatePlan();
 		}
