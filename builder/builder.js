@@ -1192,9 +1192,9 @@ function renderAddonGroup(groupId, addons, prevSelected) {
 	const off = document.createElement('option');
 	off.value = '';
 	const encounterRates = isEncounterRateGroup(groupId);
-	off.textContent = encounterRates ? 'Vanilla' : 'None';
+	off.textContent = encounterRates ? 'Unmodified' : 'None';
 	off.title = encounterRates
-		? 'Original game encounter rate; no encounter mod is applied.'
+		? 'The game’s own encounter rate; no encounter mod is applied.'
 		: 'Do not change this.';
 	select.appendChild(off);
 
@@ -1222,7 +1222,8 @@ function renderAddonGroup(groupId, addons, prevSelected) {
 		const note = document.createElement('p');
 		note.className = 'addon-group-note';
 		note.textContent =
-			'Vanilla uses the original game. Half and Double scale each area’s normal encounter threshold.';
+			'Unmodified keeps the game’s own rate, which builds up between fights and can be routed. ' +
+			'The rest roll fresh on every check, so they cannot be.';
 		wrap.appendChild(note);
 	}
 	updateAddonGroupTooltip(select);
