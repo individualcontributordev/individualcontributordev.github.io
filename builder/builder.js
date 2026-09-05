@@ -88,12 +88,15 @@ function shortBaseToken(baseId) {
 function shortAddonToken(addon) {
 	const id = String(addon?.id || '');
 	if (id.includes('manip-movies') || id.includes('csr-movies')) return 'mov';
+	// Pack ids end in the rate (field-encounter-on-csr-plus-50). They used to
+	// carry a version too, and matching that dead form named every rate 'fenc',
+	// so a Half and a Double build downloaded under the same filename.
 	if (id.includes('field-encounter')) {
-		const m = id.match(/-(\d+)-v/);
+		const m = id.match(/-(\d+)$/);
 		return 'f' + (m ? m[1] : 'enc');
 	}
 	if (id.includes('world-encounter')) {
-		const m = id.match(/-(\d+)-v/);
+		const m = id.match(/-(\d+)$/);
 		return 'w' + (m ? m[1] : 'enc');
 	}
 	if (id.includes('csr-plus') || layerKind(addon) === 'pack') return 'cplus';
@@ -1076,6 +1079,16 @@ function isEncounterRateGroup(groupId) {
 	return groupId === 'field-encounter-rate' || groupId === 'world-encounter-rate';
 }
 
+// Shared so the option and its tooltip cannot drift apart. "Unmodified" rather
+// than "Vanilla" because a Vanilla Enc Rate pack ships in the same dropdown.
+const NO_ENCOUNTER_MOD_LABEL = 'Unmodified';
+const NO_ENCOUNTER_MOD_TITLE =
+	'The game’s own encounter rate; no encounter mod is applied.';
+const ENCOUNTER_GROUP_NOTE =
+	'Rates compare with Unmodified, whose own rate builds up between fights and ' +
+	'can be routed. Every mod here rolls fresh on each check instead, so none of ' +
+	'them can be.';
+
 /** Semver from pack.version, trailing " vX.Y.Z" in name, or id suffix -vX.Y.Z. */
 function addonVersion(addon) {
 	if (!addon) return '';
@@ -1155,7 +1168,7 @@ function updateAddonGroupTooltip(select) {
 	if (!select) return;
 	if (!select.value) {
 		select.title = isEncounterRateGroup(select.dataset.group)
-			? 'Original game encounter rate; no encounter mod is applied.'
+			? NO_ENCOUNTER_MOD_TITLE
 			: 'Do not change this.';
 		return;
 	}
@@ -1192,10 +1205,8 @@ function renderAddonGroup(groupId, addons, prevSelected) {
 	const off = document.createElement('option');
 	off.value = '';
 	const encounterRates = isEncounterRateGroup(groupId);
-	off.textContent = encounterRates ? 'Unmodified' : 'None';
-	off.title = encounterRates
-		? 'The game’s own encounter rate; no encounter mod is applied.'
-		: 'Do not change this.';
+	off.textContent = encounterRates ? NO_ENCOUNTER_MOD_LABEL : 'None';
+	off.title = encounterRates ? NO_ENCOUNTER_MOD_TITLE : 'Do not change this.';
 	select.appendChild(off);
 
 	const ids = new Set(baseCompatibleAddons.map((a) => a.id));
@@ -1221,9 +1232,7 @@ function renderAddonGroup(groupId, addons, prevSelected) {
 	if (encounterRates) {
 		const note = document.createElement('p');
 		note.className = 'addon-group-note';
-		note.textContent =
-			'Unmodified keeps the game’s own rate, which builds up between fights and can be routed. ' +
-			'The rest roll fresh on every check, so they cannot be.';
+		note.textContent = ENCOUNTER_GROUP_NOTE;
 		wrap.appendChild(note);
 	}
 	updateAddonGroupTooltip(select);
