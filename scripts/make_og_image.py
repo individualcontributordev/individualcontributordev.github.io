@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render og-builder.png, the 1200x630 social card for every page on the site.
+"""Render og-builder-1.png, the 1200x630 social card for every page on the site.
 
   python3 scripts/make_og_image.py
 
@@ -20,7 +20,7 @@ from pathlib import Path
 from PIL import Image, ImageChops, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parent.parent
-OUTPUT = ROOT / "og-builder.png"
+OUTPUT = ROOT / "og-builder-1.png"
 
 WIDTH, HEIGHT = 1200, 630
 
