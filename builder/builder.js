@@ -1493,7 +1493,7 @@ function updatePlan() {
 		steps.push(packs.length ? 'CSR+ scene trims: on' : 'CSR+ scene trims: off');
 	}
 	if (mods.length) {
-		mods.forEach((a, i) => steps.push('Mod ' + (i + 1) + ': ' + freeAddonLabel(a)));
+		mods.forEach((a, i) => steps.push('Mod ' + (i + 1) + ': ' + reportModLabel(a)));
 	} else {
 		steps.push('Mods: (none)');
 	}
