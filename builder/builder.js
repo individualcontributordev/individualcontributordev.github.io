@@ -80,6 +80,7 @@ function yieldToUi() {
 function shortBaseToken(baseId) {
 	const id = String(baseId || 'clean');
 	if (id === 'clean') return 'clean';
+	if (id.startsWith('csr-plus')) return 'plus';
 	if (id.startsWith('csr')) return 'csr';
 	if (id.startsWith('highwind')) return 'hw';
 	return id.replace(/[^a-z0-9]+/gi, '').slice(0, 8).toLowerCase() || 'base';
@@ -99,7 +100,7 @@ function shortAddonToken(addon) {
 		const m = id.match(/-(\d+)$/);
 		return 'w' + (m ? m[1] : 'enc');
 	}
-	if (id.includes('csr-plus') || layerKind(addon) === 'pack') return 'cplus';
+	if (id.includes('csr-plus') || layerKind(addon) === 'pack') return 'plus';
 	const compact = id.replace(/[^a-z0-9]+/gi, '').slice(0, 6).toLowerCase();
 	return compact || 'mod';
 }
@@ -1746,66 +1747,54 @@ async function applySelection() {
 	}
 }
 
-function buildAppliedReport({ disc, base, baseId, addons, edcFixed, outputZip }) {
+// "Name -- Option (on CSR+)" -> "Name vX.Y.Z - Option"
+function reportModLabel(addon) {
+	const full = String(addon.name || addon.id || '').trim();
+	const [head, ...rest] = full.split(/\s+--\s+/);
+	const strip = (t) => t.replace(/\s*\(on [^)]*\)\s*$/i, '').trim();
+	const option = strip(addon.optionLabel || rest.join(' -- '));
+	return withAddonVersion(strip(head), addon) + (option ? ' - ' + option : '');
+}
+
+function buildAppliedReport({ disc, base, baseId, addons, outputZip }) {
 	const baseName = !base || baseId === 'clean' || !layerUrlFor(base, disc)
 		? 'Unmodified (retail)'
 		: withAddonVersion(base.name || baseId, base);
 
-	// Only list what applies to this disc image.
 	const applied = (addons || []).filter((a) => addonHasLayerForDisc(a, disc));
-
-	const lines = [
-		'Final Fantasy VII — IndividualContributor',
-		'',
-		'Disc: ' + disc + ' (layers for this disc only)',
-		'Base: ' + baseName,
-	];
-	if (outputZip) lines.push('Download: ' + outputZip);
-
 	const packs = applied.filter((a) => layerKind(a) === 'pack');
 	const mods = applied.filter((a) => layerKind(a) === 'mod');
-	if (packs.length) {
-		lines.push('CSR+ on this disc (' + packs.length + ' scene layer(s)):');
-		for (const addon of packs) {
-			const discs = addonDiscKeys(addon).join(',') || String(disc);
-			const label = freeAddonLabel(addon);
-			const idNote = addon.id ? ' (' + addon.id + ')' : '';
-			lines.push('  - ' + label + idNote + ' [disc ' + discs + ']');
-		}
-	} else {
-		lines.push('CSR+: off (or no CSR+ layer for this disc)');
-	}
-	if (mods.length) {
-		lines.push('Mods on this disc:');
-		for (const addon of mods) {
-			const discs = addonDiscKeys(addon).join(',') || String(disc);
-			const discNote =
-				discs && discs !== String(disc) ? ' [discs ' + discs + ']' : '';
-			const label = freeAddonLabel(addon);
-			const idNote = addon.id ? ' (' + addon.id + ')' : '';
-			lines.push('  - ' + label + idNote + discNote);
-		}
-	} else {
-		lines.push('Mods: none');
-	}
 
-	if (edcFixed != null) {
-		lines.push('EDC/ECC sectors repaired: ' + edcFixed);
+	const lines = [
+		'Final Fantasy VII — Disc ' + disc,
+		'',
+		'Base: ' + baseName,
+	];
+	const extras = packs.concat(mods);
+	if (extras.length) {
+		lines.push('Mods included:');
+		for (const addon of extras) lines.push('  - ' + reportModLabel(addon));
+	} else {
+		lines.push('Mods included: none');
 	}
-
+	if (outputZip) lines.push('', 'Built file: ' + outputZip);
 
 	lines.push(
 		'',
-		'Play:',
-		'- Keep the .bin and .cue in the same folder.',
-		'- Open the .cue in DuckStation (or your emulator).',
-		'- Real PS2 (MechaPwn): burn from the .cue as MODE2/2352 DAO (see Modding docs/07-hardware-burn.md).',
-		'- Builder regenerates Mode2 Form1 EDC/ECC on patched sectors after applying layers.',
+		'Emulator (e.g. DuckStation):',
+		'- Unzip, keep the .bin and .cue together, then open the .cue.',
+		'',
+		'PS2 Slim (soft-modded with MechaPwn):',
+		'- Unzip, keep the .bin and .cue together.',
+		'- Open the .cue in your CD-ROM burning software (e.g. ImgBurn).',
+		'- Burn to a blank CD-R as MODE2/2352, DAO (Disc At Once), at a low speed.',
+		'- Launch the burned disc with MechaPwn: https://github.com/mecharesearch/mechapwn',
 		'',
 		'https://individualcontributor.dev/builder/',
 		''
 	);
-	return lines.join('\n');
+	return lines.join('
+');
 }
 
 async function init() {
