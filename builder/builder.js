@@ -1793,8 +1793,7 @@ function buildAppliedReport({ disc, base, baseId, addons, outputZip }) {
 		'https://individualcontributor.dev/builder/',
 		''
 	);
-	return lines.join('
-');
+	return lines.join('\n');
 }
 
 async function init() {
