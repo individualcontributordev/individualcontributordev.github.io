@@ -1064,6 +1064,14 @@ function partitionAddons(visible) {
 		}
 		groups.get(groupId).push(addon);
 	}
+	// A group with one option left (e.g. only "No Encs") is just an on/off mod: use a checkbox.
+	for (const groupId of [...groupOrder]) {
+		const members = groups.get(groupId);
+		if (members.length !== 1) continue;
+		free.push(members[0]);
+		groups.delete(groupId);
+		groupOrder.splice(groupOrder.indexOf(groupId), 1);
+	}
 	for (const groupId of groupOrder) {
 		// Optional numeric `rate` is only a sort key when packs provide it.
 		groups.get(groupId).sort(
@@ -1250,7 +1258,10 @@ function renderFreeAddon(addon, prevSelected) {
 	}
 	label.title = betaTitleSuffix(addon);
 
-	const plainName = String(addon.name || addon.id || '').trim();
+	const plainName =
+		addon.exclusiveGroup && addon.groupLabel && addon.optionLabel
+			? `${addon.groupLabel}: ${addon.optionLabel}`
+			: String(addon.name || addon.id || '').trim();
 	const ver = addonVersion(addon);
 	const verBadge = ver
 		? '<span class="addon-version-badge" title="Pack version">v' + ver + '</span>'
