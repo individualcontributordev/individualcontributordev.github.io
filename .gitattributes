@@ -1,0 +1,13 @@
+# One rule for every platform: text is LF in the repo AND in the working tree,
+# whatever core.autocrlf says. Git for Windows ships autocrlf=true, which
+# otherwise checks files out as CRLF and leaves the index thinking they are clean.
+# Published JSON is hashed byte-for-byte (discDigests) and served verbatim by
+# Pages, so a CRLF copy no longer matches its digest.
+* text=auto eol=lf
+
+*.png binary
+*.gz binary
+*.ttf binary
+*.mp3 binary
+*.bin binary
+*.mim binary
