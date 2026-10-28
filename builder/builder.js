@@ -646,7 +646,6 @@ async function loadMergedManifest(localPath) {
 	};
 }
 
-/** Stable cache key piece: pack id@version (version bumps invalidate). */
 /** Published sha256 of one disc's layer file, or '' when the pack predates them. */
 function layerDigestFor(entry, disc) {
 	const map = entry && entry.discDigests;
@@ -655,23 +654,15 @@ function layerDigestFor(entry, disc) {
 }
 
 /**
- * Cache key for a layer body.
- *
- * A digest changes whenever the layer bytes change, so republishing under an
- * unchanged version can no longer resolve to a stale cached body. id@version
- * remains the fallback for packs published before digests, and carries that
- * hazard: fanfare-skip-on-csr-plus once shipped three different bodies as
- * 0.1.6, one of which corrupted BATTLE.X.
+ * Cache key for a layer body: its published sha256, so republishing under an
+ * unchanged version can never resolve to a stale cached body (fanfare-skip-on-
+ * csr-plus once shipped three different bodies as 0.1.6, one of which
+ * corrupted BATTLE.X). No digest means no key, so the layer is not cached.
+ * validate_manifest.py rejects manifests without digests.
  */
 function layerContentKey(entry, disc) {
-	if (!entry) return '';
 	const digest = layerDigestFor(entry, disc);
-	if (digest) return 'sha256:' + digest;
-	const id = String(entry.id || '').trim();
-	const ver = String(entry.version || '').trim();
-	if (id && ver) return id + '@' + ver;
-	if (id) return id;
-	return '';
+	return digest ? 'sha256:' + digest : '';
 }
 
 function validateLayerPayload(layer, url) {
@@ -722,7 +713,7 @@ async function fetchLayerJson(url, digest) {
 async function loadLayerByUrl(url, opts = {}) {
 	if (!url) return null;
 	const contentKey = String(opts.contentKey || '').trim();
-	// IDB only when contentKey is set (pack id@version). Version bumps = new key.
+	// IDB only when contentKey is set (layer sha256). New bytes = new key.
 	// Never cache by URL alone — avoids sticky stale layers if a path is reused.
 	const memKey = contentKey ? contentKey + '\n' + url : 'net:' + url;
 

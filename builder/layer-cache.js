@@ -1,6 +1,6 @@
 /**
  * Persistent layer JSON cache (IndexedDB). Survives hard reload.
- * Keyed by URL + optional content key (pack id@version).
+ * Keyed by URL + optional content key (layer sha256).
  * Manifests are never stored here — always fetch those fresh.
  */
 
@@ -51,15 +51,17 @@ function idbReq(req) {
  */
 export async function getCachedLayer(url, contentKey) {
 	const key = cacheKey(url, contentKey);
+	let db;
 	try {
-		const db = await openDb();
+		db = await openDb();
 		const tx = db.transaction(STORE, 'readonly');
 		const row = await idbReq(tx.objectStore(STORE).get(key));
-		db.close();
 		if (!row || !row.layer || row.layer.format !== 'ic-layer-v1') return null;
 		return { layer: row.layer, key };
 	} catch {
 		return null;
+	} finally {
+		db?.close();
 	}
 }
 
@@ -70,8 +72,9 @@ export async function getCachedLayer(url, contentKey) {
  */
 export async function putCachedLayer(url, contentKey, layer) {
 	const key = cacheKey(url, contentKey);
+	let db;
 	try {
-		const db = await openDb();
+		db = await openDb();
 		const tx = db.transaction(STORE, 'readwrite');
 		const store = tx.objectStore(STORE);
 		await idbReq(
@@ -93,36 +96,39 @@ export async function putCachedLayer(url, contentKey, layer) {
 			tx.oncomplete = () => resolve();
 			tx.onerror = () => reject(tx.error);
 		});
-		db.close();
 	} catch {
 		// ignore quota / private mode
+	} finally {
+		db?.close();
 	}
 }
 
 /** @returns {Promise<{ entries: number }>} */
 export async function clearLayerCache() {
+	let db;
 	try {
-		const db = await openDb();
+		db = await openDb();
 		const tx = db.transaction(STORE, 'readwrite');
 		await idbReq(tx.objectStore(STORE).clear());
 		await new Promise((resolve, reject) => {
 			tx.oncomplete = () => resolve();
 			tx.onerror = () => reject(tx.error);
 		});
-		db.close();
 	} catch {
 		// ignore
+	} finally {
+		db?.close();
 	}
 	return { entries: 0 };
 }
 
 /** @returns {Promise<{ entries: number, bytesEstimate: number }>} */
 export async function layerCacheStats() {
+	let db;
 	try {
-		const db = await openDb();
+		db = await openDb();
 		const tx = db.transaction(STORE, 'readonly');
 		const rows = await idbReq(tx.objectStore(STORE).getAll());
-		db.close();
 		const list = Array.isArray(rows) ? rows : [];
 		// rough JSON size
 		let bytes = 0;
@@ -136,12 +142,14 @@ export async function layerCacheStats() {
 		return { entries: list.length, bytesEstimate: bytes };
 	} catch {
 		return { entries: 0, bytesEstimate: 0 };
+	} finally {
+		db?.close();
 	}
 }
 
 /**
  * Drop cached rows whose contentKey is not in the allowed set.
- * Pass every current pack id@version from the freshly loaded manifest.
+ * Pass every current layer content key from the freshly loaded manifest.
  * Entries without contentKey (legacy) are always dropped.
  * @param {Iterable<string>} allowedContentKeys
  * @returns {Promise<{ kept: number, removed: number }>}
@@ -152,8 +160,9 @@ export async function pruneLayerCache(allowedContentKeys) {
 	);
 	let kept = 0;
 	let removed = 0;
+	let db;
 	try {
-		const db = await openDb();
+		db = await openDb();
 		const tx = db.transaction(STORE, 'readwrite');
 		const store = tx.objectStore(STORE);
 		const rows = await idbReq(store.getAll());
@@ -171,9 +180,10 @@ export async function pruneLayerCache(allowedContentKeys) {
 			tx.oncomplete = () => resolve();
 			tx.onerror = () => reject(tx.error);
 		});
-		db.close();
 	} catch {
 		// ignore
+	} finally {
+		db?.close();
 	}
 	return { kept, removed };
 }

@@ -42,6 +42,7 @@ function yieldToUi() {
  *
  * opts.recordChunk — records between yields (default 4000)
  * opts.onProgress — optional (done, total) callback
+ * opts.inPlace — write into imageBytes when the size does not change
  */
 export async function applyLayer(imageBytes, layer, opts = {}) {
 	validateLayer(layer);
@@ -90,8 +91,13 @@ export async function applyLayer(imageBytes, layer, opts = {}) {
 		size += SECTOR - (size % SECTOR);
 	}
 
-	const out = new Uint8Array(size);
-	out.set(imageBytes, 0);
+	// inPlace: caller owns imageBytes (not the user's source file) and no growth
+	// is needed, so skip the ~700 MB copy.
+	let out = imageBytes;
+	if (!(opts.inPlace && size === baselineLen)) {
+		out = new Uint8Array(size);
+		out.set(imageBytes, 0);
+	}
 	for (let i = 0; i < parsed.length; i++) {
 		const { offset, data } = parsed[i];
 		out.set(data, offset);
@@ -109,12 +115,23 @@ export async function applyLayer(imageBytes, layer, opts = {}) {
  * opts.onLayer — optional (index, total, layer) before each layer
  */
 export async function applyLayers(imageBytes, layers, opts = {}) {
+	// Layers carry no expected-before bytes, so the length is the only cheap
+	// guard against patching the wrong disc (other disc number, other dump).
+	const expected = layers[0]?.stats?.originalBytes;
+	if (expected != null && Number.isFinite(Number(expected)) && Number(expected) !== imageBytes.length) {
+		throw new Error(
+			`This disc image is ${imageBytes.length} bytes but this pack expects ${Number(expected)} bytes. ` +
+				'Pick the unmodified NTSC-U Final Fantasy VII image for the selected disc.'
+		);
+	}
 	let current = imageBytes;
 	const total = layers.length;
 	for (let i = 0; i < total; i++) {
 		const layer = layers[i];
 		if (opts.onLayer) opts.onLayer(i, total, layer);
-		current = await applyLayer(current, layer);
+		// The first layer copies, so the user's source stays pristine for the EDC
+		// repair diff; every later layer works on that private copy.
+		current = await applyLayer(current, layer, { inPlace: i > 0 });
 	}
 	return current;
 }
