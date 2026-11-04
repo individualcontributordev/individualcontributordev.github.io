@@ -1702,11 +1702,13 @@ async function applySelection() {
 			orderedAddons
 		);
 
+		const commits = await layerCommits([base, ...orderedAddons], disc);
 		const appliedText = buildAppliedReport({
 			disc,
 			base,
 			baseId,
 			addons: orderedAddons,
+			commits,
 			edcFixed: edcStats.fixed,
 			outputZip: zipName,
 		});
@@ -1758,10 +1760,40 @@ function reportModLabel(addon) {
 	return withAddonVersion(strip(head), addon) + (option ? ' - ' + option : '');
 }
 
-function buildAppliedReport({ disc, base, baseId, addons, outputZip }) {
+/**
+ * Short hash of the latest commit touching each entry's layer file, so a report
+ * pins the exact published bytes. Layer URLs look like
+ * https://<site>/<repo>/builder/<pack>/layers/discN.layer.json (Pages mirror of
+ * the individualcontributordev/<repo> GitHub repo). Best effort: a failed
+ * lookup (offline, API rate limit) leaves the hash out rather than failing the build.
+ */
+async function layerCommits(entries, disc) {
+	const commits = new Map();
+	await Promise.all(
+		entries.filter(Boolean).map(async (entry) => {
+			const url = layerUrlFor(entry, disc);
+			if (!url) return;
+			try {
+				const [repo, ...path] = new URL(url).pathname.split('/').filter(Boolean);
+				const info = await fetchLatestCommit(
+					'individualcontributordev/' + repo,
+					path.join('/')
+				);
+				commits.set(entry, info.sha);
+			} catch (err) {
+				console.warn('commit lookup', entry.id, err);
+			}
+		})
+	);
+	return commits;
+}
+
+function buildAppliedReport({ disc, base, baseId, addons, outputZip, commits = new Map() }) {
+	const withSha = (label, entry) =>
+		commits.has(entry) ? label + ' (' + commits.get(entry) + ')' : label;
 	const baseName = !base || baseId === 'clean' || !layerUrlFor(base, disc)
 		? 'Unmodified (retail)'
-		: withAddonVersion(base.name || baseId, base);
+		: withSha(withAddonVersion(base.name || baseId, base), base);
 
 	const applied = (addons || []).filter((a) => addonHasLayerForDisc(a, disc));
 	const packs = applied.filter((a) => layerKind(a) === 'pack');
@@ -1775,7 +1807,7 @@ function buildAppliedReport({ disc, base, baseId, addons, outputZip }) {
 	const extras = packs.concat(mods);
 	if (extras.length) {
 		lines.push('Mods included:');
-		for (const addon of extras) lines.push('  - ' + reportModLabel(addon));
+		for (const addon of extras) lines.push('  - ' + withSha(reportModLabel(addon), addon));
 	} else {
 		lines.push('Mods included: none');
 	}
