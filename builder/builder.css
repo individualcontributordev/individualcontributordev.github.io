@@ -81,6 +81,43 @@ main {
 .choice:last-child { margin-bottom: 0; }
 
 /*
+ * Selected mods light up like a highlighted FF7 menu row: cyan window border,
+ * brighter blue fill, white title. Unselected rows stay dim so the contrast
+ * reads at a glance. Border is always 2px (transparent when off) so toggling
+ * never shifts the layout.
+ */
+.choice {
+	padding: 8px 10px;
+	border: 2px solid rgba(255, 255, 255, 0.12);
+	border-radius: 6px;
+	background: rgba(0, 0, 40, 0.35);
+	transition: background-color 0.12s, border-color 0.12s, box-shadow 0.12s;
+}
+
+.choice .choice-title-text {
+	color: #aab6d0;
+}
+
+.choice:not(.is-disabled):hover {
+	border-color: rgba(0, 230, 230, 0.5);
+}
+
+.choice:has(input[type="checkbox"]:checked) {
+	border-color: var(--ff7-link);
+	background: linear-gradient(160deg, #1f66d6 20%, #002a80);
+	box-shadow: 0 0 8px rgba(0, 230, 230, 0.55), inset 0 0 6px rgba(255, 255, 255, 0.18);
+}
+
+.choice:has(input[type="checkbox"]:checked) .choice-title-text {
+	color: #fff;
+	text-shadow: 1px 1px 0 #000;
+}
+
+.choice:has(input[type="checkbox"]:checked) input[type="checkbox"] {
+	filter: drop-shadow(0 0 4px rgba(255, 60, 60, 0.95));
+}
+
+/*
  * Add-on toggles are the FF7 materia socket sprite instead of a native
  * checkbox: empty socket when off, glowing red orb when on. Both PNGs are
  * native 11x12 game pixels drawn at 2x, so image-rendering must stay pixelated.
