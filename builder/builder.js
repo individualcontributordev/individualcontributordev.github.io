@@ -909,6 +909,7 @@ function rememberImage(bytes, label) {
 	fileLabel.textContent = label;
 
 	const hit = detectFf7Disc(bytes);
+	panelSourceEl.classList.toggle('is-loaded', !!hit);
 	if (!hit) {
 		detectedDisc = null;
 		setDiscInfo(

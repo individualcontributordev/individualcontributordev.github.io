@@ -81,17 +81,16 @@ main {
 .choice:last-child { margin-bottom: 0; }
 
 /*
- * Selected mods light up like a highlighted FF7 menu row: cyan window border,
- * brighter blue fill, white title. Unselected rows stay dim so the contrast
- * reads at a glance. Border is always 2px (transparent when off) so toggling
- * never shifts the layout.
+ * Selected things light up like a highlighted FF7 menu row: brighter blue
+ * fill, cyan glow, white text. Unselected rows stay dim so the contrast reads
+ * at a glance. The 5px pixel window border comes from site.css (border-image),
+ * so state is carried by fill + box-shadow only; use background-color/-image,
+ * never the `background` shorthand, which would reset background-clip.
  */
 .choice {
-	padding: 8px 10px;
-	border: 2px solid rgba(255, 255, 255, 0.12);
-	border-radius: 6px;
-	background: rgba(0, 0, 40, 0.35);
-	transition: background-color 0.12s, border-color 0.12s, box-shadow 0.12s;
+	padding: 6px 8px;
+	background-color: rgba(0, 0, 40, 0.35);
+	transition: background-color 0.12s, box-shadow 0.12s;
 }
 
 .choice .choice-title-text {
@@ -99,22 +98,32 @@ main {
 }
 
 .choice:not(.is-disabled):hover {
-	border-color: rgba(0, 230, 230, 0.5);
+	box-shadow: 0 0 6px rgba(0, 230, 230, 0.45);
 }
 
-.choice:has(input[type="checkbox"]:checked) {
-	border-color: var(--ff7-link);
-	background: linear-gradient(160deg, #1f66d6 20%, #002a80);
+.choice:has(input[type="checkbox"]:checked),
+#panel-base select#base-select,
+#panel-source.is-loaded .file-btn:not(:hover) {
+	background-color: #0a3fa8;
+	background-image: linear-gradient(160deg, #1f66d6 20%, #002a80);
 	box-shadow: 0 0 8px rgba(0, 230, 230, 0.55), inset 0 0 6px rgba(255, 255, 255, 0.18);
-}
-
-.choice:has(input[type="checkbox"]:checked) .choice-title-text {
 	color: #fff;
 	text-shadow: 1px 1px 0 #000;
 }
 
+.choice:has(input[type="checkbox"]:checked) .choice-title-text {
+	color: #fff;
+}
+
 .choice:has(input[type="checkbox"]:checked) input[type="checkbox"] {
 	filter: drop-shadow(0 0 4px rgba(255, 60, 60, 0.95));
+}
+
+/* Disc loaded: filename + detection line go from muted to bright. */
+#panel-source.is-loaded .file-label,
+#panel-source.is-loaded #disc-info:not(.is-error) {
+	color: #fff;
+	text-shadow: 1px 1px 0 #000;
 }
 
 /*
