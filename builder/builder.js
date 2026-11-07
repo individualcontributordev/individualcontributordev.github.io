@@ -62,6 +62,7 @@ function syncStickyAddonIds() {
 	stickyAddonIds.clear();
 	for (const id of selectedAddonIds()) stickyAddonIds.add(id);
 	if (isCsrPlusAllChecked()) stickyAddonIds.add('csr-plus-all');
+	if (isNoEncountersChecked()) stickyAddonIds.add('no-encounters-all');
 }
 
 function setStatus(msg, isError) {
@@ -774,7 +775,7 @@ function selectedAddonIds() {
 	const ids = [];
 	for (const input of document.querySelectorAll('input[name="addon"]:checked')) {
 		// Master CSR+ toggle is not a real layer id.
-		if (input.value === 'csr-plus-all') continue;
+		if (input.value === 'csr-plus-all' || input.value === 'no-encounters-all') continue;
 		ids.push(input.value);
 	}
 	for (const select of document.querySelectorAll('select[name="addon-group"]')) {
@@ -785,7 +786,55 @@ function selectedAddonIds() {
 			if (!ids.includes(id)) ids.push(id);
 		}
 	}
+	if (isNoEncountersChecked()) {
+		const disc = selectedDisc();
+		for (const a of noEncounterMods(selectedBaseId())) {
+			if ((disc == null || addonHasLayerForDisc(a, disc)) && !ids.includes(a.id)) ids.push(a.id);
+		}
+	}
 	return ids;
+}
+
+/** Field + world "No Encs" mods for a base: shown as one "No Encounters" checkbox. */
+function noEncounterMods(baseId) {
+	return partitionAddons(addonsForBase(baseId, 'mod')).free.filter(
+		(a) => isEncounterRateGroup(a.exclusiveGroup) && Number(a.rate) === 0
+	);
+}
+
+function isNoEncountersChecked() {
+	const el = document.getElementById('no-encounters-all');
+	return !!(el && el.checked);
+}
+
+/** One checkbox that applies both No Encs mods (field + world) for the loaded disc. */
+function renderNoEncountersToggle(prevSelected) {
+	const bundle = noEncounterMods(selectedBaseId());
+	if (!bundle.length) return null;
+	const disc = selectedDisc();
+	const compatible = bundle.some(
+		(a) => addonCompatibleWithBase(a, selectedBaseId()) && addonHasLayerForDisc(a, disc)
+	);
+	// Keep the pick across disc switches, same as the other checkboxes.
+	const checked = prevSelected.has('no-encounters-all') || bundle.some((a) => prevSelected.has(a.id));
+	const vers = [...new Set(bundle.map(addonVersion).filter(Boolean))];
+	const verBadge =
+		vers.length === 1
+			? '<span class="addon-version-badge" title="Pack version">v' + vers[0] + '</span>'
+			: '';
+	const betaBadge = bundle.some(isBetaAddon)
+		? '<span class="addon-beta-badge" title="Unfinished or known issues">BETA</span>'
+		: '';
+	const metaRow =
+		verBadge || betaBadge ? '<span class="choice-meta">' + verBadge + betaBadge + '</span>' : '';
+	const label = document.createElement('label');
+	label.className = 'choice' + (compatible ? '' : ' is-disabled');
+	label.title = 'No random encounters on the field or the world map.';
+	label.innerHTML = `
+		<input type="checkbox" name="addon" id="no-encounters-all" value="no-encounters-all" ${checked ? 'checked' : ''} ${compatible ? '' : 'disabled'} />
+		<span class="choice-body"><span class="choice-title"><span class="choice-title-text">No Encounters</span></span>${metaRow}</span>
+	`;
+	return label;
 }
 
 /** CSR+ scene-trim addon ids (kind=pack). Empty while none are published. */
@@ -1404,9 +1453,12 @@ function renderLayerList(kind) {
 	listEl.innerHTML = '';
 
 	const csrToggle = renderCsrPlusToggle(prevSelected);
+	const noEncToggle = renderNoEncountersToggle(prevSelected);
+	const noEncIds = new Set(noEncounterMods(baseId).map((a) => a.id));
+	mods.free = mods.free.filter((a) => !noEncIds.has(a.id));
 	const hasMods = mods.groupOrder.length > 0 || mods.free.length > 0;
 
-	if (!csrToggle && !hasMods) {
+	if (!csrToggle && !noEncToggle && !hasMods) {
 		const empty = document.createElement('p');
 		empty.className = 'explainer';
 		empty.style.marginBottom = '0';
@@ -1420,6 +1472,7 @@ function renderLayerList(kind) {
 	const allBody = document.createElement('div');
 	allBody.className = 'addon-all-grid';
 	if (csrToggle) allBody.appendChild(csrToggle);
+	if (noEncToggle) allBody.appendChild(noEncToggle);
 	appendAddonBucket(allBody, mods, prevSelected);
 	if (allBody.childNodes.length) {
 		allSection.appendChild(allBody);
